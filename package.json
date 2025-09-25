@@ -6,6 +6,7 @@
     "dev": "next dev --turbopack",
     "build": "next build --turbopack",
     "start": "next start",
+    "format": "prettier --write \"src/**/*.{ts,tsx,css,scss,js,jsx,json,md}\"",
     "lint": "eslint",
     "lint:fix": "eslint --fix"
   },
@@ -25,6 +26,7 @@
     "eslint-config-prettier": "10.1.8",
     "eslint-import-resolver-typescript": "4.4.4",
     "eslint-plugin-import": "2.32.0",
+    "prettier": "3.6.2",
     "tailwindcss": "4.1.13",
     "typescript": "5.9.2"
   }

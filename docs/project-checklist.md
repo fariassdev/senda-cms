@@ -9,7 +9,7 @@ The Senda CMS is a modern web application built with Next.js and TypeScript to m
 - [ ] Initialize project structure
   - [x] Initialize project using command `bun create next-app`
   - [x] Configure ESLint
-  - [ ] Install and configure Prettier
+  - [x] Install and configure Prettier
   - [ ] Install and configure Commitlint for conventional commit messages
   - [ ] Install and configure Husky for pre-commit hook
   - [ ] Configure aliases
