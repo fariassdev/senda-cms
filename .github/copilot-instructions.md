@@ -130,9 +130,11 @@ src/
 Use Bun for all package management:
 
 ```bash
-bun add @tanstack/react-query zustand react-hook-form zod
-bun add -d @types/node
+bun add --exact @tanstack/react-query zustand react-hook-form zod
+bun add -d --exact @types/node
 ```
+
+**NOTE:** Always use `--exact` to avoid version drift.
 
 ### Component Development Strategy
 
