@@ -37,7 +37,8 @@
   },
   "lint-staged": {
     "*.{ts,tsx,spec.ts,spec.tsx,test.ts,test.tsx,d.ts}": [
-      "eslint --fix"
+      "eslint --fix",
+      "prettier --write"
     ],
     "*.{css,scss,md,json,mdx}": [
       "prettier --write"
