@@ -9,35 +9,39 @@ The up-to-date OpenAPI specification can be fetched at http://localhost:8000/api
 ## Data Models
 
 ### Course Type
+
 ```typescript
 interface Course {
-  id: string
-  title: string
-  description: string
-  author: string
-  imagePlaceholderUrl: string
-  lessons: Lesson[]
+  id: string;
+  title: string;
+  description: string;
+  author: string;
+  imagePlaceholderUrl: string;
+  lessons: Lesson[];
+  createdAt: Date;
+  updatedAt: Date;
 }
 ```
 
 ### Lesson Type
+
 ```typescript
 interface Lesson {
-  id: number
-  lessonNumber: number
-  title: string
-  corePractice: string
-  keyPoint: string
-  tone: string
-  durationMinutes: number
-  status: LessonStatus
-  scriptUrl?: string
-  audioUrl?: string
+  id: number;
+  lessonNumber: number;
+  title: string;
+  corePractice: string;
+  keyPoint: string;
+  tone: string;
+  durationMinutes: number;
+  status: LessonStatus;
+  scriptUrl?: string;
+  scriptGeneratedAt?: Date;
+  audioUrl?: string;
+  audioGeneratedAt?: Date;
+  createdAt: Date;
+  updatedAt: Date;
 }
 
-type LessonStatus = 
-  | 'NOT_GENERATED'
-  | 'GENERATING'
-  | 'COMPLETED'
-  | 'FAILED'
+type LessonStatus = 'NOT_GENERATED' | 'GENERATING' | 'COMPLETED' | 'FAILED';
 ```
