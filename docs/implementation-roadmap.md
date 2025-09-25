@@ -26,8 +26,8 @@ The Senda CMS is a modern web application built with Next.js and TypeScript to m
 #### 2.1 Basic Authentication Setup
 
 - [ ] Install authentication dependencies
-  - [ ] `bun add zustand` - Client state management for auth
-  - [ ] `bun add -D @types/jsonwebtoken` - JWT token types (dev dependency)
+  - [ ] `bun add --exact zustand` - Client state management for auth
+  - [ ] `bun add -D --exact @types/jsonwebtoken` - JWT token types (dev dependency)
 - [ ] Create auth store with Zustand
   - [ ] `src/stores/authStore.ts` - Auth state management
   - [ ] Define user interface and auth actions
@@ -42,7 +42,7 @@ The Senda CMS is a modern web application built with Next.js and TypeScript to m
 - [ ] Install UI dependencies for forms
   - [ ] `bunx --bun shadcn@latest init` - Initialize shadcn/ui
   - [ ] `bunx --bun shadcn@latest add button input card form` - Basic UI components
-  - [ ] `bun add react-hook-form @hookform/resolvers zod` - Form handling
+  - [ ] `bun add --exact react-hook-form @hookform/resolvers zod` - Form handling
 - [ ] Create login page
   - [ ] `src/app/login/page.tsx` - Login route
   - [ ] Login form with email/password fields
@@ -70,8 +70,8 @@ The Senda CMS is a modern web application built with Next.js and TypeScript to m
 #### 3.1 Data Fetching Setup
 
 - [ ] Install data fetching dependencies
-  - [ ] `bun add @tanstack/react-query` - Server state management
-  - [ ] `bun add -D @tanstack/react-query-devtools` - Development tools (dev dependency)
+  - [ ] `bun add --exact @tanstack/react-query` - Server state management
+  - [ ] `bun add -D --exact @tanstack/react-query-devtools` - Development tools (dev dependency)
 - [ ] Setup React Query provider
   - [ ] Update `src/app/layout.tsx` with QueryClient provider
   - [ ] Configure default query options
@@ -163,7 +163,7 @@ The Senda CMS is a modern web application built with Next.js and TypeScript to m
   - [ ] Save as draft functionality
 - [ ] Add lesson ordering
   - [ ] Drag and drop lesson reordering
-  - [ ] `bun add @dnd-kit/core @dnd-kit/sortable @dnd-kit/utilities` - Only if needed
+  - [ ] `bun add --exact @dnd-kit/core @dnd-kit/sortable @dnd-kit/utilities` - Only if needed
   - [ ] Update lesson numbers automatically
 
 ### Phase 6: Script Generation 🤖
@@ -183,7 +183,7 @@ The Senda CMS is a modern web application built with Next.js and TypeScript to m
   - [ ] Progress indicators during generation
   - [ ] Script preview and editing capabilities
 - [ ] Install code/text editor if needed
-  - [ ] `bun add @monaco-editor/react monaco-editor` - Only if advanced editing needed
+  - [ ] `bun add --exact @monaco-editor/react monaco-editor` - Only if advanced editing needed
   - [ ] Rich text editor for script content
   - [ ] Auto-save functionality
 
@@ -207,7 +207,7 @@ The Senda CMS is a modern web application built with Next.js and TypeScript to m
 #### 7.2 Audio Player Integration
 
 - [ ] Install audio components if needed
-  - [ ] `bun add react-h5-audio-player` - Only if custom player needed
+  - [ ] `bun add --exact react-h5-audio-player` - Only if custom player needed
   - [ ] Native HTML5 audio player implementation
   - [ ] Audio controls and progress indicators
 - [ ] Create audio management UI
@@ -249,8 +249,8 @@ The Senda CMS is a modern web application built with Next.js and TypeScript to m
 #### 8.3 Testing and Quality Assurance
 
 - [ ] Add testing setup only when needed
-  - [ ] `bun add -D vitest @testing-library/react @testing-library/jest-dom jsdom` - Unit testing
-  - [ ] `bun add -D @playwright/test` - E2E testing if needed
+  - [ ] `bun add -D --exact vitest @testing-library/react @testing-library/jest-dom jsdom` - Unit testing
+  - [ ] `bun add -D --exact @playwright/test` - E2E testing if needed
   - [ ] Critical path testing for auth and core features
 - [ ] Add monitoring and analytics
   - [ ] Error tracking (Sentry) if needed
