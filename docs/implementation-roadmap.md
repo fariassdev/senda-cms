@@ -25,17 +25,17 @@ The Senda CMS is a modern web application built with Next.js and TypeScript to m
 
 #### 2.1 Basic Authentication Setup
 
-- [ ] Install authentication dependencies
-  - [ ] `bun add zustand` - Client state management for auth
-  - [ ] `bun add -D @types/jsonwebtoken` - JWT token types (dev dependency)
-- [ ] Create auth store with Zustand
-  - [ ] `src/stores/authStore.ts` - Auth state management
-  - [ ] Define user interface and auth actions
-  - [ ] Handle token storage in localStorage
-- [ ] Create basic API client
-  - [ ] `src/lib/api.ts` - Fetch wrapper with base URL
-  - [ ] Add authorization header injection
-  - [ ] Basic error handling for 401/403 responses
+- [x] Install authentication dependencies
+  - [x] `bun add --exact zustand` - Client state management for auth
+  - [x] `bun add -D --exact @types/jsonwebtoken` - JWT token types (dev dependency)
+- [x] Create auth store with Zustand
+  - [x] `src/stores/authStore.ts` - Auth state management
+  - [x] Define user interface and auth actions
+  - [x] Handle token storage in localStorage
+- [x] Create basic API client
+  - [x] `src/lib/api.ts` - Fetch wrapper with base URL
+  - [x] Add authorization header injection
+  - [x] Basic error handling for 401/403 responses
 
 #### 2.2 Login Implementation
 
