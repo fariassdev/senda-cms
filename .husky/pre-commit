@@ -1,0 +1,2 @@
+# use bunx to ensure local binaries are used
+bunx lint-staged

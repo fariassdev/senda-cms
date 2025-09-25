@@ -1,0 +1,3 @@
+# Verify commit message follows Conventional Commits
+# use bunx to run the locally installed commitlint
+bunx --silent commitlint --edit "$1"
