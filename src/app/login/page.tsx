@@ -1,6 +1,7 @@
 'use client';
 
 import { zodResolver } from '@hookform/resolvers/zod';
+import { useRouter } from 'next/navigation';
 import { useState } from 'react';
 
 import { useForm } from 'react-hook-form';
@@ -23,6 +24,8 @@ import {
   FormMessage,
 } from '@/components/ui/form';
 import { Input } from '@/components/ui/input';
+import { login } from '@/lib/auth';
+import { useAuthStore } from '@/stores/authStore';
 
 // Login form validation schema
 const loginSchema = z.object({
@@ -40,6 +43,8 @@ type LoginFormData = z.infer<typeof loginSchema>;
 export default function LoginPage() {
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
+  const router = useRouter();
+  const { setAuth } = useAuthStore();
 
   const form = useForm<LoginFormData>({
     resolver: zodResolver(loginSchema),
@@ -54,14 +59,17 @@ export default function LoginPage() {
     setError(null);
 
     try {
-      // TODO: Implement login API call in next step
-      console.log('Login attempt:', data);
+      // Call the login API
+      const response = await login({
+        email: data.email,
+        password: data.password,
+      });
 
-      // Temporary success simulation
-      await new Promise((resolve) => setTimeout(resolve, 1000));
+      // Update auth state with user data and token
+      setAuth(response.user, response.access_token);
 
-      // For now, just show success
-      alert('Login functionality will be implemented in the next step!');
+      // Redirect to the courses page (or dashboard)
+      router.push('/courses');
     } catch (err) {
       setError(err instanceof Error ? err.message : 'Login failed');
     } finally {
