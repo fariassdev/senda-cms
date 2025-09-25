@@ -1,36 +1,207 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
+# Senda CMS
 
-## Getting Started
+A modern content management system designed to streamline the creation and management of guided meditation courses. Built with Next.js 15, TypeScript, and powered by AI capabilities through the Senda API.
 
-First, run the development server:
+## 🧘‍♀️ Overview
+
+Senda CMS provides an intuitive interface for creating meditation courses, generating lesson scripts, and producing audio content. The system leverages AI to automate content generation while maintaining high quality and consistency across all meditation courses.
+
+### Key Features
+
+- **Course Management**: Create, organize, and manage meditation courses with intuitive workflows
+- **AI-Powered Script Generation**: Automatically generate lesson scripts using the Senda API
+- **Audio Production**: Convert scripts to high-quality audio using Kokoro TTS integration
+- **Admin Authentication**: Secure JWT-based authentication system with admin-only access
+- **Real-time Status Tracking**: Monitor course and lesson generation progress
+- **Responsive Design**: Modern UI built with Tailwind CSS and shadcn/ui components
+
+## 🚀 Getting Started
+
+### Prerequisites
+
+- [Bun](https://bun.sh/) (recommended package manager)
+- Node.js 18+ (if not using Bun)
+- Access to the Senda API
+
+### Installation
+
+1. Clone the repository:
 
 ```bash
-npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
+git clone https://github.com/fariassdev/senda-cms.git
+cd senda-cms
+```
+
+2. Install dependencies using Bun:
+
+```bash
+bun install
+```
+
+3. Set up environment variables:
+
+```bash
+cp .env.example .env
+```
+
+Configure the following environment variables:
+
+- `NEXT_PUBLIC_API_BASE_URL`: Senda API base URL
+- `NEXT_PUBLIC_BUILD`: Environment identifier (development/staging/production)
+
+### Development
+
+Start the development server with Turbopack:
+
+```bash
 bun dev
 ```
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+Open [http://localhost:3000](http://localhost:3000) to view the application in your browser.
 
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
+### Available Scripts
 
-This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
+- `bun dev` - Start development server with Turbopack
+- `bun build` - Build the application for production
+- `bun start` - Start the production server
+- `bun lint` - Run ESLint for code quality
+- `bun lint:fix` - Auto-fix linting issues
+- `bun format` - Format code with Prettier
 
-## Learn More
+## 🏗️ Tech Stack
 
-To learn more about Next.js, take a look at the following resources:
+### Frontend
 
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
+- **Next.js 15** - React framework with App Router
+- **TypeScript** - Type-safe development
+- **Tailwind CSS** - Utility-first CSS framework
+- **shadcn/ui** - Modern component library
+- **Styled Components** - CSS-in-JS for complex styling
 
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
+### State Management
 
-## Deploy on Vercel
+- **React Query (TanStack Query)** - Server state management
+- **Zustand** - Client state management
+- **React Hook Form** - Form state management
 
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
+### Authentication & Security
 
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
+- **JWT Authentication** - Secure token-based authentication
+- **Admin-only Access Control** - Role-based permissions
+- **HTTPS Enforcement** - Security best practices
+- **CSRF Protection** - Cross-site request forgery protection
+
+### Development Tools
+
+- **ESLint** - Code linting and quality
+- **Prettier** - Code formatting
+- **Husky** - Git hooks
+- **lint-staged** - Pre-commit linting
+- **Commitlint** - Conventional commit messages
+
+## 📁 Project Structure
+
+```
+src/
+├── app/                 # Next.js App Router pages
+├── components/          # Reusable UI components
+│   └── ui/             # shadcn/ui components
+├── containers/          # Connected components with business logic
+├── hooks/               # Custom React hooks
+├── stores/              # Zustand state stores
+├── services/            # API services and utilities
+├── models/              # Data models and normalizers
+├── styles/              # Global styles and theme tokens
+└── lib/                 # Utility functions and configurations
+```
+
+## 🔌 API Integration
+
+The CMS integrates with the Senda API for course and lesson management. Key endpoints include:
+
+- **Courses**: CRUD operations for meditation courses
+- **Lessons**: Lesson management within courses
+- **Script Generation**: AI-powered content generation
+- **Audio Generation**: Text-to-speech conversion
+
+For detailed API documentation, start the Senda API project and fetch the OpenAPI spec at: `http://localhost:8000/api/openapi.json`
+
+## 🔐 Authentication
+
+The system uses JWT-based authentication with admin-only access control. All users must have administrative privileges to access the CMS.
+
+### Key Features:
+
+- Secure login with email/password
+- Automatic session management
+- Token refresh mechanism
+- Cross-tab session synchronization
+- Secure logout functionality
+
+## 🎨 UI Components
+
+Built with shadcn/ui components and customized with styled-components:
+
+- Modern, accessible component library
+- Consistent design system
+- Responsive layouts
+- Dark/light theme support
+- Form components with validation
+
+## 📊 Success Metrics
+
+- **Performance**: < 2s page load time, < 1s average response time
+- **Reliability**: > 99.9% system uptime
+- **Security**: > 99% authentication success rate, zero security breaches
+- **Content Quality**: > 95% script generation success rate
+
+## 🚀 Deployment
+
+The application is designed for deployment on Vercel with environment-specific configurations:
+
+- **Production**: `main` branch
+- **Staging**: `staging` branch
+- **Development**: `develop` branch
+
+### Environment Configuration
+
+- Security headers configured in `next.config.ts`
+- Branch-based environment selection via `vercel.sh`
+- Optimized builds with Turbopack
+
+## 📚 Documentation
+
+- [Product Requirements Document](./docs/PRD.md) - Comprehensive project requirements
+- [API Integration Guide](./docs/api-integration.md) - API implementation details
+- [Project Checklist](./docs/project-checklist.md) - Development milestones
+
+## 🤝 Contributing
+
+1. Fork the repository
+2. Create a feature branch: `git checkout -b feature/amazing-feature`
+3. Commit changes: `git commit -m 'feat: add amazing feature'`
+4. Push to branch: `git push origin feature/amazing-feature`
+5. Open a Pull Request
+
+### Code Quality
+
+- Follow conventional commit messages
+- Ensure all tests pass
+- Maintain code coverage standards
+- Use TypeScript for type safety
+
+## 📄 License
+
+This project is private and proprietary. All rights reserved.
+
+## 🆘 Support
+
+For technical support or questions:
+
+- Create an issue in the repository
+- Contact the development team
+- Review the documentation in the `docs/` directory
+
+---
+
+Built with ❤️ using Next.js, TypeScript, and Bun.
