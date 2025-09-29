@@ -132,6 +132,29 @@ export async function refreshAccessToken(): Promise<RefreshTokenResponse> {
 }
 
 /**
+ * Store login response data in auth store with proper token expiration
+ */
+export function storeLoginResponse(response: LoginResponse): void {
+  const { setAuth } = useAuthStore.getState();
+
+  // Calculate expiration timestamp if expires_in is provided
+  let expiresAt: number | undefined;
+  if (response.expires_in) {
+    expiresAt = Date.now() + response.expires_in * 1000;
+  } else {
+    // Fallback to JWT expiration if no expires_in provided
+    expiresAt = getTokenExpiration(response.access_token) || undefined;
+  }
+
+  setAuth(
+    response.user,
+    response.access_token,
+    response.refresh_token,
+    expiresAt,
+  );
+}
+
+/**
  * Logout the current user
  * Clears auth state and token
  */
@@ -158,25 +181,32 @@ export function getCurrentUser() {
 
 /**
  * Verify token validity and refresh user data if needed
- * This would typically make a call to a /me or /verify endpoint
+ * Makes a call to /auth/me endpoint to validate the token with the server
  */
 export async function verifyToken(): Promise<boolean> {
   try {
-    // TODO: Replace with actual /me endpoint when available
-    // For now, just check if we have a token
     const { token } = useAuthStore.getState();
 
     if (!token) {
       return false;
     }
 
-    // In a real implementation, you would validate the token with the server:
-    // const apiClient = createAuthenticatedApiClient();
-    // await apiClient.request("/auth/me");
+    // Check if token is expired before making API call
+    if (isTokenExpired(token)) {
+      logout();
+      return false;
+    }
 
+    // Validate token with the server
+    const apiClient = new ApiClient({
+      getToken: () => token,
+    });
+
+    await apiClient.request('/auth/me');
     return true;
-  } catch {
+  } catch (error) {
     // Token is invalid, clear auth state
+    console.error('Token verification failed:', error);
     logout();
     return false;
   }
