@@ -5,7 +5,7 @@ import { NextResponse } from 'next/server';
 
 // 1. Specify protected and public routes
 const protectedRoutes = ['/courses', '/lessons'];
-const publicRoutes = ['/login', '/'];
+const publicRoutes = ['/login'];
 
 /**
  * Validates JWT token using jose library (Edge Runtime compatible)
