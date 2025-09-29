@@ -75,14 +75,14 @@ The Senda CMS is a modern web application built with Next.js and TypeScript to m
 
 #### 2.4 Route Protection
 
-- [ ] Create auth middleware
-  - [ ] `src/middleware.ts` - Route protection middleware
-  - [ ] Redirect unauthenticated users to login
-  - [ ] Protect all routes except `/login`
-- [ ] Implement auth layout wrapper
-  - [ ] `src/components/AuthLayout.tsx` - Auth state provider
-  - [ ] Handle loading states during auth check
-  - [ ] Auto-logout on token expiration
+- [x] Create auth middleware
+  - [x] `src/middleware.ts` - Route protection middleware
+  - [x] Redirect unauthenticated users to login
+  - [x] Protect all routes except `/login`
+- [x] Implement auth layout wrapper
+  - [x] `src/components/AuthLayout.tsx` - Auth state provider
+  - [x] Handle loading states during auth check
+  - [x] Auto-logout on token expiration
 
 ### Phase 3: Course Listing 📚
 
