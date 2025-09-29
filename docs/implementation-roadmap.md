@@ -54,7 +54,26 @@ The Senda CMS is a modern web application built with Next.js and TypeScript to m
   - [x] Token parsing and user data extraction
   - [x] Redirect logic after successful login
 
-#### 2.3 Route Protection
+#### 2.3 Token Management System
+
+- [x] Enhance auth store for token management
+  - [x] Update `src/stores/authStore.ts` to store both access and refresh tokens
+  - [x] Add token refresh logic and error handling
+  - [x] Implement cross-tab session synchronization via localStorage events
+- [x] Implement automatic token refresh
+  - [x] Create `src/hooks/useAuthRefresh.ts` hook for background token refresh
+  - [x] Add token expiration checking with JWT payload parsing
+  - [x] Implement periodic refresh (every 5 minutes) and on window focus
+- [x] Update API client for token handling
+  - [x] Add automatic token refresh on 401 responses in `src/lib/api.ts`
+  - [x] Implement request retry with new token after refresh
+  - [x] Handle refresh failures with automatic logout
+- [x] Enhance auth API functions
+  - [x] Add `refreshAccessToken()` function to `src/lib/auth.ts`
+  - [x] Update `verifyToken()` to use actual `/auth/me` endpoint
+  - [x] Implement graceful error handling for all auth operations
+
+#### 2.4 Route Protection
 
 - [ ] Create auth middleware
   - [ ] `src/middleware.ts` - Route protection middleware
