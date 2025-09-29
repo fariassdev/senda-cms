@@ -88,13 +88,13 @@ The Senda CMS is a modern web application built with Next.js and TypeScript to m
 
 #### 3.1 Data Fetching Setup
 
-- [ ] Install data fetching dependencies
-  - [ ] `bun add --exact @tanstack/react-query` - Server state management
-  - [ ] `bun add -D --exact @tanstack/react-query-devtools` - Development tools (dev dependency)
-- [ ] Setup React Query provider
-  - [ ] Update `src/app/layout.tsx` with QueryClient provider
-  - [ ] Configure default query options
-  - [ ] Add dev tools in development mode
+- [x] Install data fetching dependencies
+  - [x] `bun add --exact @tanstack/react-query` - Server state management
+  - [x] `bun add -D --exact @tanstack/react-query-devtools` - Development tools (dev dependency)
+- [x] Setup React Query provider
+  - [x] Update `src/app/layout.tsx` with QueryClient provider
+  - [x] Configure default query options
+  - [x] Add dev tools in development mode
 
 #### 3.2 Course API Integration
 
