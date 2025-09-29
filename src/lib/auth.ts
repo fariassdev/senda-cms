@@ -7,7 +7,7 @@ import { useAuthStore } from '@/stores/authStore';
 import { ApiClient, ApiError } from './api';
 
 export interface LoginCredentials {
-  email: string;
+  username: string;
   password: string;
 }
 
@@ -57,9 +57,16 @@ export async function login(
   const apiClient = new ApiClient();
 
   try {
+    const formData = new URLSearchParams();
+    formData.append('username', credentials.username);
+    formData.append('password', credentials.password);
+
     const response = await apiClient.request<LoginResponse>('/auth/login', {
       method: 'POST',
-      body: JSON.stringify(credentials),
+      headers: {
+        'Content-Type': 'application/x-www-form-urlencoded',
+      },
+      body: formData.toString(),
     });
 
     return response;

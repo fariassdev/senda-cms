@@ -15,7 +15,7 @@ const useConnect = () => {
   const form = useForm<LoginFormData>({
     resolver: zodResolver(validationSchema),
     defaultValues: {
-      email: '',
+      username: '',
       password: '',
     },
   });
@@ -27,7 +27,7 @@ const useConnect = () => {
     try {
       // Call the login API
       const response = await login({
-        email: data.email,
+        username: data.username,
         password: data.password,
       });
 
