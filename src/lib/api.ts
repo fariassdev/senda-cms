@@ -17,11 +17,23 @@ export class ApiError extends Error {
 export interface ApiClientConfig {
   baseUrl?: string;
   getToken?: () => string | null;
+  onTokenRefreshNeeded?: () => Promise<{
+    access_token: string;
+    refresh_token?: string;
+    expires_in?: number;
+  }>;
+  onAuthFailure?: () => void;
 }
 
 export class ApiClient {
   private baseUrl: string;
   private getToken: () => string | null;
+  private onTokenRefreshNeeded?: () => Promise<{
+    access_token: string;
+    refresh_token?: string;
+    expires_in?: number;
+  }>;
+  private onAuthFailure?: () => void;
 
   constructor(config?: ApiClientConfig) {
     this.baseUrl =
@@ -29,12 +41,51 @@ export class ApiClient {
       process.env.NEXT_PUBLIC_API_BASE_URL ||
       'http://localhost:8000';
     this.getToken = config?.getToken || (() => null);
+    this.onTokenRefreshNeeded = config?.onTokenRefreshNeeded;
+    this.onAuthFailure = config?.onAuthFailure;
   }
 
   /**
-   * Make an authenticated API request
+   * Make an authenticated API request with automatic token refresh
    */
   async request<T = unknown>(
+    endpoint: string,
+    options: RequestInit = {},
+  ): Promise<T> {
+    // First attempt
+    try {
+      return await this.makeRequest<T>(endpoint, options);
+    } catch (error) {
+      // If 401 error and we have token refresh capability, try to refresh and retry
+      if (
+        error instanceof ApiError &&
+        error.status === 401 &&
+        this.onTokenRefreshNeeded
+      ) {
+        try {
+          const refreshResponse = await this.onTokenRefreshNeeded();
+
+          if (refreshResponse?.access_token) {
+            // Retry the request with new token
+            return await this.makeRequest<T>(endpoint, options);
+          }
+        } catch (refreshError) {
+          console.error('Token refresh failed:', refreshError);
+
+          // Call auth failure handler if available
+          this.onAuthFailure?.();
+        }
+      }
+
+      // Re-throw the original error if refresh failed or wasn't attempted
+      throw error;
+    }
+  }
+
+  /**
+   * Internal method to make the actual HTTP request
+   */
+  private async makeRequest<T = unknown>(
     endpoint: string,
     options: RequestInit = {},
   ): Promise<T> {
@@ -64,7 +115,6 @@ export class ApiClient {
 
       // Handle authentication/authorization errors
       if (response.status === 401 || response.status === 403) {
-        // These will be handled by the calling code to trigger logout
         throw new ApiError(
           errorMessage || 'Authentication failed',
           response.status,
