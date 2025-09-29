@@ -4,86 +4,112 @@
 
 Senda CMS is a meditation course management system built with Next.js 15 and TypeScript. The CMS enables content managers to create guided meditation courses, generate lesson scripts using AI, and produce audio content through the Senda API integration.
 
-**Current State**: See `docs/implementation-roadmap.md` for detailed implementation status. Phase 1 (Foundation) complete ✅, currently focusing on Phase 2 (Authentication System) 🎯.
+**Current State**: Phase 2 (Authentication) ✅ complete, Phase 3.1 (OpenAPI Setup) ✅ complete. Currently implementing Phase 3.2 (Course Listing UI). See `docs/implementation-roadmap.md` for comprehensive implementation status.
 
 ## Tech Stack & Architecture
 
-### Current Implementation
+### Core Implementation
 
-- **Framework**: Next.js 15 App Router with TypeScript
-- **Package Manager**: Bun (preferred over npm/yarn)
-- **Styling**: Tailwind CSS 4.x with CSS custom properties
-- **Linting**: ESLint 9+ with flat config, Prettier, and import ordering
+- **Framework**: Next.js 15 App Router with TypeScript + Turbopack
+- **Package Manager**: Bun (never use npm/yarn - use `--exact` flag always)
+- **Data Fetching**: openapi-react-query + @tanstack/react-query (auto-generated from OpenAPI spec)
+- **State Management**: Zustand for auth state, React Query for server state
+- **Authentication**: JWT with automatic refresh using `jose` library
+- **UI Components**: shadcn/ui with Tailwind CSS 4.x
+- **Forms**: React Hook Form + Zod validation with auto-generated schemas
+- **Linting**: ESLint 9+ flat config + Prettier + import ordering
 - **Git Hooks**: Husky + lint-staged + commitlint (conventional commits)
-- **Development**: Turbopack for fast dev server and builds
 
-### Planned Architecture
+## Development Commands & Critical Workflows
 
-- **State Management**: React Query (TanStack Query) + Zustand
-- **UI Components**: shadcn/ui with Tailwind CSS
-- **Authentication**: JWT-based admin-only access
-- **API Integration**: REST client for Senda API (meditation courses/lessons)
-- **Forms**: React Hook Form + Zod validation
+### Package Management (Bun Only)
 
-## Development Commands
+```bash
+bun install                          # Install dependencies
+bun add --exact <package>           # Add production dependency
+bun add -d --exact <package>        # Add dev dependency
+bun remove <package>                # Remove dependency
+```
 
-### Package Management
-
-Use Bun commands (never npm/yarn):
-
-- `bun install` - Install dependencies
-- `bun add --exact <package>` - Add new dependency
-- `bun add -d --exact <package>` - Add new dev dependency
-- `bun remove <package>` - Remove dependency
-
-**NOTE:** Always use `--exact` to avoid version drift.
+**CRITICAL**: Always use `--exact` flag to prevent version drift.
 
 ### Development Workflow
 
-- `bun dev` - Start dev server with Turbopack
-- `bun build` - Production build with Turbopack
-- `bun lint` - Run ESLint
-- `bun lint:fix` - Auto-fix linting issues
-- `bun format` - Format code with Prettier
+```bash
+bun dev                            # Start dev server with Turbopack
+bun build                          # Production build with Turbopack
+bun lint                           # Run ESLint
+bun lint:fix                       # Auto-fix linting issues
+bun format                         # Format code with Prettier
+bun run generate-types             # Generate TypeScript types from OpenAPI spec
+```
+
+### Type Generation (Essential for API changes)
+
+```bash
+# Regenerate API types when backend OpenAPI spec changes
+bun run generate-types
+# This updates src/types/api.d.ts with latest API schemas
+```
 
 ### Environment Setup
 
-- Environment variables in `.env` (use `.env.example` as template)
-- API base URL: `NEXT_PUBLIC_API_BASE_URL=http://localhost:8000`
-- Build identifier: `NEXT_PUBLIC_BUILD=development`
+- Copy `.env.example` to `.env`
+- Required: `NEXT_PUBLIC_API_BASE_URL=http://localhost:8000`
+- Required: `NEXT_PUBLIC_BUILD=development`
 
-## Project Structure
+## Project Architecture & Data Flow
 
-### Current Layout
+### OpenAPI-First Architecture (CRITICAL)
+
+This project uses **openapi-react-query** for ALL API interactions:
+
+- `src/types/api.d.ts` - Auto-generated TypeScript types from OpenAPI spec
+- `src/lib/api.ts` - Configured openapi-fetch client with auth middleware
+- All API calls use auto-generated, type-safe React Query hooks
+- **Never write manual API functions** - use generated hooks instead
+
+### Authentication Flow
+
+```typescript
+// Authentication state in Zustand store (src/stores/authStore.ts)
+useAuthStore() → { user, token, refreshToken, isAuthenticated }
+
+// Auto-refresh middleware in API client handles token renewal
+// Cross-tab sync via localStorage events
+// Route protection via middleware.ts
+```
+
+### Component Architecture Patterns
 
 ```
 src/
-├── app/                 # Next.js App Router (currently minimal)
-│   ├── layout.tsx       # Root layout with fonts
-│   ├── page.tsx         # Homepage
-│   └── globals.css      # Tailwind CSS imports + theme
-```
-
-### Project Structure
-
-```
-src/
-├── app/                 # Next.js App Router pages (minimal - delegate to containers)
-│   ├── layout.tsx       # Root layout with fonts
-│   ├── page.tsx         # Homepage
-│   └── globals.css      # Tailwind CSS imports + theme
-│   ├── login/           # Login group routes
-│   ├── courses/         # Course management pages
-│   └── lessons/         # Lesson management pages
-├── components/          # Reusable UI components
+├── app/                 # Next.js App Router (minimal pages)
+│   ├── layout.tsx       # Root layout → ClientLayout → QueryProvider → AuthLayout
+│   └── login/page.tsx   # Route delegates to containers
+├── components/          # Pure UI components (no data fetching)
+│   ├── AuthLayout.tsx   # Auth state management + route protection
+│   ├── ClientLayout.tsx # Provider wrapper for client-side features
 │   └── ui/              # shadcn/ui components
-├── containers/          # Connected components with data fetching and business logic
-│   └── Guest/             # Guest (unauthenticated) views
-│   └── Main/              # Authenticated views
-├── hooks/              # Custom React hooks
-├── lib/                # Utility functions
-├── services/           # API clients and services
-└── stores/             # Zustand state stores
+├── containers/          # Connected components with business logic
+│   ├── Guest/SignIn/    # Login form with connect.ts for data logic
+│   └── Main/            # Authenticated container views
+└── stores/              # Zustand stores (auth only - server state via React Query)
+```
+
+### Data Fetching Pattern
+
+```typescript
+// In containers/[Name]/connect.ts
+import { $api } from '@/lib/api';
+
+export default function useConnect() {
+  // Use auto-generated hooks from openapi-react-query
+  const coursesQuery = $api.useQuery('get', '/api/courses');
+  const createCourseMutation = $api.useMutation('post', '/api/courses');
+
+  return { coursesQuery, createCourseMutation };
+}
 ```
 
 ## Component Architecture
@@ -180,13 +206,6 @@ bun add -d --exact @types/node
 
 **NOTE:** Always use `--exact` to avoid version drift.
 
-### Component Development Strategy
-
-1. **Start Simple**: Begin with basic Tailwind-styled components
-2. **Add shadcn/ui**: Install and customize needed components (`bunx --bun shadcn@latest add button`)
-3. **State Management**: Add React Query for server state, Zustand for client state
-4. **Form Handling**: Use React Hook Form + Zod for type-safe forms
-
 ### Authentication Implementation
 
 - JWT-based admin-only system
@@ -200,12 +219,15 @@ bun add -d --exact @types/node
 
 **✅ Phase 1 Complete**: Project Foundation
 
-**🎯 Phase 2 Current**: Authentication System
+**✅ Phase 2 Complete**: Authentication System
+
+**✅ Phase 3.1 Complete**: OpenAPI-First Data Fetching Setup
+
+**🎯 Phase 3.2 Current**: Course Listing UI
 
 **⏭️ Upcoming Phases**:
 
-- Phase 3: Course Listing (React Query + shadcn/ui tables)
-- Phase 4: Course Creation (Forms with validation)
-- Phase 5: Lesson Management (CRUD operations)
-- Phase 6: Script Generation (AI integration)
-- Phase 7: Audio Generation (TTS integration)
+- Phase 3.3: Course Management (Create/Edit forms)
+- Phase 4: Lesson Management (CRUD operations)
+- Phase 5: Script Generation (AI integration)
+- Phase 6: Audio Generation (TTS integration)
