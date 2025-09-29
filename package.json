@@ -6,6 +6,7 @@
     "dev": "next dev --turbopack",
     "build": "next build --turbopack",
     "start": "next start",
+    "typecheck": "tsc --noEmit",
     "format": "prettier --write \"src/**/*.{ts,tsx,css,scss,js,jsx,json,md}\"",
     "lint": "eslint",
     "lint:fix": "eslint --fix",
@@ -59,7 +60,8 @@
   "lint-staged": {
     "*.{ts,tsx,spec.ts,spec.tsx,test.ts,test.tsx,d.ts}": [
       "eslint --fix",
-      "prettier --write"
+      "prettier --write",
+      "bun typecheck"
     ],
     "*.{css,scss,md,json,mdx}": [
       "prettier --write"
