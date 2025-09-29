@@ -33,7 +33,12 @@ export function useAuthRefresh() {
     // Check token expiration every minute
     const interval = setInterval(() => {
       try {
-        const payload = JSON.parse(atob(token.split('.')[1]));
+        const tokenPart = token.split('.')[1];
+        if (!tokenPart) {
+          console.warn('Invalid JWT token format');
+          return;
+        }
+        const payload = JSON.parse(atob(tokenPart));
         const expirationTime = payload.exp * 1000;
 
         // If token expires in the next 5 minutes, it will be refreshed by the middleware

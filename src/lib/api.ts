@@ -17,7 +17,11 @@ const publicFetchClient = createFetchClient<paths>({
  */
 function isTokenExpired(token: string, bufferMinutes = 5): boolean {
   try {
-    const payload = JSON.parse(atob(token.split('.')[1]));
+    const tokenPart = token.split('.')[1];
+    if (!tokenPart) {
+      return true; // Invalid token format, consider expired
+    }
+    const payload = JSON.parse(atob(tokenPart));
     const expirationTime = payload.exp * 1000; // Convert to milliseconds
     const bufferTime = bufferMinutes * 60 * 1000; // Buffer in milliseconds
     return Date.now() >= expirationTime - bufferTime;
