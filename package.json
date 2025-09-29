@@ -12,15 +12,17 @@
     "lint-staged": "lint-staged"
   },
   "dependencies": {
+    "next": "15.5.4",
     "react": "19.1.0",
     "react-dom": "19.1.0",
-    "next": "15.5.4"
+    "zustand": "5.0.8"
   },
   "devDependencies": {
     "@commitlint/cli": "20.0.0",
     "@commitlint/config-conventional": "20.0.0",
     "@eslint/eslintrc": "3.3.1",
     "@tailwindcss/postcss": "4.1.13",
+    "@types/jsonwebtoken": "9.0.10",
     "@types/node": "20.19.17",
     "@types/react": "19.1.13",
     "@types/react-dom": "19.1.9",
