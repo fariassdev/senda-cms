@@ -32,9 +32,11 @@ Senda CMS is a meditation course management system built with Next.js 15 and Typ
 Use Bun commands (never npm/yarn):
 
 - `bun install` - Install dependencies
-- `bun add <package>` - Add new dependency
-- `bun add -d <package>` - Add new dev dependency
+- `bun add --exact <package>` - Add new dependency
+- `bun add -d --exact <package>` - Add new dev dependency
 - `bun remove <package>` - Remove dependency
+
+**NOTE:** Always use `--exact` to avoid version drift.
 
 ### Development Workflow
 
@@ -62,21 +64,63 @@ src/
 │   └── globals.css      # Tailwind CSS imports + theme
 ```
 
-### Planned Structure
+### Project Structure
 
 ```
 src/
-├── app/                 # Next.js App Router pages
-│   ├── (auth)/          # Auth group routes
+├── app/                 # Next.js App Router pages (minimal - delegate to containers)
+│   ├── layout.tsx       # Root layout with fonts
+│   ├── page.tsx         # Homepage
+│   └── globals.css      # Tailwind CSS imports + theme
+│   ├── login/           # Login group routes
 │   ├── courses/         # Course management pages
 │   └── lessons/         # Lesson management pages
 ├── components/          # Reusable UI components
-│   └── ui/             # shadcn/ui components
+│   └── ui/              # shadcn/ui components
+├── containers/          # Connected components with data fetching and business logic
+│   └── Guest/             # Guest (unauthenticated) views
+│   └── Main/              # Authenticated views
 ├── hooks/              # Custom React hooks
 ├── lib/                # Utility functions
 ├── services/           # API clients and services
 └── stores/             # Zustand state stores
 ```
+
+## Component Architecture
+
+### Component Structure
+
+The **Components** (`src/components/`) are pure, reusable UI components.
+
+Every component follows this convention in `src/components/[Name]/`:
+
+- index.tsx: Main component export (the view)
+- types.ts: TypeScript interfaces/types for the component
+- logic.ts: (Optional) Complex logic, handlers, or hooks
+- spec.ts: (Optional) Component tests
+
+### Containers
+
+The **Containers** (`src/containers/`) are connected components that handle data fetching and business logic. Each container folder in `src/containers/Guest/[Name]/` or `src/containers/Main/[Name]/` typically includes:
+
+- index.tsx: Container view
+- types.ts: Container types/interfaces
+- connect.ts: Data fetching, effects, and logic (for API integration)
+- constants.ts: (Optional) For static values like container validation schemas
+- spec.ts: (Optional) Container tests
+
+## Next.js Specific Patterns
+
+### App Router Structure
+
+- Parallel routes: `@login` for guest views, `@dashboard` for authenticated
+- Layout hierarchy: `layout.tsx` → `client.layout.tsx` (providers) → `AuthLayout`
+- Use `'use client'` for components with hooks, state, or event handlers
+
+### Route Organization
+
+- Page components are minimal - delegate to containers
+- Use `usePathname()` for route-based logic
 
 ## Code Quality & Standards
 
