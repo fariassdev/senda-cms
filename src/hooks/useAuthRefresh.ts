@@ -96,7 +96,7 @@ export function useAuthRefresh() {
    * Handle localStorage changes from other tabs (cross-tab synchronization)
    */
   const handleStorageChange = useCallback((event: StorageEvent) => {
-    // Only handle auth-related storage changes
+    // Handle auth-related storage changes
     if (
       event.key?.startsWith('senda_auth') ||
       event.key?.startsWith('senda_refresh') ||
@@ -104,6 +104,24 @@ export function useAuthRefresh() {
     ) {
       // Re-initialize auth state from localStorage
       useAuthStore.getState().initializeAuth();
+    }
+
+    // Handle custom auth sync events
+    if (event.key === 'senda_auth_sync') {
+      switch (event.newValue) {
+        case 'login':
+          console.log('Cross-tab: User logged in on another tab');
+          useAuthStore.getState().initializeAuth();
+          break;
+        case 'logout':
+          console.log('Cross-tab: User logged out on another tab');
+          useAuthStore.getState().initializeAuth();
+          break;
+        case 'token_refresh':
+          console.log('Cross-tab: Token refreshed on another tab');
+          useAuthStore.getState().initializeAuth();
+          break;
+      }
     }
   }, []);
 

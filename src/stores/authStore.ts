@@ -38,6 +38,23 @@ const TOKEN_KEY = 'senda_auth_token';
 const REFRESH_TOKEN_KEY = 'senda_refresh_token';
 const TOKEN_EXPIRES_KEY = 'senda_token_expires';
 const USER_KEY = 'senda_auth_user';
+const AUTH_SYNC_EVENT = 'senda_auth_sync';
+
+/**
+ * Broadcast auth state changes to other tabs
+ * Uses a custom event to notify other tabs of auth changes
+ */
+function broadcastAuthChange(action: 'login' | 'logout' | 'token_refresh') {
+  if (typeof window !== 'undefined') {
+    // Dispatch a custom storage event to notify other tabs
+    const event = new StorageEvent('storage', {
+      key: AUTH_SYNC_EVENT,
+      newValue: action,
+      oldValue: null,
+    });
+    window.dispatchEvent(event);
+  }
+}
 
 export const useAuthStore = create<AuthStore>((set, _get) => ({
   // Initial state
@@ -75,6 +92,9 @@ export const useAuthStore = create<AuthStore>((set, _get) => ({
       isLoading: false,
       tokenExpiresAt: expiresAt || null,
     });
+
+    // Broadcast login to other tabs
+    broadcastAuthChange('login');
   },
 
   clearAuth: () => {
@@ -92,6 +112,9 @@ export const useAuthStore = create<AuthStore>((set, _get) => ({
       isLoading: false,
       tokenExpiresAt: null,
     });
+
+    // Broadcast logout to other tabs
+    broadcastAuthChange('logout');
   },
 
   setLoading: (loading: boolean) => {
@@ -115,6 +138,9 @@ export const useAuthStore = create<AuthStore>((set, _get) => ({
       refreshToken: refreshToken || null,
       tokenExpiresAt: expiresAt || null,
     });
+
+    // Broadcast token refresh to other tabs
+    broadcastAuthChange('token_refresh');
   },
 
   initializeAuth: () => {
