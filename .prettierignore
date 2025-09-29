@@ -1,0 +1,17 @@
+# Auto-generated files
+src/types/api.d.ts
+
+# Build outputs
+.next/
+dist/
+build/
+
+# Dependencies
+node_modules/
+
+# Logs
+*.log
+
+# OS generated files
+.DS_Store
+Thumbs.db

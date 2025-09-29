@@ -1,16 +1,15 @@
 import { zodResolver } from '@hookform/resolvers/zod';
 import { useRouter } from 'next/navigation';
-import { useState } from 'react';
 import { useForm } from 'react-hook-form';
 
-import { login, storeLoginResponse } from '@/lib/auth';
+import { $publicApi } from '@/lib/api';
+import { useAuthStore } from '@/stores/authStore';
 import { validationSchema } from './constants';
 import type { LoginFormData } from './types';
 
 const useConnect = () => {
-  const [isLoading, setIsLoading] = useState(false);
-  const [error, setError] = useState<string | null>(null);
   const router = useRouter();
+  const { setAuth } = useAuthStore();
 
   const form = useForm<LoginFormData>({
     resolver: zodResolver(validationSchema),
@@ -20,30 +19,51 @@ const useConnect = () => {
     },
   });
 
-  const onSubmit = async (data: LoginFormData) => {
-    setIsLoading(true);
-    setError(null);
+  // Use the auto-generated mutation hook for login
+  const loginMutation = $publicApi.useMutation('post', '/api/auth/login', {
+    onSuccess: (response) => {
+      // Calculate expiration timestamp if expires_in is provided
+      let expiresAt: number | undefined;
+      if (response.expires_in) {
+        expiresAt = Date.now() + response.expires_in * 1000;
+      }
 
-    try {
-      // Call the login API
-      const response = await login({
+      // Store auth data in Zustand store
+      setAuth(
+        response.user,
+        response.access_token,
+        response.refresh_token,
+        expiresAt,
+      );
+
+      // Redirect to the courses page
+      router.push('/courses');
+    },
+  });
+
+  const onSubmit = async (data: LoginFormData) => {
+    loginMutation.mutate({
+      body: {
         username: data.username,
         password: data.password,
-      });
-
-      // Store auth data with proper token expiration handling
-      storeLoginResponse(response);
-
-      // Redirect to the courses page (or dashboard)
-      router.push('/courses');
-    } catch (err) {
-      setError(err instanceof Error ? err.message : 'Login failed');
-    } finally {
-      setIsLoading(false);
-    }
+        scope: '',
+      },
+      headers: {
+        'Content-Type': 'application/x-www-form-urlencoded',
+      },
+    });
   };
 
-  return { isLoading, error, form, onSubmit };
+  return {
+    isLoading: loginMutation.isPending,
+    error: loginMutation.error
+      ? loginMutation.error instanceof Error
+        ? loginMutation.error.message
+        : 'Login failed'
+      : null,
+    form,
+    onSubmit,
+  };
 };
 
 export default useConnect;

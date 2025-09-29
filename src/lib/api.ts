@@ -1,230 +1,129 @@
+import createFetchClient, { type Middleware } from 'openapi-fetch';
+import createClient from 'openapi-react-query';
+
+import { useAuthStore } from '@/stores/authStore';
+import type { paths } from '@/types/api';
+
+const API_BASE_URL =
+  process.env.NEXT_PUBLIC_API_BASE_URL || 'http://localhost:8000';
+
+// Create public client first (for auth operations that shouldn't use auth middleware)
+const publicFetchClient = createFetchClient<paths>({
+  baseUrl: API_BASE_URL,
+});
+
 /**
- * Basic API client for Senda CMS
- * Handles authentication headers and error responses
+ * Check if a JWT token is expired or will expire soon
  */
-
-export class ApiError extends Error {
-  constructor(
-    message: string,
-    public status: number,
-    public response?: Response,
-  ) {
-    super(message);
-    this.name = 'ApiError';
+function isTokenExpired(token: string, bufferMinutes = 5): boolean {
+  try {
+    const payload = JSON.parse(atob(token.split('.')[1]));
+    const expirationTime = payload.exp * 1000; // Convert to milliseconds
+    const bufferTime = bufferMinutes * 60 * 1000; // Buffer in milliseconds
+    return Date.now() >= expirationTime - bufferTime;
+  } catch {
+    // If we can't parse the token, consider it expired
+    return true;
   }
 }
 
-export interface ApiClientConfig {
-  baseUrl?: string;
-  getToken?: () => string | null;
-  onTokenRefreshNeeded?: () => Promise<{
-    access_token: string;
-    refresh_token?: string;
-    expires_in?: number;
-  }>;
-  onAuthFailure?: () => void;
-}
+// Create a separate public client for auth operations to avoid middleware loops
 
-export class ApiClient {
-  private baseUrl: string;
-  private getToken: () => string | null;
-  private onTokenRefreshNeeded?: () => Promise<{
-    access_token: string;
-    refresh_token?: string;
-    expires_in?: number;
-  }>;
-  private onAuthFailure?: () => void;
+/**
+ * Refresh the access token using the refresh token
+ */
+async function refreshAccessToken(): Promise<boolean> {
+  const store = useAuthStore.getState();
+  const refreshToken = store.refreshToken;
 
-  constructor(config?: ApiClientConfig) {
-    this.baseUrl =
-      config?.baseUrl ||
-      process.env.NEXT_PUBLIC_API_BASE_URL ||
-      'http://localhost:8000';
-    this.getToken = config?.getToken || (() => null);
-    this.onTokenRefreshNeeded = config?.onTokenRefreshNeeded;
-    this.onAuthFailure = config?.onAuthFailure;
+  if (!refreshToken) {
+    return false;
   }
 
-  /**
-   * Make an authenticated API request with automatic token refresh
-   */
-  async request<T = unknown>(
-    endpoint: string,
-    options: RequestInit = {},
-  ): Promise<T> {
-    // First attempt
-    try {
-      return await this.makeRequest<T>(endpoint, options);
-    } catch (error) {
-      // If 401 error and we have token refresh capability, try to refresh and retry
-      if (
-        error instanceof ApiError &&
-        error.status === 401 &&
-        this.onTokenRefreshNeeded
-      ) {
-        try {
-          const refreshResponse = await this.onTokenRefreshNeeded();
+  try {
+    const { data, error } = await publicFetchClient.POST('/api/auth/refresh', {
+      body: {
+        refresh_token: refreshToken,
+      },
+    });
 
-          if (refreshResponse?.access_token) {
-            // Retry the request with new token
-            return await this.makeRequest<T>(endpoint, options);
-          }
-        } catch (refreshError) {
-          console.error('Token refresh failed:', refreshError);
-
-          // Call auth failure handler if available
-          this.onAuthFailure?.();
-        }
-      }
-
-      // Re-throw the original error if refresh failed or wasn't attempted
-      throw error;
+    if (error || !data) {
+      throw new Error('Refresh failed');
     }
+
+    // Calculate expiration time
+    const expiresAt = data.expires_in
+      ? Date.now() + data.expires_in * 1000
+      : undefined;
+
+    // Update tokens in store
+    store.updateTokens(
+      data.access_token,
+      data.refresh_token || refreshToken, // Use new refresh token if provided, otherwise keep current
+      expiresAt,
+    );
+
+    return true;
+  } catch (error) {
+    console.error('Token refresh failed:', error);
+
+    // Clear auth state on refresh failure
+    store.clearAuth();
+    return false;
   }
+}
 
-  /**
-   * Internal method to make the actual HTTP request
-   */
-  private async makeRequest<T = unknown>(
-    endpoint: string,
-    options: RequestInit = {},
-  ): Promise<T> {
-    const url = `${this.baseUrl}${endpoint}`;
-    const token = this.getToken();
+const authMiddleware: Middleware = {
+  async onRequest({ request }) {
+    const store = useAuthStore.getState();
+    let token = store.token;
 
-    // Prepare headers
-    const headers: HeadersInit = {
-      'Content-Type': 'application/json',
-      ...options.headers,
-    };
+    // Check if token needs refresh before making the request
+    if (token && isTokenExpired(token)) {
+      console.log('Token expired, attempting refresh...');
+      const refreshSuccess = await refreshAccessToken();
 
-    // Add authorization header if token exists
+      if (refreshSuccess) {
+        // Get the new token after refresh
+        token = useAuthStore.getState().token;
+      } else {
+        // Refresh failed, don't send expired token
+        token = null;
+      }
+    }
+
     if (token) {
-      (headers as Record<string, string>).Authorization = `Bearer ${token}`;
+      request.headers.set('Authorization', `Bearer ${token}`);
     }
 
-    // Make the request
-    const response = await fetch(url, {
-      ...options,
-      headers,
-    });
+    return request;
+  },
 
-    // Handle error responses
-    if (!response.ok) {
-      const errorMessage = await this.extractErrorMessage(response);
+  async onResponse({ response }) {
+    // Handle 401 responses by attempting token refresh
+    if (response.status === 401) {
+      console.log('Received 401, attempting token refresh...');
+      const refreshSuccess = await refreshAccessToken();
 
-      // Handle authentication/authorization errors
-      if (response.status === 401 || response.status === 403) {
-        throw new ApiError(
-          errorMessage || 'Authentication failed',
-          response.status,
-          response,
-        );
+      if (!refreshSuccess) {
+        // Refresh failed, redirect to login or handle as needed
+        console.log('Token refresh failed, user needs to re-authenticate');
+
+        // Note: In a React component, you might want to trigger a redirect here
+        // For now, we'll just log and let the component handle the auth state change
       }
-
-      // Handle other HTTP errors
-      throw new ApiError(
-        errorMessage || `HTTP ${response.status}: ${response.statusText}`,
-        response.status,
-        response,
-      );
     }
 
-    // Handle empty responses
-    const contentType = response.headers.get('content-type');
-    if (!contentType || response.status === 204) {
-      return undefined as T;
-    }
+    return response;
+  },
+};
 
-    // Parse JSON response
-    try {
-      return await response.json();
-    } catch {
-      throw new ApiError(
-        'Failed to parse response as JSON',
-        response.status,
-        response,
-      );
-    }
-  }
+const fetchClient = createFetchClient<paths>({
+  baseUrl: API_BASE_URL,
+});
 
-  /**
-   * Extract error message from response
-   */
-  private async extractErrorMessage(response: Response): Promise<string> {
-    try {
-      const contentType = response.headers.get('content-type');
+fetchClient.use(authMiddleware);
 
-      if (contentType?.includes('application/json')) {
-        const errorData = await response.json();
+export const $api = createClient(fetchClient);
 
-        // Common error message patterns
-        return (
-          errorData.message ||
-          errorData.error ||
-          errorData.detail ||
-          'An error occurred'
-        );
-      }
-
-      // Fallback to text content
-      const text = await response.text();
-      return text || response.statusText;
-    } catch {
-      return response.statusText || 'An error occurred';
-    }
-  }
-
-  /**
-   * Convenience methods for common HTTP verbs
-   */
-  async get<T = unknown>(endpoint: string, options?: RequestInit): Promise<T> {
-    return this.request<T>(endpoint, { ...options, method: 'GET' });
-  }
-
-  async post<T = unknown>(
-    endpoint: string,
-    data?: unknown,
-    options?: RequestInit,
-  ): Promise<T> {
-    return this.request<T>(endpoint, {
-      ...options,
-      method: 'POST',
-      body: data ? JSON.stringify(data) : undefined,
-    });
-  }
-
-  async put<T = unknown>(
-    endpoint: string,
-    data?: unknown,
-    options?: RequestInit,
-  ): Promise<T> {
-    return this.request<T>(endpoint, {
-      ...options,
-      method: 'PUT',
-      body: data ? JSON.stringify(data) : undefined,
-    });
-  }
-
-  async patch<T = unknown>(
-    endpoint: string,
-    data?: unknown,
-    options?: RequestInit,
-  ): Promise<T> {
-    return this.request<T>(endpoint, {
-      ...options,
-      method: 'PATCH',
-      body: data ? JSON.stringify(data) : undefined,
-    });
-  }
-
-  async delete<T = unknown>(
-    endpoint: string,
-    options?: RequestInit,
-  ): Promise<T> {
-    return this.request<T>(endpoint, { ...options, method: 'DELETE' });
-  }
-}
-
-// Default API client instance
-export const apiClient = new ApiClient();
+export const $publicApi = createClient(publicFetchClient);
