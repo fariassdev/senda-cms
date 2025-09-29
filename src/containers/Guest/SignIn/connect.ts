@@ -2,8 +2,8 @@ import { zodResolver } from '@hookform/resolvers/zod';
 import { useRouter } from 'next/navigation';
 import { useState } from 'react';
 import { useForm } from 'react-hook-form';
-import { login } from '@/lib/auth';
-import { useAuthStore } from '@/stores/authStore';
+
+import { login, storeLoginResponse } from '@/lib/auth';
 import { validationSchema } from './constants';
 import type { LoginFormData } from './types';
 
@@ -11,7 +11,6 @@ const useConnect = () => {
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const router = useRouter();
-  const { setAuth } = useAuthStore();
 
   const form = useForm<LoginFormData>({
     resolver: zodResolver(validationSchema),
@@ -32,8 +31,8 @@ const useConnect = () => {
         password: data.password,
       });
 
-      // Update auth state with user data and token
-      setAuth(response.user, response.access_token);
+      // Store auth data with proper token expiration handling
+      storeLoginResponse(response);
 
       // Redirect to the courses page (or dashboard)
       router.push('/courses');

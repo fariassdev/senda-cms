@@ -4,6 +4,7 @@
 
 import { useAuthStore } from '@/stores/authStore';
 import { ApiClient } from './api';
+import { refreshAccessToken, logout, getTokenExpiration } from './auth';
 
 /**
  * Create an API client that automatically uses the token from the auth store
@@ -14,6 +15,28 @@ export function createAuthenticatedApiClient() {
     getToken: () => {
       const { token } = useAuthStore.getState();
       return token;
+    },
+    onTokenRefreshNeeded: async () => {
+      const refreshResponse = await refreshAccessToken();
+
+      // Calculate expiration timestamp if expires_in is provided
+      const expiresAt = refreshResponse.expires_in
+        ? Date.now() + refreshResponse.expires_in * 1000
+        : getTokenExpiration(refreshResponse.access_token);
+
+      // Update the auth store with new tokens
+      const { updateTokens } = useAuthStore.getState();
+      updateTokens(
+        refreshResponse.access_token,
+        refreshResponse.refresh_token,
+        expiresAt || undefined,
+      );
+
+      return refreshResponse;
+    },
+    onAuthFailure: () => {
+      // Logout user when auth fails
+      logout();
     },
   });
 }
