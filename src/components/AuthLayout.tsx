@@ -3,6 +3,7 @@
 import { usePathname, useRouter } from 'next/navigation';
 import { useEffect } from 'react';
 
+import Navigation from '@/components/Navigation';
 import { useAuthRefresh } from '@/hooks/useAuthRefresh';
 import { useAuthStore } from '@/stores/authStore';
 
@@ -64,6 +65,6 @@ export default function AuthLayout({ children }: AuthLayoutProps) {
     return null;
   }
 
-  // Render children if authenticated
-  return <>{children}</>;
+  // Render children with navigation if authenticated
+  return <Navigation>{children}</Navigation>;
 }
