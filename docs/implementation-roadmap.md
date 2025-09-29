@@ -39,20 +39,20 @@ The Senda CMS is a modern web application built with Next.js and TypeScript to m
 
 #### 2.2 Login Implementation
 
-- [ ] Install UI dependencies for forms
-  - [ ] `bunx --bun shadcn@latest init` - Initialize shadcn/ui
-  - [ ] `bunx --bun shadcn@latest add button input card form` - Basic UI components
-  - [ ] `bun add --exact react-hook-form @hookform/resolvers zod` - Form handling
-- [ ] Create login page
-  - [ ] `src/app/login/page.tsx` - Login route
-  - [ ] Login form with email/password fields
-  - [ ] Form validation with Zod schema
-  - [ ] Loading states and error handling
-- [ ] Implement login API integration
-  - [ ] `src/lib/auth.ts` - Auth API functions
-  - [ ] Login mutation with error handling
-  - [ ] Token parsing and user data extraction
-  - [ ] Redirect logic after successful login
+- [x] Install UI dependencies for forms
+  - [x] `bunx --bun shadcn@latest init` - Initialize shadcn/ui
+  - [x] `bunx --bun shadcn@latest add button input card form` - Basic UI components
+  - [x] `bun add --exact react-hook-form @hookform/resolvers zod` - Form handling
+- [x] Create login page
+  - [x] `src/app/login/page.tsx` - Login route
+  - [x] Login form with email/password fields
+  - [x] Form validation with Zod schema
+  - [x] Loading states and error handling
+- [x] Implement login API integration
+  - [x] `src/lib/auth.ts` - Auth API functions
+  - [x] Login mutation with error handling
+  - [x] Token parsing and user data extraction
+  - [x] Redirect logic after successful login
 
 #### 2.3 Route Protection
 
