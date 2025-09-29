@@ -38,18 +38,22 @@ bun remove <package>                # Remove dependency
 ```bash
 bun dev                            # Start dev server with Turbopack
 bun build                          # Production build with Turbopack
+bun typecheck                      # Run TypeScript type checking (no emit)
 bun lint                           # Run ESLint
 bun lint:fix                       # Auto-fix linting issues
 bun format                         # Format code with Prettier
-bun run generate-types             # Generate TypeScript types from OpenAPI spec
+bun generate-types             # Generate TypeScript types from OpenAPI spec
 ```
 
 ### Type Generation (Essential for API changes)
 
 ```bash
 # Regenerate API types when backend OpenAPI spec changes
-bun run generate-types
+bun generate-types
 # This updates src/types/api.d.ts with latest API schemas
+
+# Validate types after regeneration
+bun generate-types && bun typecheck
 ```
 
 ### Environment Setup
@@ -57,6 +61,17 @@ bun run generate-types
 - Copy `.env.example` to `.env`
 - Required: `NEXT_PUBLIC_API_BASE_URL=http://localhost:8000`
 - Required: `NEXT_PUBLIC_BUILD=development`
+
+### Pre-Commit Quality Gates
+
+Pre-commit hooks automatically run on TypeScript files:
+
+```bash
+# Triggered on git commit for *.{ts,tsx} files
+eslint --fix                       # Auto-fix linting issues
+prettier --write                   # Format code consistently
+bun typecheck                      # Validate TypeScript types (entire project)
+```
 
 ## Project Architecture & Data Flow
 
