@@ -135,24 +135,24 @@ The Senda CMS is a modern web application built with Next.js and TypeScript to m
 
 #### 4.1 Course Creation Form
 
-- [ ] Install additional form components
-  - [ ] `bunx --bun shadcn@latest add textarea select label` - Form inputs
-- [ ] Create course creation page
-  - [ ] `src/app/courses/new/page.tsx` - New course route
-  - [ ] Course creation form with prompt-based generation
-  - [ ] Form validation with Zod schema (auto-generated from OpenAPI)
-  - [ ] Handle form submission and loading states
+- [x] Install additional form components
+  - [x] `bunx --bun shadcn@latest add textarea select label` - Form inputs
+- [x] Create course creation page
+  - [x] `src/app/courses/new/page.tsx` - New course route
+  - [x] Course creation form with prompt-based generation
+  - [x] Form validation with Zod schema (auto-generated from OpenAPI)
+  - [x] Handle form submission and loading states
 
 #### 4.2 Course Creation API
 
-- [ ] Implement course creation with auto-generated hooks
-  - [ ] Use `useCreateCourseFromPrompt()` mutation from openapi-react-query
-  - [ ] Optimistic updates with React Query
-  - [ ] Success/error toast notifications
-- [ ] Install toast notifications
-  - [ ] `bunx --bun shadcn@latest add sonner` - Toast notifications
-  - [ ] Add Toaster provider to layout
-  - [ ] Success and error message handling
+- [x] Implement course creation with auto-generated hooks
+  - [x] Use `useCreateCourseFromPrompt()` mutation from openapi-react-query
+  - [x] Optimistic updates with React Query
+  - [x] Success/error toast notifications
+- [x] Install toast notifications
+  - [x] `bunx --bun shadcn@latest add sonner` - Toast notifications
+  - [x] Add Toaster provider to layout
+  - [x] Success and error message handling
 
 #### 4.3 Course Management
 
