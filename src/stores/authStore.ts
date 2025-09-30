@@ -1,3 +1,4 @@
+import Cookies from 'js-cookie';
 import { create } from 'zustand';
 
 interface User {
@@ -84,6 +85,21 @@ export const useAuthStore = create<AuthStore>((set, _get) => ({
       localStorage.setItem(TOKEN_EXPIRES_KEY, expiresAt.toString());
     }
 
+    // Also store in cookies for server-side access
+    Cookies.set('senda_auth_token', token, {
+      expires: 30, // 30 days
+      sameSite: 'strict',
+      secure: process.env.NODE_ENV === 'production',
+    });
+
+    if (refreshToken) {
+      Cookies.set('senda_refresh_token', refreshToken, {
+        expires: 30, // 30 days
+        sameSite: 'strict',
+        secure: process.env.NODE_ENV === 'production',
+      });
+    }
+
     set({
       user,
       token,
@@ -103,6 +119,10 @@ export const useAuthStore = create<AuthStore>((set, _get) => ({
     localStorage.removeItem(REFRESH_TOKEN_KEY);
     localStorage.removeItem(TOKEN_EXPIRES_KEY);
     localStorage.removeItem(USER_KEY);
+
+    // Clear cookies
+    Cookies.remove('senda_auth_token');
+    Cookies.remove('senda_refresh_token');
 
     set({
       user: null,
@@ -131,6 +151,21 @@ export const useAuthStore = create<AuthStore>((set, _get) => ({
 
     if (expiresAt) {
       localStorage.setItem(TOKEN_EXPIRES_KEY, expiresAt.toString());
+    }
+
+    // Update cookies for server-side access
+    Cookies.set('senda_auth_token', token, {
+      expires: 30, // 30 days
+      sameSite: 'strict',
+      secure: process.env.NODE_ENV === 'production',
+    });
+
+    if (refreshToken) {
+      Cookies.set('senda_refresh_token', refreshToken, {
+        expires: 30, // 30 days
+        sameSite: 'strict',
+        secure: process.env.NODE_ENV === 'production',
+      });
     }
 
     set({
