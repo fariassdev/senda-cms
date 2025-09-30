@@ -123,12 +123,16 @@ function CourseRow({ course }: { course: Course }) {
               alt={course.title}
               fill
               className="object-cover"
-              sizes="48px"
+              sizes="80px"
             />
           ) : (
-            <div className="flex h-full w-full items-center justify-center">
-              <BookOpenIcon className="h-6 w-6 text-muted-foreground" />
-            </div>
+            <Image
+              src="/images/list_placeholder.png"
+              alt={course.title + ' placeholder'}
+              fill
+              className="object-cover"
+              sizes="80px"
+            />
           )}
         </div>
       </TableCell>
