@@ -8,6 +8,7 @@ import {
   TagIcon,
   UserIcon,
 } from 'lucide-react';
+import Image from 'next/image';
 import Link from 'next/link';
 
 import { Badge } from '@/components/ui/badge';
@@ -81,6 +82,7 @@ export default function CourseList() {
             <Table>
               <TableHeader>
                 <TableRow>
+                  <TableHead className="w-[80px]">Image</TableHead>
                   <TableHead className="w-[300px]">Title</TableHead>
                   <TableHead className="w-[120px]">Author</TableHead>
                   <TableHead className="w-[150px]">Tags</TableHead>
@@ -113,6 +115,23 @@ function CourseRow({ course }: { course: Course }) {
 
   return (
     <TableRow>
+      <TableCell className="w-[80px]">
+        <div className="relative h-20 w-20 rounded-lg overflow-hidden bg-muted">
+          {course.imagePlaceholderUrl ? (
+            <Image
+              src={course.imagePlaceholderUrl}
+              alt={course.title}
+              fill
+              className="object-cover"
+              sizes="48px"
+            />
+          ) : (
+            <div className="flex h-full w-full items-center justify-center">
+              <BookOpenIcon className="h-6 w-6 text-muted-foreground" />
+            </div>
+          )}
+        </div>
+      </TableCell>
       <TableCell className="max-w-[300px]">
         <div className="space-y-2 py-2">
           <Link
@@ -200,13 +219,14 @@ function CourseListSkeleton() {
         </CardHeader>
         <CardContent>
           <div className="space-y-4">
-            <div className="grid grid-cols-7 gap-4">
-              {Array.from({ length: 7 }).map((_, i) => (
+            <div className="grid grid-cols-8 gap-4">
+              {Array.from({ length: 8 }).map((_, i) => (
                 <Skeleton key={i} className="h-6 w-full" />
               ))}
             </div>
             {Array.from({ length: 5 }).map((_, i) => (
-              <div key={i} className="grid grid-cols-7 gap-4">
+              <div key={i} className="grid grid-cols-8 gap-4">
+                <Skeleton className="h-12 w-12 rounded-lg" />
                 {Array.from({ length: 7 }).map((_, j) => (
                   <Skeleton key={j} className="h-15 w-full" />
                 ))}
