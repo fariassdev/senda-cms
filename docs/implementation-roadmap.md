@@ -119,17 +119,17 @@ The Senda CMS is a modern web application built with Next.js and TypeScript to m
 
 #### 3.3 Course Listing UI
 
-- [ ] Install additional UI components
-  - [ ] `bunx --bun shadcn@latest add table skeleton badge` - List components
-- [ ] Create course list page
-  - [ ] `src/app/courses/page.tsx` - Courses listing route
-  - [ ] Use auto-generated `useGetCourses()` hook from openapi-react-query
-  - [ ] Loading skeletons and empty states
-  - [ ] Error boundaries for failed requests
-- [ ] Add navigation structure
-  - [ ] `src/components/Navigation.tsx` - Main navigation
-  - [ ] Sidebar or top navigation with course link
-  - [ ] Active route highlighting
+- [x] Install additional UI components
+  - [x] `bunx --bun shadcn@latest add table skeleton badge` - List components
+- [x] Create course list page
+  - [x] `src/app/courses/page.tsx` - Courses listing route
+  - [x] Use auto-generated `useGetCourses()` hook from openapi-react-query
+  - [x] Loading skeletons and empty states
+  - [x] Error boundaries for failed requests
+- [x] Add navigation structure
+  - [x] `src/components/Navigation.tsx` - Main navigation
+  - [x] Sidebar or top navigation with course link
+  - [x] Active route highlighting
 
 ### Phase 4: Course Creation ➕
 
