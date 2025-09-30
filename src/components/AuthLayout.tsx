@@ -1,6 +1,6 @@
 'use client';
 
-import { useRouter } from 'next/navigation';
+import { usePathname, useRouter } from 'next/navigation';
 import { useEffect } from 'react';
 
 import { useAuthRefresh } from '@/hooks/useAuthRefresh';
@@ -20,29 +20,27 @@ interface AuthLayoutProps {
  */
 export default function AuthLayout({ children }: AuthLayoutProps) {
   const router = useRouter();
+  const pathname = usePathname();
   const { isLoading, isAuthenticated, initializeAuth } = useAuthStore();
+
+  // Check if we're on the login page
+  const isLoginPage = pathname.startsWith('/login');
+
+  // Handle auth refresh and logout
+  useAuthRefresh();
 
   // Initialize authentication state on mount
   useEffect(() => {
     initializeAuth();
   }, [initializeAuth]);
 
-  // Set up automatic token refresh
-  useAuthRefresh();
-
   // Handle authentication state changes
   useEffect(() => {
-    // Only redirect if we're done loading and not authenticated
-    if (!isLoading && !isAuthenticated) {
-      // Check if we're already on the login page to avoid infinite redirects
-      if (
-        typeof window !== 'undefined' &&
-        !window.location.pathname.startsWith('/login')
-      ) {
-        router.push('/login');
-      }
+    // Only redirect if we're done loading and not authenticated, and not on login page
+    if (!isLoading && !isAuthenticated && !isLoginPage) {
+      router.push('/login');
     }
-  }, [isLoading, isAuthenticated, router]);
+  }, [isLoading, isAuthenticated, isLoginPage, router]);
 
   // Show loading spinner while checking authentication
   if (isLoading) {
@@ -56,7 +54,12 @@ export default function AuthLayout({ children }: AuthLayoutProps) {
     );
   }
 
-  // If not authenticated, don't render children (middleware should handle redirects)
+  // Allow login page to render even when not authenticated
+  if (!isAuthenticated && isLoginPage) {
+    return <>{children}</>;
+  }
+
+  // If not authenticated and not on login page, don't render children (redirect should happen)
   if (!isAuthenticated) {
     return null;
   }

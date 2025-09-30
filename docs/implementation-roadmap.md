@@ -86,25 +86,36 @@ The Senda CMS is a modern web application built with Next.js and TypeScript to m
 
 ### Phase 3: Course Listing 📚
 
-#### 3.1 Data Fetching Setup
+> **🚀 ARCHITECTURAL SHIFT**: Phase 3.1 introduced openapi-react-query as the core data fetching strategy. This eliminated the need for manual API client development and type definitions. All subsequent phases now leverage auto-generated, type-safe React Query hooks from the OpenAPI specification.
 
-- [ ] Install data fetching dependencies
-  - [ ] `bun add --exact @tanstack/react-query` - Server state management
-  - [ ] `bun add -D --exact @tanstack/react-query-devtools` - Development tools (dev dependency)
-- [ ] Setup React Query provider
-  - [ ] Update `src/app/layout.tsx` with QueryClient provider
-  - [ ] Configure default query options
-  - [ ] Add dev tools in development mode
+#### 3.1 OpenAPI-First Data Fetching Setup ✅
+
+- [x] Install data fetching dependencies
+  - [x] `bun add --exact @tanstack/react-query` - Server state management
+  - [x] `bun add -D --exact @tanstack/react-query-devtools` - Development tools (dev dependency)
+  - [x] `bun add --exact openapi-fetch openapi-react-query` - OpenAPI integration
+  - [x] `bun add --exact jose` - Secure JWT token handling
+- [x] Setup React Query provider
+  - [x] Update `src/app/layout.tsx` with QueryClient provider
+  - [x] Configure default query options
+  - [x] Add dev tools in development mode
+- [x] **MAJOR**: Implement OpenAPI-first architecture
+  - [x] Replace custom API client with openapi-react-query
+  - [x] Auto-generate TypeScript types from OpenAPI spec (`src/types/api.d.ts`)
+  - [x] Create type generation script: `bun run generate-types`
+  - [x] Enhanced JWT handling with jose library
+  - [x] Improved token refresh and error handling
+  - [x] Add strict TypeScript mode with `noUncheckedIndexedAccess`
 
 #### 3.2 Course API Integration
 
-- [ ] Create course types
-  - [ ] `src/types/course.ts` - Course and Lesson interfaces
-  - [ ] Based on Senda API OpenAPI spec structure
-- [ ] Implement course API client
-  - [ ] `src/lib/api/courses.ts` - Course CRUD operations
-  - [ ] `getCourses()` function with proper typing
-  - [ ] Error handling and response parsing
+- [x] **Auto-Generated API Types**: Complete TypeScript definitions from OpenAPI spec
+  - [x] Course, Lesson, User, and all API schemas automatically typed
+  - [x] Full endpoint coverage with request/response typing
+- [x] **Type-Safe API Client**: openapi-fetch integration
+  - [x] Automatic API client generation from OpenAPI schema
+  - [x] Built-in authentication and error handling
+  - [x] Optimized React Query hooks for all endpoints
 
 #### 3.3 Course Listing UI
 
@@ -112,7 +123,7 @@ The Senda CMS is a modern web application built with Next.js and TypeScript to m
   - [ ] `bunx --bun shadcn@latest add table skeleton badge` - List components
 - [ ] Create course list page
   - [ ] `src/app/courses/page.tsx` - Courses listing route
-  - [ ] Course list component with React Query
+  - [ ] Use auto-generated `useGetCourses()` hook from openapi-react-query
   - [ ] Loading skeletons and empty states
   - [ ] Error boundaries for failed requests
 - [ ] Add navigation structure
@@ -128,14 +139,14 @@ The Senda CMS is a modern web application built with Next.js and TypeScript to m
   - [ ] `bunx --bun shadcn@latest add textarea select label` - Form inputs
 - [ ] Create course creation page
   - [ ] `src/app/courses/new/page.tsx` - New course route
-  - [ ] Course creation form with all required fields
-  - [ ] Form validation with Zod schema
+  - [ ] Course creation form with prompt-based generation
+  - [ ] Form validation with Zod schema (auto-generated from OpenAPI)
   - [ ] Handle form submission and loading states
 
 #### 4.2 Course Creation API
 
-- [ ] Implement course creation API
-  - [ ] `createCourse()` function in courses API client
+- [ ] Implement course creation with auto-generated hooks
+  - [ ] Use `useCreateCourseFromPrompt()` mutation from openapi-react-query
   - [ ] Optimistic updates with React Query
   - [ ] Success/error toast notifications
 - [ ] Install toast notifications
@@ -145,12 +156,13 @@ The Senda CMS is a modern web application built with Next.js and TypeScript to m
 
 #### 4.3 Course Management
 
-- [ ] Add course actions
-  - [ ] Edit course functionality
+- [ ] Add course actions using auto-generated hooks
+  - [ ] Edit course functionality with `useUpdateCourse()` mutation
   - [ ] Delete course with confirmation dialog
   - [ ] `bunx --bun shadcn@latest add dialog` - Confirmation modals
 - [ ] Create course detail page
   - [ ] `src/app/courses/[id]/page.tsx` - Individual course view
+  - [ ] Use `useGetCourse()` hook for course details
   - [ ] Display course metadata and lesson list
   - [ ] Navigation between course list and detail
 
@@ -158,17 +170,17 @@ The Senda CMS is a modern web application built with Next.js and TypeScript to m
 
 #### 5.1 Lesson Data Structure
 
-- [ ] Update lesson types
-  - [ ] Extend lesson interface with all required fields
-  - [ ] Lesson status enum (NOT_GENERATED, GENERATING, etc.)
-  - [ ] Lesson form validation schemas
+- [x] **Auto-Generated Lesson Types**: Complete lesson interfaces from OpenAPI spec
+  - [x] Lesson, LessonStatus, ScriptPart types automatically available
+  - [x] Lesson status enum (PENDING, SCRIPT_GENERATING, SCRIPT_COMPLETED, etc.)
+  - [x] Full typing for lesson metadata, script parts, and audio URLs
 
 #### 5.2 Lesson CRUD Operations
 
-- [ ] Implement lesson API client
-  - [ ] `src/lib/api/lessons.ts` - Lesson operations
-  - [ ] Create, read, update, delete lesson functions
-  - [ ] Lesson reordering functionality
+- [ ] Implement lesson management with auto-generated hooks
+  - [ ] Use lesson-related hooks from openapi-react-query (when available)
+  - [ ] Create, read, update, delete lesson operations
+  - [ ] Lesson reordering functionality within courses
 - [ ] Create lesson management UI
   - [ ] Lesson list within course detail page
   - [ ] Add/edit lesson form modal or page
@@ -177,10 +189,10 @@ The Senda CMS is a modern web application built with Next.js and TypeScript to m
 #### 5.3 Lesson Form Implementation
 
 - [ ] Create comprehensive lesson form
-  - [ ] All lesson fields (title, duration, tone, key points, etc.)
-  - [ ] Dynamic form validation
+  - [ ] All lesson fields with auto-generated validation schemas
+  - [ ] Dynamic form validation using OpenAPI-derived types
   - [ ] Save as draft functionality
-- [ ] Add lesson ordering
+- [ ] Add lesson ordering (if needed)
   - [ ] Drag and drop lesson reordering
   - [ ] `bun add --exact @dnd-kit/core @dnd-kit/sortable @dnd-kit/utilities` - Only if needed
   - [ ] Update lesson numbers automatically
@@ -189,17 +201,20 @@ The Senda CMS is a modern web application built with Next.js and TypeScript to m
 
 #### 6.1 Script Generation API Integration
 
-- [ ] Implement script generation API
-  - [ ] `src/lib/api/scripts.ts` - Script generation functions
-  - [ ] `generateScript()` function with lesson parameters
-  - [ ] Script generation status polling
-  - [ ] Script retrieval and caching
+- [x] **Auto-Generated Script API**: Script generation hooks from openapi-react-query
+  - [x] `useGenerateLessonScript()` mutation for individual lessons
+  - [x] `useGenerateAllLessonsScripts()` mutation for batch generation
+  - [x] Built-in progress tracking and error handling
+- [ ] Implement script generation UI integration
+  - [ ] Script generation status polling with React Query
+  - [ ] Script retrieval and caching with auto-refresh
+  - [ ] Progress indicators during generation
 
 #### 6.2 Script Generation UI
 
 - [ ] Add script generation interface
   - [ ] Generate script button in lesson detail
-  - [ ] Progress indicators during generation
+  - [ ] Progress indicators during generation using lesson status
   - [ ] Script preview and editing capabilities
 - [ ] Install code/text editor if needed
   - [ ] `bun add --exact @monaco-editor/react monaco-editor` - Only if advanced editing needed
@@ -208,20 +223,24 @@ The Senda CMS is a modern web application built with Next.js and TypeScript to m
 
 #### 6.3 Script Management
 
-- [ ] Implement script versioning
-  - [ ] Script history and version comparison
-  - [ ] Rollback to previous versions
-  - [ ] Script approval workflow if needed
+- [ ] Implement script workflow
+  - [ ] Script regeneration controls
+  - [ ] Script status management (PENDING → GENERATING → COMPLETED/FAILED)
+  - [ ] Batch script generation for multiple lessons
+  - [ ] Error handling and retry logic for failed generations
 
 ### Phase 7: Audio Generation 🎵
 
 #### 7.1 Audio Generation API
 
-- [ ] Implement audio generation API
-  - [ ] `src/lib/api/audio.ts` - Audio generation functions
-  - [ ] `generateAudio()` function from script content
-  - [ ] Audio generation progress tracking
-  - [ ] Audio file management and URLs
+- [x] **Auto-Generated Audio API**: Audio generation hooks from openapi-react-query
+  - [x] `useGenerateLessonAudio()` mutation for individual lessons
+  - [x] `useGenerateCourseAudios()` mutation for batch audio generation
+  - [x] Built-in progress tracking and audio URL management
+- [ ] Implement audio generation workflow
+  - [ ] Audio generation from lesson scripts
+  - [ ] Audio generation progress tracking with lesson status
+  - [ ] Audio file management and URL handling
 
 #### 7.2 Audio Player Integration
 
@@ -237,9 +256,10 @@ The Senda CMS is a modern web application built with Next.js and TypeScript to m
 #### 7.3 Audio Status Management
 
 - [ ] Implement audio workflow
-  - [ ] Audio generation queue management
+  - [ ] Audio generation queue management with lesson status
   - [ ] Batch audio generation for multiple lessons
   - [ ] Audio quality validation and retry logic
+  - [ ] Integration with lesson status (AUDIO_GENERATING → AUDIO_COMPLETED/FAILED)
 
 ### Phase 8: Polish and Optimization 🎨
 
@@ -313,6 +333,9 @@ The Senda CMS is a modern web application built with Next.js and TypeScript to m
 - Add dependencies only when implementing specific features
 - Prefer lighter alternatives when possible
 - Document why each dependency was chosen
+- **Core Architecture**: openapi-react-query + React Query for all API interactions
+- **Type Safety**: Auto-generate types with `bun run generate-types` when API changes
+- Use exact versions with `--exact` flag to prevent version drift
 
 ### Code Quality
 
