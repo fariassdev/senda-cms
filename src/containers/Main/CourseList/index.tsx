@@ -202,13 +202,13 @@ function CourseListSkeleton() {
           <div className="space-y-4">
             <div className="grid grid-cols-7 gap-4">
               {Array.from({ length: 7 }).map((_, i) => (
-                <Skeleton key={i} className="h-4 w-full" />
+                <Skeleton key={i} className="h-6 w-full" />
               ))}
             </div>
             {Array.from({ length: 5 }).map((_, i) => (
               <div key={i} className="grid grid-cols-7 gap-4">
                 {Array.from({ length: 7 }).map((_, j) => (
-                  <Skeleton key={j} className="h-8 w-full" />
+                  <Skeleton key={j} className="h-15 w-full" />
                 ))}
               </div>
             ))}
