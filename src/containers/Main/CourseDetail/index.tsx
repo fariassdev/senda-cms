@@ -3,6 +3,7 @@
 import { zodResolver } from '@hookform/resolvers/zod';
 import {
   AlertCircleIcon,
+  ArrowLeft,
   BookOpenIcon,
   CalendarIcon,
   TagIcon,
@@ -61,7 +62,7 @@ export default function CourseDetail({ courseId }: CourseDetailProps) {
       description: '',
       author: '',
       tags: [],
-      active: true,
+      active: false,
       imagePlaceholderUrl: '',
     },
   });
@@ -121,12 +122,20 @@ export default function CourseDetail({ courseId }: CourseDetailProps) {
 
   return (
     <div className="space-y-6">
-      {/* Course Header */}
-      <div className="space-y-2">
-        <h1 className="text-3xl font-bold tracking-tight">Course Details</h1>
-        <p className="text-muted-foreground">
-          Edit course information and settings
-        </p>
+      {/* Header with back button */}
+      <div className="space-y-4">
+        <Link href="/courses">
+          <Button variant="ghost" className="mb-4">
+            <ArrowLeft className="mr-2 h-4 w-4" />
+            Back to Courses
+          </Button>
+        </Link>
+        <div className="space-y-2">
+          <h1 className="text-3xl font-bold tracking-tight">Course Details</h1>
+          <p className="text-muted-foreground">
+            Edit course information and settings
+          </p>
+        </div>
       </div>
 
       {/* Course Edit Form */}
@@ -287,10 +296,7 @@ export default function CourseDetail({ courseId }: CourseDetailProps) {
               </Card>
 
               {/* Submit Button */}
-              <div className="flex justify-end space-x-4">
-                <Button type="button" variant="outline" asChild>
-                  <Link href="/courses">Back to Courses</Link>
-                </Button>
+              <div className="flex justify-end">
                 <Button type="submit" disabled={isUpdating}>
                   {isUpdating ? 'Updating...' : 'Update Course'}
                 </Button>
@@ -401,10 +407,13 @@ export default function CourseDetail({ courseId }: CourseDetailProps) {
 function CourseDetailSkeleton() {
   return (
     <div className="space-y-6">
-      {/* Header */}
-      <div className="space-y-2">
-        <Skeleton className="h-9 w-96" />
-        <Skeleton className="h-6 w-128" />
+      {/* Header with back button */}
+      <div className="space-y-4">
+        <Skeleton className="h-10 w-32" />
+        <div className="space-y-2">
+          <Skeleton className="h-9 w-96" />
+          <Skeleton className="h-6 w-128" />
+        </div>
       </div>
 
       {/* Main grid layout matching the actual component */}
@@ -455,9 +464,8 @@ function CourseDetailSkeleton() {
             </CardContent>
           </Card>
 
-          {/* Submit buttons */}
-          <div className="flex justify-end space-x-4">
-            <Skeleton className="h-10 w-32" />
+          {/* Submit button */}
+          <div className="flex justify-end">
             <Skeleton className="h-10 w-36" />
           </div>
         </div>
