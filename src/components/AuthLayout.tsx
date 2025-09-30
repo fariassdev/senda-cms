@@ -3,6 +3,8 @@
 import { usePathname, useRouter } from 'next/navigation';
 import { useEffect } from 'react';
 
+import Navigation from '@/components/Navigation';
+import CourseList from '@/containers/Main/CourseList';
 import { useAuthRefresh } from '@/hooks/useAuthRefresh';
 import { useAuthStore } from '@/stores/authStore';
 
@@ -54,7 +56,16 @@ export default function AuthLayout({ children }: AuthLayoutProps) {
     );
   }
 
-  // Allow login page to render even when not authenticated
+  // Show course list with loading state when authenticated but still on login page (seamless transition)
+  if (isAuthenticated && isLoginPage) {
+    return (
+      <Navigation>
+        <CourseList />
+      </Navigation>
+    );
+  }
+
+  // Allow login page to render only when not authenticated
   if (!isAuthenticated && isLoginPage) {
     return <>{children}</>;
   }
@@ -64,6 +75,6 @@ export default function AuthLayout({ children }: AuthLayoutProps) {
     return null;
   }
 
-  // Render children if authenticated
-  return <>{children}</>;
+  // Render children with navigation if authenticated
+  return <Navigation>{children}</Navigation>;
 }
