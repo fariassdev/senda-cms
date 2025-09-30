@@ -77,24 +77,26 @@ export default function CourseList() {
           </CardDescription>
         </CardHeader>
         <CardContent>
-          <Table>
-            <TableHeader>
-              <TableRow>
-                <TableHead>Title</TableHead>
-                <TableHead>Author</TableHead>
-                <TableHead>Tags</TableHead>
-                <TableHead>Lessons</TableHead>
-                <TableHead>Status</TableHead>
-                <TableHead>Created</TableHead>
-                <TableHead className="w-[100px]">Actions</TableHead>
-              </TableRow>
-            </TableHeader>
-            <TableBody>
-              {courses.map((course) => (
-                <CourseRow key={course.id} course={course} />
-              ))}
-            </TableBody>
-          </Table>
+          <div className="overflow-x-auto">
+            <Table>
+              <TableHeader>
+                <TableRow>
+                  <TableHead className="w-[300px]">Title</TableHead>
+                  <TableHead className="w-[120px]">Author</TableHead>
+                  <TableHead className="w-[150px]">Tags</TableHead>
+                  <TableHead className="w-[80px]">Lessons</TableHead>
+                  <TableHead className="w-[80px]">Status</TableHead>
+                  <TableHead className="w-[100px]">Created</TableHead>
+                  <TableHead className="w-[80px]">Actions</TableHead>
+                </TableRow>
+              </TableHeader>
+              <TableBody>
+                {courses.map((course) => (
+                  <CourseRow key={course.id} course={course} />
+                ))}
+              </TableBody>
+            </Table>
+          </div>
         </CardContent>
       </Card>
     </div>
@@ -111,16 +113,16 @@ function CourseRow({ course }: { course: Course }) {
 
   return (
     <TableRow>
-      <TableCell>
-        <div className="space-y-1">
+      <TableCell className="max-w-[300px]">
+        <div className="space-y-2 py-2">
           <Link
             href={`/courses/${course.id}`}
-            className="font-medium hover:underline"
+            className="font-medium hover:underline block"
           >
             {course.title}
           </Link>
           {course.description && (
-            <p className="text-sm text-muted-foreground line-clamp-2">
+            <p className="text-sm text-muted-foreground line-clamp-2 leading-relaxed whitespace-normal">
               {course.description}
             </p>
           )}
