@@ -156,15 +156,15 @@ The Senda CMS is a modern web application built with Next.js and TypeScript to m
 
 #### 4.3 Course Management
 
-- [ ] Add course actions using auto-generated hooks
-  - [ ] Edit course functionality with `useUpdateCourse()` mutation
-  - [ ] Delete course with confirmation dialog
-  - [ ] `bunx --bun shadcn@latest add dialog` - Confirmation modals
-- [ ] Create course detail page
-  - [ ] `src/app/courses/[id]/page.tsx` - Individual course view
-  - [ ] Use `useGetCourse()` hook for course details
-  - [ ] Display course metadata and lesson list
-  - [ ] Navigation between course list and detail
+- [x] Add course actions using auto-generated hooks
+  - [x] Edit course functionality with `useUpdateCourse()` mutation
+  - [x] Delete course with confirmation dialog
+  - [x] `bunx --bun shadcn@latest add dialog` - Confirmation modals
+- [x] Create course detail page
+  - [x] `src/app/courses/[id]/page.tsx` - Individual course view
+  - [x] Use `useGetCourse()` hook for course details
+  - [x] Display course metadata and lesson list
+  - [x] Navigation between course list and detail
 
 ### Phase 5: Lesson Management 📝
 
