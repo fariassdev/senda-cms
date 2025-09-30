@@ -4,6 +4,7 @@ import { usePathname, useRouter } from 'next/navigation';
 import { useEffect } from 'react';
 
 import Navigation from '@/components/Navigation';
+import CourseList from '@/containers/Main/CourseList';
 import { useAuthRefresh } from '@/hooks/useAuthRefresh';
 import { useAuthStore } from '@/stores/authStore';
 
@@ -41,10 +42,6 @@ export default function AuthLayout({ children }: AuthLayoutProps) {
     if (!isLoading && !isAuthenticated && !isLoginPage) {
       router.push('/login');
     }
-    // If we're authenticated and on login page, redirect to courses
-    if (!isLoading && isAuthenticated && isLoginPage) {
-      router.push('/courses');
-    }
   }, [isLoading, isAuthenticated, isLoginPage, router]);
 
   // Show loading spinner while checking authentication
@@ -59,15 +56,12 @@ export default function AuthLayout({ children }: AuthLayoutProps) {
     );
   }
 
-  // Show loading when authenticated but still on login page (redirecting)
+  // Show course list with loading state when authenticated but still on login page (seamless transition)
   if (isAuthenticated && isLoginPage) {
     return (
-      <div className="flex min-h-screen items-center justify-center">
-        <div className="flex flex-col items-center space-y-4">
-          <div className="h-8 w-8 animate-spin rounded-full border-4 border-gray-300 border-t-blue-600" />
-          <p className="text-sm text-gray-600">Signing in...</p>
-        </div>
-      </div>
+      <Navigation>
+        <CourseList />
+      </Navigation>
     );
   }
 
