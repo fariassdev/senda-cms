@@ -1,13 +1,11 @@
+import { useQueryClient } from '@tanstack/react-query';
 import { toast } from 'sonner';
 
 import { $api } from '@/lib/api';
 
-/**
- * Connect hook for CourseDetail container
- * Handles data fetching and business logic using auto-generated API hooks
- */
 export default function useConnect(courseId: string) {
-  // Use auto-generated hook for course details
+  const queryClient = useQueryClient();
+
   const {
     data: course,
     isLoading,
@@ -22,7 +20,6 @@ export default function useConnect(courseId: string) {
     },
   });
 
-  // Update course mutation
   const updateCourseMutation = $api.useMutation(
     'put',
     '/api/courses/{course_id}',
@@ -47,8 +44,13 @@ export default function useConnect(courseId: string) {
       });
 
       toast.success('Course updated successfully');
-      // Refetch to get updated data
+
       refetch();
+
+      await queryClient.invalidateQueries({
+        queryKey: ['get', '/api/courses'],
+        refetchType: 'active',
+      });
     } catch (error) {
       toast.error('Failed to update course');
       console.error('Course update error:', error);
