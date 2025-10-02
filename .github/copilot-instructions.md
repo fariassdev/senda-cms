@@ -1,248 +1,251 @@
-# Senda CMS - AI Coding Agent Instructions
+# Senda CMS - AI Agent Instructions
 
-## Project Overview
+Meditation course management system built with Next.js 15 + TypeScript. See `docs/implementation-roadmap.md` for detailed implementation status (currently Phase 5.2).
 
-Senda CMS is a meditation course management system built with Next.js 15 and TypeScript. The CMS enables content managers to create guided meditation courses, generate lesson scripts using AI, and produce audio content through the Senda API integration.
+## Critical Architecture Patterns
 
-**Current State**: Phase 2 (Authentication) ✅ complete, Phase 3.1 (OpenAPI Setup) ✅ complete. Currently implementing Phase 3.2 (Course Listing UI). See `docs/implementation-roadmap.md` for comprehensive implementation status.
+### OpenAPI-First Data Fetching (NEVER write manual API calls)
 
-## Tech Stack & Architecture
+All API interactions use **openapi-react-query** with auto-generated types:
 
-### Core Implementation
+```typescript
+// In containers/*/connect.ts - the ONLY place for data fetching logic
+import { $api, $publicApi } from '@/lib/api'; // Two clients: auth'd vs public
 
-- **Framework**: Next.js 15 App Router with TypeScript + Turbopack
-- **Package Manager**: Bun (never use npm/yarn - use `--exact` flag always)
-- **Data Fetching**: openapi-react-query + @tanstack/react-query (auto-generated from OpenAPI spec)
-- **State Management**: Zustand for auth state, React Query for server state
-- **Authentication**: JWT with automatic refresh using `jose` library
-- **UI Components**: shadcn/ui with Tailwind CSS 4.x
-- **Forms**: React Hook Form + Zod validation with auto-generated schemas
-- **Linting**: ESLint 9+ flat config + Prettier + import ordering
-- **Git Hooks**: Husky + lint-staged + commitlint (conventional commits)
+export default function useConnect() {
+  // Auto-generated hooks with full type safety
+  const query = $api.useQuery('get', '/api/courses', {
+    params: { query: { skip: 0, limit: 100 } },
+  });
 
-## Development Commands & Critical Workflows
+  const mutation = $api.useMutation('post', '/api/courses', {
+    onSuccess: async (data) => {
+      toast.success('Course created');
+      await queryClient.invalidateQueries({
+        queryKey: ['get', '/api/courses'],
+      });
+    },
+  });
 
-### Package Management (Bun Only)
-
-```bash
-bun install                          # Install dependencies
-bun add --exact <package>           # Add production dependency
-bun add -d --exact <package>        # Add dev dependency
-bun remove <package>                # Remove dependency
+  return { query, mutation };
+}
 ```
 
-**CRITICAL**: Always use `--exact` flag to prevent version drift.
-
-### Development Workflow
+**Type regeneration** (run when backend OpenAPI spec changes):
 
 ```bash
-bun dev                            # Start dev server with Turbopack
-bun build                          # Production build with Turbopack
-bun typecheck                      # Run TypeScript type checking (no emit)
-bun lint                           # Run ESLint
-bun lint:fix                       # Auto-fix linting issues
-bun format                         # Format code with Prettier
-bun generate-types             # Generate TypeScript types from OpenAPI spec
+bun generate-types  # Updates src/types/api.d.ts
 ```
 
-### Type Generation (Essential for API changes)
+### Component Architecture
 
-```bash
-# Regenerate API types when backend OpenAPI spec changes
-bun generate-types
-# This updates src/types/api.d.ts with latest API schemas
-
-# Validate types after regeneration
-bun generate-types && bun typecheck
+```
+src/
+├── app/                    # Next.js pages (minimal - delegate to containers)
+│   ├── layout.tsx          # Root → ClientLayout → QueryProvider → AuthLayout
+│   └── <page>/page.tsx     # The pages are minimal, just delegates to containers
+├── components/
+│   ├── AuthLayout.tsx      # Auth state + route protection + token refresh
+│   ├── ClientLayout.tsx    # 'use client' wrapper for providers
+│   └── ui/                 # shadcn/ui components only
+├── containers/             # Business logic + data fetching
+│   ├── Guest/SignIn/       # Login flow
+│   │   ├── index.tsx       # View component
+│   │   ├── connect.ts      # Data logic: forms, mutations, router
+│   │   ├── types.ts        # Local types (NOT API types)
+│   │   └── constants.ts    # Zod schemas, validation rules
+│   └── Main/<Container>/   # Authenticated views
+└── stores/authStore.ts     # Auth state ONLY (server state → React Query)
 ```
 
-### Environment Setup
-
-- Copy `.env.example` to `.env`
-- Required: `NEXT_PUBLIC_API_BASE_URL=http://localhost:8000`
-- Required: `NEXT_PUBLIC_BUILD=development`
-
-### Pre-Commit Quality Gates
-
-Pre-commit hooks automatically run on TypeScript files:
-
-```bash
-# Triggered on git commit for *.{ts,tsx} files
-eslint --fix                       # Auto-fix linting issues
-prettier --write                   # Format code consistently
-bun typecheck                      # Validate TypeScript types (entire project)
-```
-
-## Project Architecture & Data Flow
-
-### OpenAPI-First Architecture (CRITICAL)
-
-This project uses **openapi-react-query** for ALL API interactions:
-
-- `src/types/api.d.ts` - Auto-generated TypeScript types from OpenAPI spec
-- `src/lib/api.ts` - Configured openapi-fetch client with auth middleware
-- All API calls use auto-generated, type-safe React Query hooks
-- **Never write manual API functions** - use generated hooks instead
+**Rule**: Containers have `connect.ts` for ALL logic (API calls, forms, effects). Components are pure presentational.
 
 ### Authentication Flow
 
 ```typescript
-// Authentication state in Zustand store (src/stores/authStore.ts)
-useAuthStore() → { user, token, refreshToken, isAuthenticated }
+// Auth middleware in src/lib/api.ts handles EVERYTHING:
+// 1. Token injection on requests
+// 2. Token expiration checks (5min buffer)
+// 3. Auto-refresh on 401 or expired tokens
+// 4. Cross-tab sync via localStorage events
 
-// Auto-refresh middleware in API client handles token renewal
-// Cross-tab sync via localStorage events
-// Route protection via middleware.ts
+// Route protection in src/middleware.ts
+// - All routes except /login require auth
+// - Redirects unauthenticated → /login
+// - Redirects authenticated /login → /courses
 ```
 
-### Component Architecture Patterns
+Token refresh runs automatically:
 
-```
-src/
-├── app/                 # Next.js App Router (minimal pages)
-│   ├── layout.tsx       # Root layout → ClientLayout → QueryProvider → AuthLayout
-│   └── login/page.tsx   # Route delegates to containers
-├── components/          # Pure UI components (no data fetching)
-│   ├── AuthLayout.tsx   # Auth state management + route protection
-│   ├── ClientLayout.tsx # Provider wrapper for client-side features
-│   └── ui/              # shadcn/ui components
-├── containers/          # Connected components with business logic
-│   ├── Guest/SignIn/    # Login form with connect.ts for data logic
-│   └── Main/            # Authenticated container views
-└── stores/              # Zustand stores (auth only - server state via React Query)
-```
+- Every 5 minutes (background)
+- On window focus
+- Before requests if token expires in <5min
+- On 401 responses
 
-### Data Fetching Pattern
+**Never manually handle auth** - middleware + store handle everything.
 
-```typescript
-// In containers/[Name]/connect.ts
-import { $api } from '@/lib/api';
+## Development Workflow
 
-export default function useConnect() {
-  // Use auto-generated hooks from openapi-react-query
-  const coursesQuery = $api.useQuery('get', '/api/courses');
-  const createCourseMutation = $api.useMutation('post', '/api/courses');
+### Package Management (Bun ONLY)
 
-  return { coursesQuery, createCourseMutation };
-}
+```bash
+bun add --exact <pkg>       # ALWAYS use --exact flag
+bun add -d --exact <pkg>    # Dev dependencies
+bun remove <pkg>
+
+# Common commands
+bun dev                     # Dev server (Turbopack)
+bun typecheck               # Full TS validation (pre-commit runs this)
+bun lint:fix                # Linter auto-fix
+bun format                  # Format
 ```
 
-## Component Architecture
+### Pre-Commit Hooks (Husky + lint-staged)
 
-### Component Structure
+On every commit for `*.{ts,tsx}` files:
 
-The **Components** (`src/components/`) are pure, reusable UI components.
+1. `eslint --fix` - Auto-fixes linting
+2. `prettier --write` - Formats code
+3. `bun typecheck` - Validates entire project (catches type errors)
 
-Every component follows this convention in `src/components/[Name]/`:
+**Commit format**: `feat/fix/docs/refactor/test: description` (max 110 chars)
 
-- index.tsx: Main component export (the view)
-- types.ts: TypeScript interfaces/types for the component
-- logic.ts: (Optional) Complex logic, handlers, or hooks
-- spec.ts: (Optional) Component tests
+### Environment Variables
 
-### Containers
+```bash
+NEXT_PUBLIC_API_BASE_URL=http://localhost:8000  # Required
+NEXT_PUBLIC_BUILD=development                    # Required
+JWT_SECRET=<secret>                              # Optional (middleware validation)
+```
 
-The **Containers** (`src/containers/`) are connected components that handle data fetching and business logic. Each container folder in `src/containers/Guest/[Name]/` or `src/containers/Main/[Name]/` typically includes:
+## Code Standards
 
-- index.tsx: Container view
-- types.ts: Container types/interfaces
-- connect.ts: Data fetching, effects, and logic (for API integration)
-- constants.ts: (Optional) For static values like container validation schemas
-- spec.ts: (Optional) Container tests
+### ESLint Rules (eslint.config.mjs)
 
-## Next.js Specific Patterns
-
-### App Router Structure
-
-- Parallel routes: `@login` for guest views, `@dashboard` for authenticated
-- Layout hierarchy: `layout.tsx` → `client.layout.tsx` (providers) → `AuthLayout`
-- Use `'use client'` for components with hooks, state, or event handlers
-
-### Route Organization
-
-- Page components are minimal - delegate to containers
-- Use `usePathname()` for route-based logic
-
-## Code Quality & Standards
-
-### ESLint Configuration
-
-- Flat config format (eslint.config.mjs)
-- TypeScript strict rules with consistent-type-imports
-- Import ordering: builtin → external → internal (@/\*) → relative
-- Prettier integration for formatting consistency
+- **Import ordering enforced**: builtin → external → `@/*` internal → relative
+- **Consistent type imports**: `import type { Foo } from 'bar'` (required)
+- **Single quotes** for strings (except template literals)
+- **Ignored files**: `src/types/api.d.ts` (auto-generated)
 
 ### TypeScript Patterns
 
-- Use `interface` over `type` for object shapes
-- Strict mode enabled with consistent type imports
-- Path aliases: `@/*` maps to `./src/*`
+```typescript
+// Use interface, not type (for objects)
+interface CourseFormData {
+  prompt: string;
+}
 
-### Commit Standards
+// Import types consistently
+import type { Course, Lesson } from '@/types/models';
 
-- Conventional Commits enforced via commitlint
-- Husky pre-commit hooks for linting and formatting
-- Format: `feat/fix/docs/style/refactor/test/chore: description`
+// Path alias @/* = src/*
+import { $api } from '@/lib/api';
 
-## Business Domain - Meditation Content
-
-### Core Models
-
-**Courses**: Meditation course management with metadata and lesson organization
-**Lessons**: Individual meditation sessions with AI-generated scripts and audio
-**Content Generation**: Script creation via Senda API integration
-**Audio Production**: Text-to-speech conversion using Kokoro TTS
-
-### Content Workflow
-
-1. Create course with metadata (title, description, author)
-2. Add lessons with practice parameters (duration, tone, key points)
-3. Generate lesson scripts using AI integration
-4. Convert scripts to audio content
-5. Track generation status and handle errors
-
-### API Integration
-
-- **Base URL**: `http://localhost:8000` (configurable via env)
-- **OpenAPI Spec**: Available at `/api/openapi.json`
-- **Key Endpoints**: Courses CRUD, lesson management, script/audio generation
-- **Authentication**: JWT-based admin-only access
-
-## Implementation Guidelines
-
-### When Adding Dependencies
-
-Use Bun for all package management:
-
-```bash
-bun add --exact @tanstack/react-query zustand react-hook-form zod
-bun add -d --exact @types/node
+// Strict mode enabled: noUncheckedIndexedAccess
+const item = array[0]; // Type: Item | undefined
 ```
 
-**NOTE:** Always use `--exact` to avoid version drift.
+### React Query Patterns
 
-### Authentication Implementation
+```typescript
+// Optimistic updates + cache invalidation
+const mutation = $api.useMutation('post', '/api/courses', {
+  onSuccess: async () => {
+    // Invalidate queries to refetch
+    await queryClient.invalidateQueries({
+      queryKey: ['get', '/api/courses'],
+      refetchType: 'active', // Only refetch mounted queries
+    });
+  },
+});
 
-- JWT-based admin-only system
-- Store auth state in Zustand store
-- Protect all routes (no public access)
-- Handle token refresh and session management
+// Query config in QueryProvider.tsx:
+// - staleTime: 5min
+// - gcTime: 10min
+// - retry: 3x with backoff
+// - NO refetchOnWindowFocus (opt-in per query)
+```
 
-## Current Development Status
+## Common Tasks
 
-**📋 Implementation Roadmap**: See `docs/implementation-roadmap.md` for comprehensive phase-by-phase implementation plan.
+### Adding a New Container
 
-**✅ Phase 1 Complete**: Project Foundation
+```bash
+# 1. Create structure
+mkdir -p src/containers/Main/FeatureName
+touch src/containers/Main/FeatureName/{index.tsx,connect.ts,types.ts,constants.ts}
 
-**✅ Phase 2 Complete**: Authentication System
+# 2. In connect.ts - use auto-generated hooks
+import { $api } from '@/lib/api';
+export default function useConnect() {
+  const query = $api.useQuery('get', '/api/endpoint');
+  return { query };
+}
 
-**✅ Phase 3.1 Complete**: OpenAPI-First Data Fetching Setup
+# 3. In index.tsx - consume hook
+import useConnect from './connect';
+export default function FeatureName() {
+  const { query } = useConnect();
+  return <div>{query.data}</div>;
+}
+```
 
-**🎯 Phase 3.2 Current**: Course Listing UI
+### Adding shadcn/ui Components
 
-**⏭️ Upcoming Phases**:
+```bash
+bunx --bun shadcn@latest add button input table
+# Always use --bun flag, components go to src/components/ui/
+```
 
-- Phase 3.3: Course Management (Create/Edit forms)
-- Phase 4: Lesson Management (CRUD operations)
-- Phase 5: Script Generation (AI integration)
-- Phase 6: Audio Generation (TTS integration)
+### Form Validation with Zod
+
+```typescript
+// In constants.ts
+import { z } from 'zod';
+
+export const validationSchema = z.object({
+  prompt: z.string().min(10, 'At least 10 characters'),
+});
+
+// In connect.ts
+import { zodResolver } from '@hookform/resolvers/zod';
+import { useForm } from 'react-hook-form';
+import { validationSchema } from './constants';
+
+const form = useForm({
+  resolver: zodResolver(validationSchema),
+  defaultValues: { prompt: '' },
+});
+```
+
+## Business Domain (Meditation CMS)
+
+**Workflow**: Course creation → Lesson management → Script generation (AI) → Audio generation (TTS)
+
+**Models** (from `src/types/models.ts` - all from OpenAPI):
+
+- `Course`: Course metadata (title, description, author)
+- `Lesson`: Lesson details (duration, key_points, tone)
+- `LessonStatus`: PENDING | SCRIPT_GENERATING | SCRIPT_COMPLETED | AUDIO_GENERATING | COMPLETED
+- `ScriptPart`: Script sections with text/audio URLs
+
+**API**: JWT admin-only, OpenAPI spec at `http://localhost:8000/api/openapi.json`
+
+## Key Files Reference
+
+| File                             | Purpose                                                                          |
+| -------------------------------- | -------------------------------------------------------------------------------- |
+| `src/lib/api.ts`                 | OpenAPI clients with auth middleware (token refresh, 401 handling)               |
+| `src/stores/authStore.ts`        | Auth state + cross-tab sync + token storage                                      |
+| `src/middleware.ts`              | Route protection (redirects based on auth)                                       |
+| `src/components/AuthLayout.tsx`  | Auth initialization + loading states                                             |
+| `src/types/api.d.ts`             | **Auto-generated** - NEVER edit manually                                         |
+| `src/types/models.ts`            | Type exports from OpenAPI schemas **Always use these types to reference models** |
+| `docs/implementation-roadmap.md` | Full implementation checklist                                                    |
+
+## Troubleshooting
+
+**Token refresh failures**: Check JWT expiration, refresh token validity, API availability  
+**Type errors after API changes**: Run `bun generate-types && bun typecheck`  
+**Pre-commit failing**: Run `bun lint:fix && bun typecheck` manually  
+**401 errors**: Check token in localStorage, auth middleware logs
