@@ -94,7 +94,7 @@ export default function CourseList() {
               </TableHeader>
               <TableBody>
                 {courses.map((course) => (
-                  <CourseRow key={course.id} course={course} />
+                  <CourseRow key={course.slug} course={course} />
                 ))}
               </TableBody>
             </Table>
@@ -139,7 +139,7 @@ function CourseRow({ course }: { course: Course }) {
       <TableCell className="max-w-[300px]">
         <div className="space-y-2 py-2">
           <Link
-            href={`/courses/${course.id}`}
+            href={`/courses/${course.slug}`}
             className="font-medium hover:underline block"
           >
             {course.title}
@@ -154,13 +154,15 @@ function CourseRow({ course }: { course: Course }) {
       <TableCell>
         <div className="flex items-center space-x-2">
           <UserIcon className="h-4 w-4 text-muted-foreground" />
-          <span className="text-sm">{course.author}</span>
+          <span className="text-sm">
+            {course.author?.username || 'Unknown'}
+          </span>
         </div>
       </TableCell>
       <TableCell>
         <div className="flex flex-wrap gap-1">
-          {course.tags.length > 0 ? (
-            course.tags.slice(0, 3).map((tag) => (
+          {course.tagList && course.tagList.length > 0 ? (
+            course.tagList.slice(0, 3).map((tag) => (
               <Badge key={tag} variant="secondary" className="text-xs">
                 <TagIcon className="mr-1 h-3 w-3" />
                 {tag}
@@ -169,9 +171,9 @@ function CourseRow({ course }: { course: Course }) {
           ) : (
             <span className="text-sm text-muted-foreground">No tags</span>
           )}
-          {course.tags.length > 3 && (
+          {course.tagList && course.tagList.length > 3 && (
             <Badge variant="outline" className="text-xs">
-              +{course.tags.length - 3} more
+              +{course.tagList.length - 3} more
             </Badge>
           )}
         </div>
@@ -179,7 +181,7 @@ function CourseRow({ course }: { course: Course }) {
       <TableCell>
         <div className="flex items-center space-x-2">
           <BookOpenIcon className="h-4 w-4 text-muted-foreground" />
-          <span className="text-sm">{course.lessons.length} lessons</span>
+          <span className="text-sm">View lessons</span>
         </div>
       </TableCell>
       <TableCell>
@@ -195,7 +197,7 @@ function CourseRow({ course }: { course: Course }) {
       </TableCell>
       <TableCell>
         <Button variant="ghost" size="sm" asChild>
-          <Link href={`/courses/${course.id}`}>View</Link>
+          <Link href={`/courses/${course.slug}`}>View</Link>
         </Button>
       </TableCell>
     </TableRow>

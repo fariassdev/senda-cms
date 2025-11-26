@@ -8,12 +8,10 @@ import {
   CalendarIcon,
   TagIcon,
   ImageIcon,
-  PlusIcon,
-  XIcon,
 } from 'lucide-react';
 import Image from 'next/image';
 import Link from 'next/link';
-import { useEffect, useState } from 'react';
+import { useEffect } from 'react';
 import { useForm } from 'react-hook-form';
 
 import { Badge } from '@/components/ui/badge';
@@ -43,7 +41,7 @@ import useConnect from './connect';
 import { courseUpdateSchema, type CourseUpdateFormData } from './constants';
 import type { CourseDetailProps } from './types';
 
-export default function CourseDetail({ courseId }: CourseDetailProps) {
+export default function CourseDetail({ courseSlug }: CourseDetailProps) {
   const {
     course,
     isLoading,
@@ -52,18 +50,16 @@ export default function CourseDetail({ courseId }: CourseDetailProps) {
     refetch,
     updateCourse,
     isUpdating,
-  } = useConnect(courseId);
-  const [newTag, setNewTag] = useState('');
+  } = useConnect(courseSlug);
 
   const form = useForm<CourseUpdateFormData>({
     resolver: zodResolver(courseUpdateSchema),
     defaultValues: {
-      name: '',
+      title: '',
       description: '',
-      author: '',
-      tags: [],
+      difficulty_level: '',
       active: false,
-      imagePlaceholderUrl: '',
+      image_placeholder_url: '',
     },
   });
 
@@ -71,41 +67,23 @@ export default function CourseDetail({ courseId }: CourseDetailProps) {
   useEffect(() => {
     if (course) {
       form.reset({
-        name: course.title,
+        title: course.title,
         description: course.description,
-        author: course.author,
-        tags: course.tags,
+        difficulty_level: course.difficultyLevel,
         active: course.active,
-        imagePlaceholderUrl: course.imagePlaceholderUrl || '',
+        image_placeholder_url: course.imagePlaceholderUrl || '',
       });
     }
   }, [course, form]);
 
   const onSubmit = async (data: CourseUpdateFormData) => {
     await updateCourse({
-      name: data.name,
+      title: data.title,
       description: data.description,
-      author: data.author,
-      tags: data.tags,
+      difficulty_level: data.difficulty_level || null,
       active: data.active,
-      imagePlaceholderUrl: data.imagePlaceholderUrl || null,
+      image_placeholder_url: data.image_placeholder_url || null,
     });
-  };
-
-  const addTag = () => {
-    if (newTag.trim() && !form.getValues('tags').includes(newTag.trim())) {
-      const currentTags = form.getValues('tags');
-      form.setValue('tags', [...currentTags, newTag.trim()]);
-      setNewTag('');
-    }
-  };
-
-  const removeTag = (tagToRemove: string) => {
-    const currentTags = form.getValues('tags');
-    form.setValue(
-      'tags',
-      currentTags.filter((tag) => tag !== tagToRemove),
-    );
   };
 
   if (isLoading) {
@@ -192,7 +170,7 @@ export default function CourseDetail({ courseId }: CourseDetailProps) {
 
                   <FormField
                     control={form.control}
-                    name="name"
+                    name="title"
                     render={({ field }) => (
                       <FormItem>
                         <FormLabel>Title</FormLabel>
@@ -229,22 +207,14 @@ export default function CourseDetail({ courseId }: CourseDetailProps) {
                     )}
                   />
 
-                  <FormField
-                    control={form.control}
-                    name="author"
-                    render={({ field }) => (
-                      <FormItem>
-                        <FormLabel>Author</FormLabel>
-                        <FormControl>
-                          <Input placeholder="Author name" {...field} />
-                        </FormControl>
-                        <FormDescription>
-                          The name of the course instructor or creator
-                        </FormDescription>
-                        <FormMessage />
-                      </FormItem>
-                    )}
-                  />
+                  <div className="space-y-2">
+                    <div className="flex items-center space-x-2">
+                      <span className="text-sm">
+                        <strong>Author:</strong>{' '}
+                        {course.author?.username || 'Unknown'}
+                      </span>
+                    </div>
+                  </div>
 
                   {/* Dates at the end of course information */}
                   <div className="space-y-2 pt-4 border-t">
@@ -282,16 +252,10 @@ export default function CourseDetail({ courseId }: CourseDetailProps) {
                   </CardDescription>
                 </CardHeader>
                 <CardContent>
-                  {course.lessons.length > 0 ? (
-                    <p className="text-muted-foreground">
-                      {course.lessons.length} lessons in this course. Lesson
-                      management coming in Phase 5.
-                    </p>
-                  ) : (
-                    <p className="text-muted-foreground">
-                      No lessons created yet. Lesson creation coming in Phase 5.
-                    </p>
-                  )}
+                  <p className="text-muted-foreground">
+                    Lesson management interface coming soon. Use the course
+                    generation response to see lesson details.
+                  </p>
                 </CardContent>
               </Card>
 
@@ -342,60 +306,32 @@ export default function CourseDetail({ courseId }: CourseDetailProps) {
             </CardContent>
           </Card>
 
-          {/* Tags Card */}
+          {/* Tags Card - Read-only for now */}
           <Card>
             <CardHeader>
               <CardTitle className="flex items-center space-x-2">
                 <TagIcon className="h-5 w-5" />
                 <span>Tags</span>
               </CardTitle>
-              <CardDescription>
-                Categorize and organize your course
-              </CardDescription>
+              <CardDescription>Course categories and topics</CardDescription>
             </CardHeader>
             <CardContent className="space-y-4">
               <div className="flex flex-wrap gap-2">
-                {form.watch('tags').map((tag) => (
-                  <Badge
-                    key={tag}
-                    variant="secondary"
-                    className="flex items-center gap-1"
-                  >
-                    {tag}
-                    <Button
-                      type="button"
-                      variant="ghost"
-                      size="sm"
-                      className="h-4 w-4 p-0 hover:bg-transparent"
-                      onClick={() => removeTag(tag)}
-                    >
-                      <XIcon className="h-3 w-3" />
-                    </Button>
-                  </Badge>
-                ))}
+                {course.tagList && course.tagList.length > 0 ? (
+                  course.tagList.map((tag) => (
+                    <Badge key={tag} variant="secondary">
+                      {tag}
+                    </Badge>
+                  ))
+                ) : (
+                  <p className="text-sm text-muted-foreground">
+                    No tags assigned
+                  </p>
+                )}
               </div>
-
-              <div className="flex gap-2">
-                <Input
-                  placeholder="Add a tag"
-                  value={newTag}
-                  onChange={(e) => setNewTag(e.target.value)}
-                  onKeyDown={(e) => {
-                    if (e.key === 'Enter') {
-                      e.preventDefault();
-                      addTag();
-                    }
-                  }}
-                />
-                <Button
-                  type="button"
-                  variant="outline"
-                  size="sm"
-                  onClick={addTag}
-                >
-                  <PlusIcon className="h-4 w-4" />
-                </Button>
-              </div>
+              <p className="text-xs text-muted-foreground">
+                Tag management coming soon
+              </p>
             </CardContent>
           </Card>
         </div>

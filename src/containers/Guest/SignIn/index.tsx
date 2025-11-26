@@ -39,14 +39,14 @@ const SignIn: FC = () => {
             <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-4">
               <FormField
                 control={form.control}
-                name="username"
+                name="email"
                 render={({ field }) => (
                   <FormItem>
-                    <FormLabel>Username</FormLabel>
+                    <FormLabel>Email</FormLabel>
                     <FormControl>
                       <Input
-                        type="text"
-                        placeholder="Enter your username"
+                        type="email"
+                        placeholder="Enter your email"
                         {...field}
                       />
                     </FormControl>

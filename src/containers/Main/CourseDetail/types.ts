@@ -4,7 +4,7 @@ import type { Course } from '@/types/models';
  * Course detail container props
  */
 export interface CourseDetailProps {
-  courseId: string;
+  courseSlug: string;
 }
 
 /**

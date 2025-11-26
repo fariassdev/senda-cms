@@ -3,44 +3,44 @@ import { toast } from 'sonner';
 
 import { $api } from '@/lib/api';
 
-export default function useConnect(courseId: string) {
+export default function useConnect(courseSlug: string) {
   const queryClient = useQueryClient();
 
   const {
-    data: course,
+    data: courseResponse,
     isLoading,
     isError,
     error,
     refetch,
-  } = $api.useQuery('get', '/api/courses/{course_id}', {
+  } = $api.useQuery('get', '/api/courses/{slug}', {
     params: {
       path: {
-        course_id: courseId,
+        slug: courseSlug,
       },
     },
   });
 
-  const updateCourseMutation = $api.useMutation(
-    'put',
-    '/api/courses/{course_id}',
-  );
+  const course = courseResponse?.course;
+
+  const updateCourseMutation = $api.useMutation('put', '/api/courses/{slug}');
 
   const updateCourse = async (data: {
-    name?: string | null;
+    title?: string | null;
     description?: string | null;
-    tags?: string[] | null;
+    difficulty_level?: string | null;
     active?: boolean | null;
-    author?: string | null;
-    imagePlaceholderUrl?: string | null;
+    image_placeholder_url?: string | null;
   }) => {
     try {
       await updateCourseMutation.mutateAsync({
         params: {
           path: {
-            course_id: courseId,
+            slug: courseSlug,
           },
         },
-        body: data,
+        body: {
+          course: data,
+        },
       });
 
       toast.success('Course updated successfully');

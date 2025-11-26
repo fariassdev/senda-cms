@@ -10,7 +10,7 @@ export default function useConnect() {
   const coursesQuery = $api.useQuery('get', '/api/courses', {
     params: {
       query: {
-        skip: 0,
+        offset: 0,
         limit: 100, // For now, fetch all courses without pagination
       },
     },
@@ -18,7 +18,7 @@ export default function useConnect() {
 
   return {
     // Course data and loading states
-    courses: coursesQuery.data ?? [],
+    courses: coursesQuery.data?.courses ?? [],
     isLoading: coursesQuery.isLoading,
     isError: coursesQuery.isError,
     error: coursesQuery.error,

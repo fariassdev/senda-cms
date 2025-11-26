@@ -2,17 +2,14 @@ import { z } from 'zod';
 
 /**
  * Course update form validation schema
+ * Matches the UpdateCourseData schema from the API
  */
 export const courseUpdateSchema = z.object({
-  name: z.string().min(1, 'Title is required').max(200, 'Title is too long'),
+  title: z.string().min(1, 'Title is required').max(200, 'Title is too long'),
   description: z.string().min(1, 'Description is required'),
-  author: z
-    .string()
-    .min(1, 'Author is required')
-    .max(100, 'Author name is too long'),
-  tags: z.array(z.string()),
+  difficulty_level: z.string().optional(),
   active: z.boolean(),
-  imagePlaceholderUrl: z.string().optional(),
+  image_placeholder_url: z.string().optional(),
 });
 
 export type CourseUpdateFormData = z.infer<typeof courseUpdateSchema>;
