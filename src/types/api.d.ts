@@ -4,7 +4,7 @@
  */
 
 export interface paths {
-    "/api/health": {
+    "/api/health-check": {
         parameters: {
             query?: never;
             header?: never;
@@ -12,7 +12,7 @@ export interface paths {
             cookie?: never;
         };
         /** Health Check */
-        get: operations["health_check_api_health_get"];
+        get: operations["health_check_api_health_check_get"];
         put?: never;
         post?: never;
         delete?: never;
@@ -21,7 +21,7 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
-    "/api/auth/login": {
+    "/api/users": {
         parameters: {
             query?: never;
             header?: never;
@@ -31,19 +31,17 @@ export interface paths {
         get?: never;
         put?: never;
         /**
-         * Login
-         * @description Admin Login Endpoint
-         *
-         *     Authenticate admin user with email/username and password. Returns JWT and user data.
+         * Register User
+         * @description Process user registration.
          */
-        post: operations["login_api_auth_login_post"];
+        post: operations["register_user_api_users_post"];
         delete?: never;
         options?: never;
         head?: never;
         patch?: never;
         trace?: never;
     };
-    "/api/auth/login-json": {
+    "/api/users/login": {
         parameters: {
             query?: never;
             header?: never;
@@ -53,19 +51,17 @@ export interface paths {
         get?: never;
         put?: never;
         /**
-         * Login Json
-         * @description Alternative JSON-based login endpoint (for non-OAuth2 compatible clients).
-         *
-         *     Same functionality as `/login` but accepts JSON payload instead of form data.
+         * Login User
+         * @description Process user login.
          */
-        post: operations["login_json_api_auth_login_json_post"];
+        post: operations["login_user_api_users_login_post"];
         delete?: never;
         options?: never;
         head?: never;
         patch?: never;
         trace?: never;
     };
-    "/api/auth/me": {
+    "/api/user": {
         parameters: {
             query?: never;
             header?: never;
@@ -74,13 +70,14 @@ export interface paths {
         };
         /**
          * Get Current User
-         * @description Get Current User & Verify Session
-         *
-         *     Validate JWT and return current admin user data.
-         *     Requires JWT in Authorization: Bearer <token> header.
+         * @description Return current user.
          */
-        get: operations["get_current_user_api_auth_me_get"];
-        put?: never;
+        get: operations["get_current_user_api_user_get"];
+        /**
+         * Update Current User
+         * @description Update current user.
+         */
+        put: operations["update_current_user_api_user_put"];
         post?: never;
         delete?: never;
         options?: never;
@@ -88,7 +85,7 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
-    "/api/auth/refresh": {
+    "/api/user/admin": {
         parameters: {
             query?: never;
             header?: never;
@@ -98,13 +95,114 @@ export interface paths {
         get?: never;
         put?: never;
         /**
-         * Refresh Token
-         * @description Refresh Access Token
-         *
-         *     Refresh JWT access token using a valid refresh token.
-         *     Accepts refresh_token in request body and returns new access token.
+         * Create Admin User
+         * @description Create a new admin user. Requires admin permissions.
          */
-        post: operations["refresh_token_api_auth_refresh_post"];
+        post: operations["create_admin_user_api_user_admin_post"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/user/{user_id}/promote": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        /**
+         * Promote User To Admin
+         * @description Promote an existing user to admin role. Requires admin permissions.
+         */
+        put: operations["promote_user_to_admin_api_user__user_id__promote_put"];
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/profiles/{username}": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /**
+         * Get User Profile
+         * @description Return user profile information.
+         */
+        get: operations["get_user_profile_api_profiles__username__get"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/profiles/{username}/follow": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /**
+         * Follow Username
+         * @description Follow profile with specific username.
+         */
+        post: operations["follow_username_api_profiles__username__follow_post"];
+        /**
+         * Unfollow Username
+         * @description Unfollow profile with specific username
+         */
+        delete: operations["unfollow_username_api_profiles__username__follow_delete"];
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/tags": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /**
+         * Get All Tags
+         * @description Return available all tags.
+         */
+        get: operations["get_all_tags_api_tags_get"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/courses/feed": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /**
+         * Get Course Feed
+         * @description Get course feed from following users.
+         */
+        get: operations["get_course_feed_api_courses_feed_get"];
+        put?: never;
+        post?: never;
         delete?: never;
         options?: never;
         head?: never;
@@ -118,31 +216,208 @@ export interface paths {
             path?: never;
             cookie?: never;
         };
-        /** Get Courses */
-        get: operations["get_courses_api_courses_get"];
+        /**
+         * Get Global Course Feed
+         * @description Get global course feed.
+         */
+        get: operations["get_global_course_feed_api_courses_get"];
         put?: never;
         /**
-         * Create Course From Prompt
-         * @description Creates a new course draft from a text prompt by generating its structure with an AI architect.
+         * Create Course
+         * @description Create new course.
          */
-        post: operations["create_course_from_prompt_api_courses_post"];
+        post: operations["create_course_api_courses_post"];
         delete?: never;
         options?: never;
         head?: never;
         patch?: never;
         trace?: never;
     };
-    "/api/courses/{course_id}": {
+    "/api/courses/{slug}": {
         parameters: {
             query?: never;
             header?: never;
             path?: never;
             cookie?: never;
         };
-        /** Get Course */
-        get: operations["get_course_api_courses__course_id__get"];
-        /** Update Course */
-        put: operations["update_course_api_courses__course_id__put"];
+        /**
+         * Get Course
+         * @description Get course by slug.
+         */
+        get: operations["get_course_api_courses__slug__get"];
+        /**
+         * Update Course
+         * @description Update a course.
+         */
+        put: operations["update_course_api_courses__slug__put"];
+        post?: never;
+        /**
+         * Delete Course
+         * @description Delete a course by slug.
+         */
+        delete: operations["delete_course_api_courses__slug__delete"];
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/courses/generate": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /**
+         * Generate course from AI prompt
+         * @description Generates a complete course structure using AI and creates it in the database.
+         *
+         *     The AI will create:
+         *     - Course title and description
+         *     - Appropriate difficulty level
+         *     - Daily lessons with titles, practices, key points
+         *     - Estimated duration for each lesson
+         *     - Relevant tags
+         *
+         *     The generated course is saved as a draft with all lessons created.
+         *     Lesson scripts can be generated separately using the lesson endpoints.
+         *
+         *     Returns the complete course data including all generated lessons.
+         */
+        post: operations["generate_course_api_courses_generate_post"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/courses/{slug}/favorite": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /**
+         * Favorite Course
+         * @description Favorite a course.
+         */
+        post: operations["favorite_course_api_courses__slug__favorite_post"];
+        /**
+         * Unfavorite Course
+         * @description Unfavorite a course.
+         */
+        delete: operations["unfavorite_course_api_courses__slug__favorite_delete"];
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/courses/{slug}/lessons": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /**
+         * Get Lessons
+         * @description Get lessons for a course.
+         */
+        get: operations["get_lessons_api_courses__slug__lessons_get"];
+        put?: never;
+        /**
+         * Create Lesson
+         * @description Create a lesson for a course.
+         */
+        post: operations["create_lesson_api_courses__slug__lessons_post"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/courses/{slug}/lessons/{id}": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        /**
+         * Update Lesson
+         * @description Update a lesson for a course.
+         */
+        put: operations["update_lesson_api_courses__slug__lessons__id__put"];
+        post?: never;
+        /**
+         * Delete Lesson
+         * @description Delete a lesson for a course.
+         */
+        delete: operations["delete_lesson_api_courses__slug__lessons__id__delete"];
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/courses/{slug}/lessons/{id}/generate-script": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /**
+         * Generate Lesson Script
+         * @description Generate script for a specific lesson.
+         */
+        post: operations["generate_lesson_script_api_courses__slug__lessons__id__generate_script_post"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/courses/{slug}/generate-all-scripts": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /**
+         * Generate Course Scripts
+         * @description Generate scripts for all ungenerated lessons in a course.
+         */
+        post: operations["generate_course_scripts_api_courses__slug__generate_all_scripts_post"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/courses/{slug}/lessons/{id}/script-status": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /**
+         * Get Lesson Script Status
+         * @description Get the current script generation status for a lesson.
+         */
+        get: operations["get_lesson_script_status_api_courses__slug__lessons__id__script_status_get"];
+        put?: never;
         post?: never;
         delete?: never;
         options?: never;
@@ -150,7 +425,7 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
-    "/api/courses/{course_id}/generate-all-scripts": {
+    "/api/courses/{slug}/lessons/{id}/generate-audio": {
         parameters: {
             query?: never;
             header?: never;
@@ -159,15 +434,18 @@ export interface paths {
         };
         get?: never;
         put?: never;
-        /** Generate All Lessons Scripts */
-        post: operations["generate_all_lessons_scripts_api_courses__course_id__generate_all_scripts_post"];
+        /**
+         * Generate Lesson Audio
+         * @description Generate audio for a specific lesson.
+         */
+        post: operations["generate_lesson_audio_api_courses__slug__lessons__id__generate_audio_post"];
         delete?: never;
         options?: never;
         head?: never;
         patch?: never;
         trace?: never;
     };
-    "/api/courses/{course_id}/generate-audios": {
+    "/api/courses/{slug}/generate-all-audios": {
         parameters: {
             query?: never;
             header?: never;
@@ -176,42 +454,31 @@ export interface paths {
         };
         get?: never;
         put?: never;
-        /** Generate Course Audios */
-        post: operations["generate_course_audios_api_courses__course_id__generate_audios_post"];
+        /**
+         * Generate Course Audios
+         * @description Generate audio for all script-completed lessons in a course.
+         */
+        post: operations["generate_course_audios_api_courses__slug__generate_all_audios_post"];
         delete?: never;
         options?: never;
         head?: never;
         patch?: never;
         trace?: never;
     };
-    "/api/lessons/{lesson_id}/generate-audio": {
+    "/api/courses/{slug}/lessons/{id}/audio-status": {
         parameters: {
             query?: never;
             header?: never;
             path?: never;
             cookie?: never;
         };
-        get?: never;
+        /**
+         * Get Lesson Audio Status
+         * @description Get the current audio generation status for a lesson.
+         */
+        get: operations["get_lesson_audio_status_api_courses__slug__lessons__id__audio_status_get"];
         put?: never;
-        /** Generate Lesson Audio */
-        post: operations["generate_lesson_audio_api_lessons__lesson_id__generate_audio_post"];
-        delete?: never;
-        options?: never;
-        head?: never;
-        patch?: never;
-        trace?: never;
-    };
-    "/api/lessons/{lesson_id}/generate-script": {
-        parameters: {
-            query?: never;
-            header?: never;
-            path?: never;
-            cookie?: never;
-        };
-        get?: never;
-        put?: never;
-        /** Generate Lesson Script */
-        post: operations["generate_lesson_script_api_lessons__lesson_id__generate_script_post"];
+        post?: never;
         delete?: never;
         options?: never;
         head?: never;
@@ -222,230 +489,712 @@ export interface paths {
 export type webhooks = Record<string, never>;
 export interface components {
     schemas: {
-        /** Body_login_api_auth_login_post */
-        Body_login_api_auth_login_post: {
-            /** Grant Type */
-            grant_type?: string | null;
+        /**
+         * AdminUserCreationData
+         * @description Schema for creating an admin user.
+         */
+        AdminUserCreationData: {
+            /**
+             * Email
+             * Format: email
+             */
+            email: string;
+            /** Name */
+            name?: string | null;
+            /** Password */
+            password: string;
             /** Username */
             username: string;
-            /**
-             * Password
-             * Format: password
-             */
-            password: string;
-            /**
-             * Scope
-             * @default
-             */
-            scope: string;
-            /** Client Id */
-            client_id?: string | null;
-            /**
-             * Client Secret
-             * Format: password
-             */
-            client_secret?: string | null;
         };
-        /** Course */
-        Course: {
+        /**
+         * AdminUserCreationRequest
+         * @description Request to create a new admin user (admin-only endpoint).
+         */
+        AdminUserCreationRequest: {
+            user: components["schemas"]["AdminUserCreationData"];
+        };
+        /**
+         * AdminUserCreationResponse
+         * @description Response for admin user creation.
+         */
+        AdminUserCreationResponse: {
+            user: components["schemas"]["AdminUserData"];
+        };
+        /**
+         * AdminUserData
+         * @description Admin user data with role information.
+         */
+        AdminUserData: {
+            /** Id */
+            id: number;
+            /** Email */
+            email: string;
+            /** Username */
+            username: string;
+            /** Name */
+            name: string | null;
+            /** Role */
+            role: string;
+        };
+        /**
+         * AudioGenerationResponse
+         * @description Response for audio generation request.
+         * @example {
+         *       "audio_url": "https://senda-ai.s3.amazonaws.com/audio/1_welcome_to_senda_abc123.mp3",
+         *       "file_size_bytes": 524288,
+         *       "generation_time_seconds": 15.34,
+         *       "lesson_id": 1
+         *     }
+         */
+        AudioGenerationResponse: {
+            /**
+             * Lesson Id
+             * @description ID of the lesson
+             */
+            lesson_id: number;
+            /**
+             * Audio Url
+             * @description Public URL of the generated audio file
+             */
+            audio_url: string;
+            /**
+             * Generation Time Seconds
+             * @description Time taken to generate the audio
+             */
+            generation_time_seconds: number;
+            /**
+             * File Size Bytes
+             * @description Size of the audio file in bytes
+             */
+            file_size_bytes: number;
+        };
+        /**
+         * AudioGenerationStatusResponse
+         * @description Response for audio generation status check.
+         * @example {
+         *       "lesson_id": 1,
+         *       "status": "AUDIO_GENERATING"
+         *     }
+         */
+        AudioGenerationStatusResponse: {
+            /**
+             * Lesson Id
+             * @description ID of the lesson
+             */
+            lesson_id: number;
+            /**
+             * Status
+             * @description Current audio generation status
+             */
+            status: string;
+            /**
+             * Audio Url
+             * @description Audio URL if generation complete
+             */
+            audio_url?: string | null;
+        };
+        /** AuthenticatedUserData */
+        AuthenticatedUserData: {
+            /** Email */
+            email: string;
+            /** Username */
+            username: string;
+            /** Name */
+            name: string | null;
+            /** Bio */
+            bio: string | null;
+            /** Image */
+            image: string | null;
+            /** Token */
+            token: string;
+            /** Id */
+            id: number;
+        };
+        /** AuthenticatedUserResponse */
+        AuthenticatedUserResponse: {
+            user: components["schemas"]["AuthenticatedUserData"];
+        };
+        /**
+         * CourseAudiosGenerationResponse
+         * @description Response for bulk course audio generation.
+         * @example {
+         *       "generated_audios": [
+         *         {
+         *           "audio_url": "https://senda-ai.s3.amazonaws.com/audio/1_welcome_abc123.mp3",
+         *           "file_size_bytes": 524288,
+         *           "generation_time_seconds": 15.34,
+         *           "lesson_id": 1
+         *         }
+         *       ],
+         *       "successful_generations": 1,
+         *       "total_lessons_processed": 5
+         *     }
+         */
+        CourseAudiosGenerationResponse: {
+            /**
+             * Generated Audios
+             * @description List of generated audio results
+             */
+            generated_audios: components["schemas"]["AudioGenerationResponse"][];
+            /**
+             * Total Lessons Processed
+             * @description Total number of lessons processed
+             */
+            total_lessons_processed: number;
+            /**
+             * Successful Generations
+             * @description Number of successful audio generations
+             */
+            successful_generations: number;
+        };
+        /** CourseData */
+        CourseData: {
+            /** Slug */
+            slug: string;
             /** Title */
             title: string;
             /** Description */
             description: string;
-            /** Tags */
-            tags: string[];
-            /**
-             * Id
-             * Format: uuid
-             */
-            id: string;
+            /** Difficultylevel */
+            difficultyLevel: string;
             /** Active */
             active: boolean;
-            /** Lessons */
-            lessons: components["schemas"]["Lesson"][];
-            /** Author */
-            author: string;
             /** Imageplaceholderurl */
-            imagePlaceholderUrl?: string | null;
-            /** Createdat */
-            createdAt?: string | null;
-            /** Updatedat */
-            updatedAt?: string | null;
+            imagePlaceholderUrl: string | null;
+            /** Taglist */
+            tagList: string[];
+            /**
+             * Createdat
+             * Format: date-time
+             */
+            createdAt: string;
+            /**
+             * Updatedat
+             * Format: date-time
+             */
+            updatedAt: string;
+            /**
+             * Favorited
+             * @default false
+             */
+            favorited: boolean;
+            /**
+             * Favoritescount
+             * @default 0
+             */
+            favoritesCount: number;
+            author: components["schemas"]["senda__api__schemas__responses__course__CourseAuthorData"];
         };
-        /** CourseCreatePrompt */
-        CourseCreatePrompt: {
-            /** Prompt */
-            prompt: string;
-        };
-        /** CourseUpdate */
-        CourseUpdate: {
-            /** Name */
-            name?: string | null;
+        /**
+         * CourseGenerationData
+         * @description Complete course data with lessons in generation response.
+         */
+        CourseGenerationData: {
+            /** Slug */
+            slug: string;
+            /** Title */
+            title: string;
             /** Description */
-            description?: string | null;
-            /** Tags */
-            tags?: string[] | null;
+            description: string;
+            difficultyLevel: components["schemas"]["DifficultyLevel"];
+            /** Taglist */
+            tagList: string[];
             /** Active */
-            active?: boolean | null;
-            /** Author */
-            author?: string | null;
-            /** Imageplaceholderurl */
-            imagePlaceholderUrl?: string | null;
+            active: boolean;
+            /**
+             * Createdat
+             * Format: date-time
+             */
+            createdAt: string;
+            /**
+             * Updatedat
+             * Format: date-time
+             */
+            updatedAt: string;
+            /**
+             * Favorited
+             * @default false
+             */
+            favorited: boolean;
+            /**
+             * Favoritescount
+             * @default 0
+             */
+            favoritesCount: number;
+            author: components["schemas"]["senda__api__schemas__responses__course_generation__CourseAuthorData"];
+            /** Lessons */
+            lessons: components["schemas"]["LessonGenerationData"][];
+            /** Lessonscount */
+            lessonsCount: number;
         };
+        /**
+         * CourseGenerationRequest
+         * @description Request schema for AI-powered course generation.
+         */
+        CourseGenerationRequest: {
+            /**
+             * Prompt
+             * @description Natural language description of the desired course
+             * @example Create a 7-day mindfulness course for anxiety
+             */
+            prompt: string;
+            /** @description Target difficulty level */
+            difficultyLevel?: components["schemas"]["DifficultyLevel"] | null;
+        };
+        /**
+         * CourseGenerationResponse
+         * @description Response schema for successful course generation.
+         */
+        CourseGenerationResponse: {
+            course: components["schemas"]["CourseGenerationData"];
+        };
+        /** CourseResponse */
+        CourseResponse: {
+            course: components["schemas"]["CourseData"];
+        };
+        /**
+         * CourseScriptsGenerationResponse
+         * @description Response for bulk course script generation.
+         * @example {
+         *       "generated_scripts": [
+         *         {
+         *           "generation_time_seconds": 2.45,
+         *           "lesson_id": 1,
+         *           "script": [
+         *             {
+         *               "content": "Welcome back to Senda...",
+         *               "type": "speak"
+         *             }
+         *           ]
+         *         }
+         *       ],
+         *       "successful_generations": 1,
+         *       "total_lessons_processed": 3
+         *     }
+         */
+        CourseScriptsGenerationResponse: {
+            /**
+             * Generated Scripts
+             * @description List of generated script results
+             */
+            generated_scripts: components["schemas"]["ScriptGenerationResponse"][];
+            /**
+             * Total Lessons Processed
+             * @description Total number of lessons processed
+             */
+            total_lessons_processed: number;
+            /**
+             * Successful Generations
+             * @description Number of successful script generations
+             */
+            successful_generations: number;
+        };
+        /** CoursesFeedResponse */
+        CoursesFeedResponse: {
+            /** Courses */
+            courses: components["schemas"]["CourseData"][];
+            /** Coursescount */
+            coursesCount: number;
+        };
+        /** CreateCourseData */
+        CreateCourseData: {
+            /** Title */
+            title: string;
+            /** Description */
+            description: string;
+            /**
+             * Difficulty Level
+             * @default BEGINNER
+             */
+            difficulty_level: string;
+            /**
+             * Active
+             * @default false
+             */
+            active: boolean;
+            /** Image Placeholder Url */
+            image_placeholder_url?: string | null;
+            /** Taglist */
+            tagList?: string[];
+        };
+        /** CreateCourseRequest */
+        CreateCourseRequest: {
+            course: components["schemas"]["CreateCourseData"];
+        };
+        /** CreateLessonData */
+        CreateLessonData: {
+            /** Lesson Number */
+            lesson_number: number;
+            /** Title */
+            title: string;
+            /** Core Practice */
+            core_practice: string;
+            /** Key Point */
+            key_point: string;
+            /** Tone */
+            tone: string;
+            /** Duration Minutes */
+            duration_minutes: number;
+        };
+        /** CreateLessonRequest */
+        CreateLessonRequest: {
+            lesson: components["schemas"]["CreateLessonData"];
+        };
+        /**
+         * DifficultyLevel
+         * @description Course difficulty level enumeration
+         * @enum {string}
+         */
+        DifficultyLevel: "BEGINNER" | "INTERMEDIATE" | "ADVANCED";
         /** HTTPValidationError */
         HTTPValidationError: {
             /** Detail */
             detail?: components["schemas"]["ValidationError"][];
         };
-        /** Lesson */
-        Lesson: {
+        /** LessonData */
+        LessonData: {
+            /** Id */
+            id: number;
             /** Lessonnumber */
             lessonNumber: number;
             /** Title */
             title: string;
             /** Corepractice */
             corePractice: string;
-            /** Durationminutes */
-            durationMinutes: number;
             /** Keypoint */
             keyPoint: string;
             /** Tone */
             tone: string;
-            /**
-             * Id
-             * Format: uuid
-             */
-            id: string;
-            /** @default PENDING */
-            status: components["schemas"]["LessonStatus"];
+            /** Durationminutes */
+            durationMinutes: number;
+            /** Status */
+            status: string;
             /** Script */
-            script?: components["schemas"]["ScriptPart"][] | null;
+            script?: Record<string, never> | null;
             /** Audiourl */
-            audioUrl?: string | null;
+            audioUrl: string | null;
             /** Scriptgeneratedat */
-            scriptGeneratedAt?: string | null;
+            scriptGeneratedAt: string | null;
             /** Audiogeneratedat */
-            audioGeneratedAt?: string | null;
-            /** Createdat */
-            createdAt?: string | null;
-            /** Updatedat */
-            updatedAt?: string | null;
+            audioGeneratedAt: string | null;
+            /**
+             * Createdat
+             * Format: date-time
+             */
+            createdAt: string;
+            /**
+             * Updatedat
+             * Format: date-time
+             */
+            updatedAt: string;
         };
         /**
-         * LessonStatus
-         * @enum {string}
+         * LessonGenerationData
+         * @description Lesson data in course generation response.
          */
-        LessonStatus: "PENDING" | "SCRIPT_GENERATING" | "SCRIPT_COMPLETED" | "SCRIPT_FAILED" | "AUDIO_GENERATING" | "AUDIO_COMPLETED" | "AUDIO_FAILED";
-        /**
-         * LoginRequest
-         * @description Schema for login requests.
-         */
-        LoginRequest: {
+        LessonGenerationData: {
+            /** Lessonnumber */
+            lessonNumber: number;
+            /** Title */
+            title: string;
+            /** Corepractice */
+            corePractice: string;
+            /** Keypoint */
+            keyPoint: string;
+            /** Tone */
+            tone: string;
+            /** Durationminutes */
+            durationMinutes: number;
+            /** Status */
+            status: string;
             /**
-             * Username
-             * @description Email address or username
+             * Createdat
+             * Format: date-time
              */
+            createdAt: string;
+            /**
+             * Updatedat
+             * Format: date-time
+             */
+            updatedAt: string;
+        };
+        /** LessonResponse */
+        LessonResponse: {
+            lesson: components["schemas"]["LessonData"];
+        };
+        /** LessonsListResponse */
+        LessonsListResponse: {
+            /** Lessons */
+            lessons: components["schemas"]["LessonData"][];
+            /** Lessonscount */
+            lessonsCount: number;
+        };
+        /** LoggedInUserData */
+        LoggedInUserData: {
+            /** Email */
+            email: string;
+            /** Username */
             username: string;
-            /** Password */
-            password: string;
+            /** Name */
+            name: string | null;
+            /** Bio */
+            bio: string | null;
+            /** Image */
+            image: string | null;
+            /** Token */
+            token: string;
+        };
+        /** ProfileData */
+        ProfileData: {
+            /** Username */
+            username: string;
+            /** Bio */
+            bio: string | null;
+            /** Image */
+            image: string | null;
+            /** Following */
+            following: boolean;
+        };
+        /** ProfileResponse */
+        ProfileResponse: {
+            profile: components["schemas"]["ProfileData"];
+        };
+        /** RegisteredUserData */
+        RegisteredUserData: {
+            /** Email */
+            email: string;
+            /** Username */
+            username: string;
+            /** Name */
+            name: string | null;
+            /** Bio */
+            bio: string | null;
+            /** Image */
+            image: string | null;
+            /** Token */
+            token: string;
+            /** Id */
+            id: number;
         };
         /**
-         * LoginResponse
-         * @description Schema for successful login responses.
+         * ScriptGenerationResponse
+         * @description Response for script generation request.
+         * @example {
+         *       "generation_time_seconds": 2.45,
+         *       "lesson_id": 1,
+         *       "script": [
+         *         {
+         *           "content": "Welcome back to Senda...",
+         *           "type": "speak"
+         *         },
+         *         {
+         *           "duration": 3,
+         *           "type": "pause"
+         *         }
+         *       ]
+         *     }
          */
-        LoginResponse: {
-            /** Access Token */
-            access_token: string;
-            /** Refresh Token */
-            refresh_token: string;
+        ScriptGenerationResponse: {
             /**
-             * Token Type
-             * @default bearer
-             * @constant
+             * Lesson Id
+             * @description ID of the lesson
              */
-            token_type: "bearer";
-            /** Expires In */
-            expires_in: number;
-            user: components["schemas"]["UserPublic"];
+            lesson_id: number;
+            /**
+             * Script
+             * @description Generated script parts
+             */
+            script: components["schemas"]["ScriptPartResponse"][];
+            /**
+             * Generation Time Seconds
+             * @description Time taken to generate the script
+             */
+            generation_time_seconds?: number | null;
         };
         /**
-         * RefreshTokenRequest
-         * @description Schema for refresh token requests.
+         * ScriptGenerationStatusResponse
+         * @description Response for script generation status check.
+         * @example {
+         *       "lesson_id": 1,
+         *       "status": "SCRIPT_GENERATING"
+         *     }
          */
-        RefreshTokenRequest: {
-            /** Refresh Token */
-            refresh_token: string;
+        ScriptGenerationStatusResponse: {
+            /**
+             * Lesson Id
+             * @description ID of the lesson
+             */
+            lesson_id: number;
+            /**
+             * Status
+             * @description Current generation status
+             */
+            status: string;
         };
-        /** ScriptPart */
-        ScriptPart: {
+        /**
+         * ScriptPartResponse
+         * @description Individual script part in API response.
+         * @example {
+         *       "content": "Welcome back to Senda...",
+         *       "type": "speak"
+         *     }
+         * @example {
+         *       "duration": 3,
+         *       "type": "pause"
+         *     }
+         */
+        ScriptPartResponse: {
+            /** @description Type of script part (speak or pause) */
             type: components["schemas"]["ScriptPartType"];
-            /** Content */
+            /**
+             * Content
+             * @description Content text for speak parts, null for pause parts
+             */
             content?: string | null;
-            /** Duration */
+            /**
+             * Duration
+             * @description Duration in seconds for pause parts, optional for speak
+             */
             duration?: number | null;
         };
         /**
          * ScriptPartType
+         * @description Script part type enumeration for lesson scripts
          * @enum {string}
          */
         ScriptPartType: "speak" | "pause";
-        /**
-         * TokenResponse
-         * @description Schema for token refresh responses.
-         */
-        TokenResponse: {
-            /** Access Token */
-            access_token: string;
-            /** Refresh Token */
-            refresh_token: string;
-            /**
-             * Token Type
-             * @default bearer
-             * @constant
-             */
-            token_type: "bearer";
-            /** Expires In */
-            expires_in: number;
+        /** TagsResponse */
+        TagsResponse: {
+            /** Tags */
+            tags: string[];
         };
-        /**
-         * UserPublic
-         * @description Public user schema (for auth responses).
-         */
-        UserPublic: {
-            /**
-             * Id
-             * Format: uuid
-             */
-            id: string;
+        /** UpdateCourseData */
+        UpdateCourseData: {
+            /** Title */
+            title?: string | null;
+            /** Description */
+            description?: string | null;
+            /** Difficulty Level */
+            difficulty_level?: string | null;
+            /** Active */
+            active?: boolean | null;
+            /** Image Placeholder Url */
+            image_placeholder_url?: string | null;
+        };
+        /** UpdateCourseRequest */
+        UpdateCourseRequest: {
+            course: components["schemas"]["UpdateCourseData"];
+        };
+        /** UpdateLessonData */
+        UpdateLessonData: {
+            /** Title */
+            title?: string | null;
+            /** Core Practice */
+            core_practice?: string | null;
+            /** Key Point */
+            key_point?: string | null;
+            /** Tone */
+            tone?: string | null;
+            /** Duration Minutes */
+            duration_minutes?: number | null;
+            /** Status */
+            status?: string | null;
+            /** Script */
+            script?: Record<string, never> | null;
+            /** Audio Url */
+            audio_url?: string | null;
+        };
+        /** UpdateLessonRequest */
+        UpdateLessonRequest: {
+            lesson: components["schemas"]["UpdateLessonData"];
+        };
+        /** UpdatedUserData */
+        UpdatedUserData: {
+            /** Email */
+            email: string;
+            /** Username */
+            username: string;
+            /** Name */
+            name: string | null;
+            /** Bio */
+            bio: string | null;
+            /** Image */
+            image: string | null;
+            /** Token */
+            token: string;
+            /** Id */
+            id: number;
+        };
+        /** UpdatedUserResponse */
+        UpdatedUserResponse: {
+            user: components["schemas"]["UpdatedUserData"];
+        };
+        /** UserLoginData */
+        UserLoginData: {
             /**
              * Email
              * Format: email
              */
             email: string;
-            /** Username */
-            username: string;
-            /** Name */
-            name: string;
-            role: components["schemas"]["UserRole"];
-            /** Last Login */
-            last_login?: string | null;
-            /**
-             * Created At
-             * Format: date-time
-             */
-            created_at: string;
-            /**
-             * Updated At
-             * Format: date-time
-             */
-            updated_at: string;
+            /** Password */
+            password: string;
+        };
+        /** UserLoginRequest */
+        UserLoginRequest: {
+            user: components["schemas"]["UserLoginData"];
+        };
+        /** UserLoginResponse */
+        UserLoginResponse: {
+            user: components["schemas"]["LoggedInUserData"];
         };
         /**
-         * UserRole
-         * @description Available user roles.
-         * @enum {string}
+         * UserPromotionResponse
+         * @description Response for user promotion to admin.
          */
-        UserRole: "admin";
+        UserPromotionResponse: {
+            user: components["schemas"]["AdminUserData"];
+        };
+        /** UserRegistrationData */
+        UserRegistrationData: {
+            /**
+             * Email
+             * Format: email
+             */
+            email: string;
+            /** Name */
+            name?: string | null;
+            /** Password */
+            password: string;
+            /** Username */
+            username: string;
+        };
+        /** UserRegistrationRequest */
+        UserRegistrationRequest: {
+            user: components["schemas"]["UserRegistrationData"];
+        };
+        /** UserRegistrationResponse */
+        UserRegistrationResponse: {
+            user: components["schemas"]["RegisteredUserData"];
+        };
+        /** UserUpdateData */
+        UserUpdateData: {
+            /** Email */
+            email?: string | null;
+            /** Password */
+            password?: string | null;
+            /** Username */
+            username?: string | null;
+            /** Name */
+            name?: string | null;
+            /** Bio */
+            bio?: string | null;
+            /** Image */
+            image?: string | null;
+        };
+        /** UserUpdateRequest */
+        UserUpdateRequest: {
+            user: components["schemas"]["UserUpdateData"];
+        };
         /** ValidationError */
         ValidationError: {
             /** Location */
@@ -454,6 +1203,31 @@ export interface components {
             msg: string;
             /** Error Type */
             type: string;
+        };
+        /** CourseAuthorData */
+        senda__api__schemas__responses__course__CourseAuthorData: {
+            /** Username */
+            username: string;
+            /** Bio */
+            bio: string | null;
+            /** Image */
+            image: string | null;
+            /** Following */
+            following: boolean;
+        };
+        /**
+         * CourseAuthorData
+         * @description Author data for course generation response.
+         */
+        senda__api__schemas__responses__course_generation__CourseAuthorData: {
+            /** Username */
+            username: string;
+            /** Bio */
+            bio: string | null;
+            /** Image */
+            image: string | null;
+            /** Following */
+            following: boolean;
         };
     };
     responses: never;
@@ -464,7 +1238,7 @@ export interface components {
 }
 export type $defs = Record<string, never>;
 export interface operations {
-    health_check_api_health_get: {
+    health_check_api_health_check_get: {
         parameters: {
             query?: never;
             header?: never;
@@ -479,12 +1253,12 @@ export interface operations {
                     [name: string]: unknown;
                 };
                 content: {
-                    "application/json": unknown;
+                    "application/json": Record<string, never>;
                 };
             };
         };
     };
-    login_api_auth_login_post: {
+    register_user_api_users_post: {
         parameters: {
             query?: never;
             header?: never;
@@ -493,7 +1267,7 @@ export interface operations {
         };
         requestBody: {
             content: {
-                "application/x-www-form-urlencoded": components["schemas"]["Body_login_api_auth_login_post"];
+                "application/json": components["schemas"]["UserRegistrationRequest"];
             };
         };
         responses: {
@@ -503,7 +1277,7 @@ export interface operations {
                     [name: string]: unknown;
                 };
                 content: {
-                    "application/json": components["schemas"]["LoginResponse"];
+                    "application/json": components["schemas"]["UserRegistrationResponse"];
                 };
             };
             /** @description Validation Error */
@@ -517,7 +1291,7 @@ export interface operations {
             };
         };
     };
-    login_json_api_auth_login_json_post: {
+    login_user_api_users_login_post: {
         parameters: {
             query?: never;
             header?: never;
@@ -526,7 +1300,7 @@ export interface operations {
         };
         requestBody: {
             content: {
-                "application/json": components["schemas"]["LoginRequest"];
+                "application/json": components["schemas"]["UserLoginRequest"];
             };
         };
         responses: {
@@ -536,7 +1310,7 @@ export interface operations {
                     [name: string]: unknown;
                 };
                 content: {
-                    "application/json": components["schemas"]["LoginResponse"];
+                    "application/json": components["schemas"]["UserLoginResponse"];
                 };
             };
             /** @description Validation Error */
@@ -550,7 +1324,7 @@ export interface operations {
             };
         };
     };
-    get_current_user_api_auth_me_get: {
+    get_current_user_api_user_get: {
         parameters: {
             query?: never;
             header?: never;
@@ -565,12 +1339,12 @@ export interface operations {
                     [name: string]: unknown;
                 };
                 content: {
-                    "application/json": components["schemas"]["UserPublic"];
+                    "application/json": components["schemas"]["AuthenticatedUserResponse"];
                 };
             };
         };
     };
-    refresh_token_api_auth_refresh_post: {
+    update_current_user_api_user_put: {
         parameters: {
             query?: never;
             header?: never;
@@ -579,7 +1353,7 @@ export interface operations {
         };
         requestBody: {
             content: {
-                "application/json": components["schemas"]["RefreshTokenRequest"];
+                "application/json": components["schemas"]["UserUpdateRequest"];
             };
         };
         responses: {
@@ -589,7 +1363,7 @@ export interface operations {
                     [name: string]: unknown;
                 };
                 content: {
-                    "application/json": components["schemas"]["TokenResponse"];
+                    "application/json": components["schemas"]["UpdatedUserResponse"];
                 };
             };
             /** @description Validation Error */
@@ -603,11 +1377,188 @@ export interface operations {
             };
         };
     };
-    get_courses_api_courses_get: {
+    create_admin_user_api_user_admin_post: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["AdminUserCreationRequest"];
+            };
+        };
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["AdminUserCreationResponse"];
+                };
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
+    promote_user_to_admin_api_user__user_id__promote_put: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                user_id: number;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["UserPromotionResponse"];
+                };
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
+    get_user_profile_api_profiles__username__get: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                username: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ProfileResponse"];
+                };
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
+    follow_username_api_profiles__username__follow_post: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                username: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ProfileResponse"];
+                };
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
+    unfollow_username_api_profiles__username__follow_delete: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                username: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ProfileResponse"];
+                };
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
+    get_all_tags_api_tags_get: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["TagsResponse"];
+                };
+            };
+        };
+    };
+    get_course_feed_api_courses_feed_get: {
         parameters: {
             query?: {
-                skip?: number;
                 limit?: number;
+                offset?: number;
             };
             header?: never;
             path?: never;
@@ -621,7 +1572,7 @@ export interface operations {
                     [name: string]: unknown;
                 };
                 content: {
-                    "application/json": components["schemas"]["Course"][];
+                    "application/json": components["schemas"]["CoursesFeedResponse"];
                 };
             };
             /** @description Validation Error */
@@ -635,7 +1586,42 @@ export interface operations {
             };
         };
     };
-    create_course_from_prompt_api_courses_post: {
+    get_global_course_feed_api_courses_get: {
+        parameters: {
+            query?: {
+                limit?: number;
+                offset?: number;
+                tag?: string | null;
+                author?: string | null;
+                favorited?: string | null;
+            };
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["CoursesFeedResponse"];
+                };
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
+    create_course_api_courses_post: {
         parameters: {
             query?: never;
             header?: never;
@@ -644,7 +1630,7 @@ export interface operations {
         };
         requestBody: {
             content: {
-                "application/json": components["schemas"]["CourseCreatePrompt"];
+                "application/json": components["schemas"]["CreateCourseRequest"];
             };
         };
         responses: {
@@ -654,7 +1640,7 @@ export interface operations {
                     [name: string]: unknown;
                 };
                 content: {
-                    "application/json": components["schemas"]["Course"];
+                    "application/json": components["schemas"]["CourseResponse"];
                 };
             };
             /** @description Validation Error */
@@ -668,12 +1654,12 @@ export interface operations {
             };
         };
     };
-    get_course_api_courses__course_id__get: {
+    get_course_api_courses__slug__get: {
         parameters: {
             query?: never;
             header?: never;
             path: {
-                course_id: string;
+                slug: string;
             };
             cookie?: never;
         };
@@ -685,7 +1671,7 @@ export interface operations {
                     [name: string]: unknown;
                 };
                 content: {
-                    "application/json": components["schemas"]["Course"];
+                    "application/json": components["schemas"]["CourseResponse"];
                 };
             };
             /** @description Validation Error */
@@ -699,18 +1685,18 @@ export interface operations {
             };
         };
     };
-    update_course_api_courses__course_id__put: {
+    update_course_api_courses__slug__put: {
         parameters: {
             query?: never;
             header?: never;
             path: {
-                course_id: string;
+                slug: string;
             };
             cookie?: never;
         };
         requestBody: {
             content: {
-                "application/json": components["schemas"]["CourseUpdate"];
+                "application/json": components["schemas"]["UpdateCourseRequest"];
             };
         };
         responses: {
@@ -720,7 +1706,7 @@ export interface operations {
                     [name: string]: unknown;
                 };
                 content: {
-                    "application/json": components["schemas"]["Course"];
+                    "application/json": components["schemas"]["CourseResponse"];
                 };
             };
             /** @description Validation Error */
@@ -734,24 +1720,100 @@ export interface operations {
             };
         };
     };
-    generate_all_lessons_scripts_api_courses__course_id__generate_all_scripts_post: {
+    delete_course_api_courses__slug__delete: {
         parameters: {
             query?: never;
             header?: never;
             path: {
-                course_id: string;
+                slug: string;
             };
             cookie?: never;
         };
         requestBody?: never;
         responses: {
             /** @description Successful Response */
-            202: {
+            204: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+            /** @description Validation Error */
+            422: {
                 headers: {
                     [name: string]: unknown;
                 };
                 content: {
-                    "application/json": unknown;
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
+    generate_course_api_courses_generate_post: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["CourseGenerationRequest"];
+            };
+        };
+        responses: {
+            /** @description Course successfully generated and created */
+            201: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["CourseGenerationResponse"];
+                };
+            };
+            /** @description Invalid prompt or parameters */
+            400: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+            /** @description AI service unavailable */
+            503: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+        };
+    };
+    favorite_course_api_courses__slug__favorite_post: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                slug: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["CourseResponse"];
                 };
             };
             /** @description Validation Error */
@@ -765,24 +1827,24 @@ export interface operations {
             };
         };
     };
-    generate_course_audios_api_courses__course_id__generate_audios_post: {
+    unfavorite_course_api_courses__slug__favorite_delete: {
         parameters: {
             query?: never;
             header?: never;
             path: {
-                course_id: string;
+                slug: string;
             };
             cookie?: never;
         };
         requestBody?: never;
         responses: {
             /** @description Successful Response */
-            202: {
+            200: {
                 headers: {
                     [name: string]: unknown;
                 };
                 content: {
-                    "application/json": unknown;
+                    "application/json": components["schemas"]["CourseResponse"];
                 };
             };
             /** @description Validation Error */
@@ -796,24 +1858,24 @@ export interface operations {
             };
         };
     };
-    generate_lesson_audio_api_lessons__lesson_id__generate_audio_post: {
+    get_lessons_api_courses__slug__lessons_get: {
         parameters: {
             query?: never;
             header?: never;
             path: {
-                lesson_id: string;
+                slug: string;
             };
             cookie?: never;
         };
         requestBody?: never;
         responses: {
             /** @description Successful Response */
-            202: {
+            200: {
                 headers: {
                     [name: string]: unknown;
                 };
                 content: {
-                    "application/json": unknown;
+                    "application/json": components["schemas"]["LessonsListResponse"];
                 };
             };
             /** @description Validation Error */
@@ -827,24 +1889,284 @@ export interface operations {
             };
         };
     };
-    generate_lesson_script_api_lessons__lesson_id__generate_script_post: {
+    create_lesson_api_courses__slug__lessons_post: {
         parameters: {
             query?: never;
             header?: never;
             path: {
-                lesson_id: string;
+                slug: string;
+            };
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["CreateLessonRequest"];
+            };
+        };
+        responses: {
+            /** @description Successful Response */
+            201: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["LessonResponse"];
+                };
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
+    update_lesson_api_courses__slug__lessons__id__put: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                slug: string;
+                id: number;
+            };
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["UpdateLessonRequest"];
+            };
+        };
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["LessonResponse"];
+                };
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
+    delete_lesson_api_courses__slug__lessons__id__delete: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                slug: string;
+                id: number;
             };
             cookie?: never;
         };
         requestBody?: never;
         responses: {
             /** @description Successful Response */
-            202: {
+            204: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+            /** @description Validation Error */
+            422: {
                 headers: {
                     [name: string]: unknown;
                 };
                 content: {
-                    "application/json": unknown;
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
+    generate_lesson_script_api_courses__slug__lessons__id__generate_script_post: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                slug: string;
+                id: number;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ScriptGenerationResponse"];
+                };
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
+    generate_course_scripts_api_courses__slug__generate_all_scripts_post: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                slug: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["CourseScriptsGenerationResponse"];
+                };
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
+    get_lesson_script_status_api_courses__slug__lessons__id__script_status_get: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                slug: string;
+                id: number;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ScriptGenerationStatusResponse"];
+                };
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
+    generate_lesson_audio_api_courses__slug__lessons__id__generate_audio_post: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                slug: string;
+                id: number;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["AudioGenerationResponse"];
+                };
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
+    generate_course_audios_api_courses__slug__generate_all_audios_post: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                slug: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["CourseAudiosGenerationResponse"];
+                };
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
+    get_lesson_audio_status_api_courses__slug__lessons__id__audio_status_get: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                slug: string;
+                id: number;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["AudioGenerationStatusResponse"];
                 };
             };
             /** @description Validation Error */

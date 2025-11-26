@@ -11,7 +11,7 @@
     "lint": "eslint",
     "lint:fix": "eslint --fix",
     "lint-staged": "lint-staged",
-    "generate-types": "openapi-typescript http://localhost:8000/api/openapi.json -o src/types/api.d.ts"
+    "generate-types": "openapi-typescript http://localhost:8081/openapi.json -o src/types/api.d.ts"
   },
   "dependencies": {
     "@hookform/resolvers": "5.2.2",

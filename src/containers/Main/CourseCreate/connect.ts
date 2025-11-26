@@ -22,38 +22,45 @@ export default function useConnect() {
     },
   });
 
-  const createCourseMutation = $api.useMutation('post', '/api/courses', {
-    onSuccess: async (result) => {
-      if (currentLoadingToastId) {
-        toast.dismiss(currentLoadingToastId);
-        currentLoadingToastId = undefined;
-      }
+  const createCourseMutation = $api.useMutation(
+    'post',
+    '/api/courses/generate',
+    {
+      onSuccess: async (result) => {
+        if (currentLoadingToastId) {
+          toast.dismiss(currentLoadingToastId);
+          currentLoadingToastId = undefined;
+        }
 
-      toast.success('Course created successfully!', {
-        description: `"${result.title}" has been created and is ready for lesson management.`,
-        duration: 4000,
-      });
+        toast.success('Course created successfully!', {
+          description: `"${result.course.title}" has been created with ${result.course.lessonsCount} lessons.`,
+          duration: 4000,
+        });
 
-      await queryClient.invalidateQueries({
-        queryKey: ['get', '/api/courses'],
-        refetchType: 'active',
-      });
+        await queryClient.invalidateQueries({
+          queryKey: ['get', '/api/courses'],
+          refetchType: 'active',
+        });
+
+        // Redirect to the newly created course detail page
+        router.push(`/courses/${result.course.slug}`);
+      },
+      onError: (error) => {
+        if (currentLoadingToastId) {
+          toast.dismiss(currentLoadingToastId);
+          currentLoadingToastId = undefined;
+        }
+
+        toast.error('Failed to create course', {
+          description:
+            'Please check your input and try again. If the problem persists, contact support.',
+          duration: 6000,
+        });
+
+        console.error('Failed to create course:', error);
+      },
     },
-    onError: (error) => {
-      if (currentLoadingToastId) {
-        toast.dismiss(currentLoadingToastId);
-        currentLoadingToastId = undefined;
-      }
-
-      toast.error('Failed to create course', {
-        description:
-          'Please check your input and try again. If the problem persists, contact support.',
-        duration: 6000,
-      });
-
-      console.error('Failed to create course:', error);
-    },
-  });
+  );
 
   const onSubmit = async (data: CourseCreateFormData) => {
     currentLoadingToastId = toast.loading('Creating course...', {
@@ -66,8 +73,6 @@ export default function useConnect() {
         prompt: data.prompt,
       },
     });
-
-    router.push('/courses');
   };
 
   return {

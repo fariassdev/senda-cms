@@ -14,27 +14,16 @@ const useConnect = () => {
   const form = useForm<LoginFormData>({
     resolver: zodResolver(validationSchema),
     defaultValues: {
-      username: '',
+      email: '',
       password: '',
     },
   });
 
   // Use the auto-generated mutation hook for login
-  const loginMutation = $publicApi.useMutation('post', '/api/auth/login', {
+  const loginMutation = $publicApi.useMutation('post', '/api/users/login', {
     onSuccess: (response) => {
-      // Calculate expiration timestamp if expires_in is provided
-      let expiresAt: number | undefined;
-      if (response.expires_in) {
-        expiresAt = Date.now() + response.expires_in * 1000;
-      }
-
       // Store auth data in Zustand store
-      setAuth(
-        response.user,
-        response.access_token,
-        response.refresh_token,
-        expiresAt,
-      );
+      setAuth(response.user, response.user.token);
 
       // Redirect to the courses page
       router.push('/courses');
@@ -44,12 +33,10 @@ const useConnect = () => {
   const onSubmit = async (data: LoginFormData) => {
     loginMutation.mutate({
       body: {
-        username: data.username,
-        password: data.password,
-        scope: '',
-      },
-      headers: {
-        'Content-Type': 'application/x-www-form-urlencoded',
+        user: {
+          email: data.email,
+          password: data.password,
+        },
       },
     });
   };
