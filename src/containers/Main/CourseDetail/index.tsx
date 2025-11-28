@@ -1,6 +1,5 @@
 'use client';
 
-import { zodResolver } from '@hookform/resolvers/zod';
 import {
   AlertCircleIcon,
   ArrowLeft,
@@ -11,8 +10,6 @@ import {
 } from 'lucide-react';
 import Image from 'next/image';
 import Link from 'next/link';
-import { useEffect } from 'react';
-import { useForm } from 'react-hook-form';
 
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
@@ -38,54 +35,19 @@ import { Switch } from '@/components/ui/switch';
 import { Textarea } from '@/components/ui/textarea';
 
 import useConnect from './connect';
-import { courseUpdateSchema, type CourseUpdateFormData } from './constants';
 import type { CourseDetailProps } from './types';
 
 export default function CourseDetail({ courseSlug }: CourseDetailProps) {
   const {
     course,
+    form,
     isLoading,
     isError,
     error,
     refetch,
-    updateCourse,
     isUpdating,
+    onSubmit,
   } = useConnect(courseSlug);
-
-  const form = useForm<CourseUpdateFormData>({
-    resolver: zodResolver(courseUpdateSchema),
-    defaultValues: {
-      title: '',
-      description: '',
-      difficulty_level: '',
-      active: false,
-      image_placeholder_url: '',
-    },
-  });
-
-  // Update form when course data is loaded
-  useEffect(() => {
-    if (course) {
-      form.reset({
-        title: course.title,
-        description: course.description,
-        difficulty_level: course.difficultyLevel,
-        active: course.active,
-        image_placeholder_url: course.imagePlaceholderUrl || '',
-      });
-    }
-  }, [course, form]);
-
-  const onSubmit = async (data: CourseUpdateFormData) => {
-    await updateCourse({
-      title: data.title,
-      description: data.description,
-      difficulty_level: data.difficulty_level || null,
-      active: data.active,
-      image_placeholder_url: data.image_placeholder_url || null,
-    });
-  };
-
   if (isLoading) {
     return <CourseDetailSkeleton />;
   }

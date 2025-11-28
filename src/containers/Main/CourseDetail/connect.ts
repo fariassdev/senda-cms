@@ -1,10 +1,25 @@
+import { zodResolver } from '@hookform/resolvers/zod';
 import { useQueryClient } from '@tanstack/react-query';
+import { useEffect } from 'react';
+import { useForm } from 'react-hook-form';
 import { toast } from 'sonner';
 
 import { $api } from '@/lib/api';
+import { courseUpdateSchema, type CourseUpdateFormData } from './constants';
 
 export default function useConnect(courseSlug: string) {
   const queryClient = useQueryClient();
+
+  const form = useForm<CourseUpdateFormData>({
+    resolver: zodResolver(courseUpdateSchema),
+    defaultValues: {
+      title: '',
+      description: '',
+      difficulty_level: '',
+      active: false,
+      image_placeholder_url: '',
+    },
+  });
 
   const {
     data: courseResponse,
@@ -21,6 +36,19 @@ export default function useConnect(courseSlug: string) {
   });
 
   const course = courseResponse?.course;
+
+  // Update form when course data is loaded
+  useEffect(() => {
+    if (course) {
+      form.reset({
+        title: course.title,
+        description: course.description,
+        difficulty_level: course.difficultyLevel,
+        active: course.active,
+        image_placeholder_url: course.imagePlaceholderUrl || '',
+      });
+    }
+  }, [course, form]);
 
   const updateCourseMutation = $api.useMutation('put', '/api/courses/{slug}');
 
@@ -57,13 +85,24 @@ export default function useConnect(courseSlug: string) {
     }
   };
 
+  const onSubmit = async (data: CourseUpdateFormData) => {
+    await updateCourse({
+      title: data.title,
+      description: data.description,
+      difficulty_level: data.difficulty_level || null,
+      active: data.active,
+      image_placeholder_url: data.image_placeholder_url || null,
+    });
+  };
+
   return {
     course,
+    form,
     isLoading,
     isError,
     error,
     refetch,
-    updateCourse,
     isUpdating: updateCourseMutation.isPending,
+    onSubmit,
   };
 }
