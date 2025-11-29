@@ -1,13 +1,15 @@
 import { z } from 'zod';
 
-export const TONE_OPTIONS = [
-  { value: 'calming', label: 'Calming' },
-  { value: 'energizing', label: 'Energizing' },
-  { value: 'neutral', label: 'Neutral' },
-  { value: 'visualization', label: 'Guided Visualization' },
+// Tone suggestions - users can also type custom values
+export const TONE_SUGGESTIONS = [
+  'Calming',
+  'Energizing',
+  'Neutral',
+  'Guided Visualization',
+  'Soothing',
+  'Motivating',
+  'Reflective',
 ] as const;
-
-export type ToneValue = (typeof TONE_OPTIONS)[number]['value'];
 
 export const lessonSchema = z.object({
   title: z
@@ -22,9 +24,10 @@ export const lessonSchema = z.object({
     .string()
     .min(3, 'Core practice must be at least 3 characters'),
   keyPoint: z.string().min(3, 'Key point must be at least 3 characters'),
-  tone: z.enum(['calming', 'energizing', 'neutral', 'visualization'], {
-    message: 'Please select a tone',
-  }),
+  tone: z
+    .string()
+    .min(2, 'Tone must be at least 2 characters')
+    .max(50, 'Tone cannot exceed 50 characters'),
 });
 
 export type LessonFormData = z.infer<typeof lessonSchema>;
@@ -34,5 +37,5 @@ export const DEFAULT_FORM_VALUES: LessonFormData = {
   durationMinutes: 10,
   corePractice: '',
   keyPoint: '',
-  tone: 'calming',
+  tone: '',
 };

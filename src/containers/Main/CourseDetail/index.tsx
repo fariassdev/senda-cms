@@ -246,15 +246,6 @@ export default function CourseDetail({ courseSlug }: CourseDetailProps) {
                 </CardContent>
               </Card>
 
-              {/* LessonCreate Modal */}
-              <LessonCreate
-                courseSlug={courseSlug}
-                nextLessonNumber={nextLessonNumber}
-                open={isLessonCreateOpen}
-                onOpenChange={handleCloseLessonCreate}
-                onSuccess={handleLessonCreateSuccess}
-              />
-
               {/* Submit Button */}
               <div className="flex justify-end">
                 <Button type="submit" disabled={isUpdating}>
@@ -263,6 +254,15 @@ export default function CourseDetail({ courseSlug }: CourseDetailProps) {
               </div>
             </form>
           </Form>
+
+          {/* LessonCreate Modal - Outside form to prevent submit interference */}
+          <LessonCreate
+            courseSlug={courseSlug}
+            nextLessonNumber={nextLessonNumber}
+            open={isLessonCreateOpen}
+            onOpenChange={handleCloseLessonCreate}
+            onSuccess={handleLessonCreateSuccess}
+          />
         </div>
 
         {/* Right Sidebar - Course Image and Tags */}
