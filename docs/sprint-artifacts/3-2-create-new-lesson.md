@@ -117,11 +117,15 @@ const createMutation = $api.useMutation('post', '/api/courses/{slug}/lessons', {
 // In LessonCreate/constants.ts
 import { z } from 'zod';
 
-export const TONE_OPTIONS = [
-  { value: 'calming', label: 'Calming' },
-  { value: 'energizing', label: 'Energizing' },
-  { value: 'neutral', label: 'Neutral' },
-  { value: 'visualization', label: 'Guided Visualization' },
+// Tone suggestions - users can also type custom values
+export const TONE_SUGGESTIONS = [
+  'Calming',
+  'Energizing',
+  'Neutral',
+  'Guided Visualization',
+  'Soothing',
+  'Motivating',
+  'Reflective',
 ] as const;
 
 export const lessonSchema = z.object({
@@ -135,11 +139,46 @@ export const lessonSchema = z.object({
     .max(120, 'Duration cannot exceed 120 minutes'),
   corePractice: z.string().min(3, 'Core practice is required'),
   keyPoint: z.string().min(3, 'Key point is required'),
-  tone: z.enum(['calming', 'energizing', 'neutral', 'visualization']),
+  tone: z
+    .string()
+    .min(2, 'Tone must be at least 2 characters')
+    .max(50, 'Tone cannot exceed 50 characters'),
 });
 
 export type LessonFormData = z.infer<typeof lessonSchema>;
 ```
+
+**Tone Field Implementation** - Free text input with datalist suggestions:
+
+```typescript
+// In LessonCreate/index.tsx
+<FormField
+  control={form.control}
+  name="tone"
+  render={({ field }) => (
+    <FormItem>
+      <FormLabel>
+        Tone <span className="text-destructive">*</span>
+      </FormLabel>
+      <FormControl>
+        <Input
+          placeholder="Type or select a tone (e.g., Calming, Energizing)"
+          list="tone-suggestions"
+          {...field}
+        />
+      </FormControl>
+      <datalist id="tone-suggestions">
+        {TONE_SUGGESTIONS.map((tone) => (
+          <option key={tone} value={tone} />
+        ))}
+      </datalist>
+      <FormMessage />
+    </FormItem>
+  )}
+/>
+```
+
+**Important**: The `datalist` element must be placed **outside** `FormControl` to avoid React/Next.js errors about invalid props on React.Fragment. The `datalist` should be a sibling of `FormControl` within the `FormItem`.
 
 ### API Request/Response from OpenAPI
 
@@ -215,6 +254,36 @@ const handleClose = () => {
 - **Ordering**: Lessons ordered by `lessonNumber` field - New lesson should get `max(lessonNumber) + 1`
 
 [Source: docs/sprint-artifacts/3-1-display-lesson-list.md#Dev-Agent-Record]
+
+### Important Implementation Notes
+
+**Modal Placement in CourseDetail**
+
+The `LessonCreate` modal must be rendered **outside** the CourseDetail form element to prevent unintended form submission. When the modal closes, it should not trigger the parent form's `onSubmit`. Place the modal after the `</Form>` closing tag but within the same container.
+
+**Tone Field: Free Text with Suggestions**
+
+Changed from enum-based `Select` dropdown to free-text `Input` with HTML5 `datalist`:
+
+- Users can type custom tone values for 100% personalization
+- `datalist` provides quick-select suggestions without restricting choices
+- Validation accepts any string 2-50 characters
+- Better UX for power users who want flexibility
+
+**FormControl and Nested Elements**
+
+The shadcn/ui `FormControl` component applies attributes to its immediate child. When using elements that need specific DOM structure (like `Input` + `datalist`), place the `datalist` outside `FormControl`:
+
+```tsx
+<FormControl>
+  <Input list="tone-suggestions" {...field} />
+</FormControl>
+<datalist id="tone-suggestions">
+  {/* options */}
+</datalist>
+```
+
+Placing `datalist` inside a Fragment within `FormControl` causes React errors about invalid props.
 
 ### Project Structure Notes
 
@@ -308,7 +377,10 @@ Claude Opus 4.5 (Preview)
 
 ## Change Log
 
-| Date       | Author             | Change                                                                            |
-| ---------- | ------------------ | --------------------------------------------------------------------------------- |
-| 2025-11-29 | SM Agent (Bob)     | Initial story creation from Epic 3, Story 3.2                                     |
-| 2025-11-29 | Dev Agent (Amelia) | Implemented Tasks 1-6: LessonCreate container, modal UI, CourseDetail integration |
+| Date       | Author             | Change                                                                                         |
+| ---------- | ------------------ | ---------------------------------------------------------------------------------------------- |
+| 2025-11-29 | SM Agent (Bob)     | Initial story creation from Epic 3, Story 3.2                                                  |
+| 2025-11-29 | Dev Agent (Amelia) | Implemented Tasks 1-6: LessonCreate container, modal UI, CourseDetail integration              |
+| 2025-11-29 | Dev Agent (Amelia) | **Fix 1**: Changed tone from enum Select to free-text Input with datalist                      |
+| 2025-11-29 | Dev Agent (Amelia) | **Fix 2**: Moved LessonCreate modal outside CourseDetail form to prevent unwanted submit toast |
+| 2025-11-29 | Dev Agent (Amelia) | **Fix 3**: Moved datalist outside FormControl to avoid React Fragment prop errors              |

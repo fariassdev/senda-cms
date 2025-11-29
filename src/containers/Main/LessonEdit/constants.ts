@@ -1,7 +1,6 @@
-// Reuse validation schema and tone options from LessonCreate
+// Reuse validation schema and tone suggestions from LessonCreate
 export {
   lessonSchema,
-  TONE_OPTIONS,
+  TONE_SUGGESTIONS,
   type LessonFormData,
-  type ToneValue,
 } from '@/containers/Main/LessonCreate/constants';

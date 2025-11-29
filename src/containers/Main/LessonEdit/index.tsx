@@ -30,17 +30,10 @@ import {
   FormMessage,
 } from '@/components/ui/form';
 import { Input } from '@/components/ui/input';
-import {
-  Select,
-  SelectContent,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
-} from '@/components/ui/select';
 import { Textarea } from '@/components/ui/textarea';
 
 import useConnect from './connect';
-import { TONE_OPTIONS } from './constants';
+import { TONE_SUGGESTIONS } from './constants';
 import type { LessonEditProps } from './types';
 
 export default function LessonEdit({
@@ -181,20 +174,18 @@ export default function LessonEdit({
                     <FormLabel>
                       Tone <span className="text-destructive">*</span>
                     </FormLabel>
-                    <Select onValueChange={field.onChange} value={field.value}>
-                      <FormControl>
-                        <SelectTrigger>
-                          <SelectValue placeholder="Select a tone" />
-                        </SelectTrigger>
-                      </FormControl>
-                      <SelectContent>
-                        {TONE_OPTIONS.map((option) => (
-                          <SelectItem key={option.value} value={option.value}>
-                            {option.label}
-                          </SelectItem>
-                        ))}
-                      </SelectContent>
-                    </Select>
+                    <FormControl>
+                      <Input
+                        placeholder="Type or select a tone (e.g., Calming, Energizing)"
+                        list="tone-suggestions"
+                        {...field}
+                      />
+                    </FormControl>
+                    <datalist id="tone-suggestions">
+                      {TONE_SUGGESTIONS.map((tone) => (
+                        <option key={tone} value={tone} />
+                      ))}
+                    </datalist>
                     <FormMessage />
                   </FormItem>
                 )}

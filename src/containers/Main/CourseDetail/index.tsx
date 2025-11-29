@@ -253,26 +253,6 @@ export default function CourseDetail({ courseSlug }: CourseDetailProps) {
                 </CardContent>
               </Card>
 
-              {/* LessonCreate Modal */}
-              <LessonCreate
-                courseSlug={courseSlug}
-                nextLessonNumber={nextLessonNumber}
-                open={isLessonCreateOpen}
-                onOpenChange={handleCloseLessonCreate}
-                onSuccess={handleLessonCreateSuccess}
-              />
-
-              {/* LessonEdit Modal */}
-              {selectedLesson && (
-                <LessonEdit
-                  courseSlug={courseSlug}
-                  lesson={selectedLesson}
-                  open={isLessonEditOpen}
-                  onOpenChange={handleCloseLessonEdit}
-                  onSuccess={handleLessonEditSuccess}
-                />
-              )}
-
               {/* Submit Button */}
               <div className="flex justify-end">
                 <Button type="submit" disabled={isUpdating}>
@@ -281,6 +261,26 @@ export default function CourseDetail({ courseSlug }: CourseDetailProps) {
               </div>
             </form>
           </Form>
+
+          {/* LessonCreate Modal - Outside form to prevent submit interference */}
+          <LessonCreate
+            courseSlug={courseSlug}
+            nextLessonNumber={nextLessonNumber}
+            open={isLessonCreateOpen}
+            onOpenChange={handleCloseLessonCreate}
+            onSuccess={handleLessonCreateSuccess}
+          />
+
+          {/* LessonEdit Modal */}
+          {selectedLesson && (
+            <LessonEdit
+              courseSlug={courseSlug}
+              lesson={selectedLesson}
+              open={isLessonEditOpen}
+              onOpenChange={handleCloseLessonEdit}
+              onSuccess={handleLessonEditSuccess}
+            />
+          )}
         </div>
 
         {/* Right Sidebar - Course Image and Tags */}

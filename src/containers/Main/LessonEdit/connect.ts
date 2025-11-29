@@ -6,7 +6,7 @@ import { toast } from 'sonner';
 
 import { $api } from '@/lib/api';
 
-import { lessonSchema, type LessonFormData, type ToneValue } from './constants';
+import { lessonSchema, type LessonFormData } from './constants';
 import type { LessonEditProps } from './types';
 
 export default function useConnect({
@@ -26,7 +26,7 @@ export default function useConnect({
       durationMinutes: lesson.durationMinutes,
       corePractice: lesson.corePractice,
       keyPoint: lesson.keyPoint,
-      tone: lesson.tone as ToneValue,
+      tone: lesson.tone,
     },
   });
 
@@ -113,7 +113,7 @@ export default function useConnect({
       durationMinutes: lesson.durationMinutes,
       corePractice: lesson.corePractice,
       keyPoint: lesson.keyPoint,
-      tone: lesson.tone as ToneValue,
+      tone: lesson.tone,
     });
     onOpenChange(false);
   };
