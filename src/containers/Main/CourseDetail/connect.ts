@@ -1,6 +1,6 @@
 import { zodResolver } from '@hookform/resolvers/zod';
 import { useQueryClient } from '@tanstack/react-query';
-import { useEffect } from 'react';
+import { useEffect, useState } from 'react';
 import { useForm } from 'react-hook-form';
 import { toast } from 'sonner';
 
@@ -11,6 +11,7 @@ import { courseUpdateSchema, type CourseUpdateFormData } from './constants';
 
 export default function useConnect(courseSlug: string) {
   const queryClient = useQueryClient();
+  const [isLessonCreateOpen, setIsLessonCreateOpen] = useState(false);
 
   const form = useForm<CourseUpdateFormData>({
     resolver: zodResolver(courseUpdateSchema),
@@ -113,6 +114,23 @@ export default function useConnect(courseSlug: string) {
     });
   };
 
+  // Calculate next lesson number for new lessons
+  const nextLessonNumber = lessons
+    ? Math.max(0, ...lessons.map((l) => l.lessonNumber)) + 1
+    : 1;
+
+  const handleOpenLessonCreate = () => {
+    setIsLessonCreateOpen(true);
+  };
+
+  const handleCloseLessonCreate = (open: boolean) => {
+    setIsLessonCreateOpen(open);
+  };
+
+  const handleLessonCreateSuccess = () => {
+    refetchLessons();
+  };
+
   return {
     course,
     lessons,
@@ -126,5 +144,10 @@ export default function useConnect(courseSlug: string) {
     refetchLessons,
     isUpdating: updateCourseMutation.isPending,
     onSubmit,
+    isLessonCreateOpen,
+    nextLessonNumber,
+    handleOpenLessonCreate,
+    handleCloseLessonCreate,
+    handleLessonCreateSuccess,
   };
 }

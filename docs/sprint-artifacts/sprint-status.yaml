@@ -25,7 +25,7 @@ development_status:
   
   # Epic 3: Lesson Management 🎯 CURRENT
   3-1-display-lesson-list: review
-  3-2-create-new-lesson: ready
+  3-2-create-new-lesson: review
   3-3-edit-existing-lesson: backlog
   3-4-delete-lesson: backlog
   3-5-reorder-lessons-drag-drop: backlog
