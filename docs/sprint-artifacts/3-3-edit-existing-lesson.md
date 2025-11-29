@@ -1,6 +1,6 @@
 # Story 3.3: Edit Existing Lesson
 
-Status: ready-for-dev
+Status: review
 
 ## Story
 
@@ -39,45 +39,55 @@ so that I can correct errors or update content.
 
 ## Tasks / Subtasks
 
-- [ ] **Task 1: Create LessonEdit container structure** (AC: #1, #2)
-  - [ ] 1.1 Create `src/containers/Main/LessonEdit/` directory
-  - [ ] 1.2 Create `connect.ts` with form setup, pre-populated values, and mutation logic
-  - [ ] 1.3 Create `constants.ts` - reuse validation schema from LessonCreate
-  - [ ] 1.4 Create `types.ts` with LessonEditProps interface (including lesson data)
-  - [ ] 1.5 Create `index.tsx` with modal dialog and pre-populated form UI
+- [x] **Task 1: Create LessonEdit container structure** (AC: #1, #2)
+  - [x] 1.1 Create `src/containers/Main/LessonEdit/` directory
+  - [x] 1.2 Create `connect.ts` with form setup, pre-populated values, and mutation logic
+  - [x] 1.3 Create `constants.ts` - reuse validation schema from LessonCreate
+  - [x] 1.4 Create `types.ts` with LessonEditProps interface (including lesson data)
+  - [x] 1.5 Create `index.tsx` with modal dialog and pre-populated form UI
 
-- [ ] **Task 2: Implement form pre-population logic** (AC: #1, #2)
-  - [ ] 2.1 Accept `lesson` prop with current lesson data
-  - [ ] 2.2 Set form `defaultValues` from lesson data
-  - [ ] 2.3 Map lesson fields to form schema (handle field name differences if any)
-  - [ ] 2.4 Initialize tone dropdown with current lesson tone value
+- [x] **Task 2: Implement form pre-population logic** (AC: #1, #2)
+  - [x] 2.1 Accept `lesson` prop with current lesson data
+  - [x] 2.2 Set form `defaultValues` from lesson data
+  - [x] 2.3 Map lesson fields to form schema (handle field name differences if any)
+  - [x] 2.4 Initialize tone dropdown with current lesson tone value
 
-- [ ] **Task 3: Implement update mutation in connect.ts** (AC: #3, #5)
-  - [ ] 3.1 Implement `$api.useMutation('patch', '/api/lessons/{id}')`
-  - [ ] 3.2 Handle `onSuccess`: invalidate course query, show toast, close modal
-  - [ ] 3.3 Handle `onError`: show error toast with message
-  - [ ] 3.4 Implement dirty state check - skip API call if no changes (AC #5)
-  - [ ] 3.5 Compare current values vs default values to detect changes
+- [x] **Task 3: Implement update mutation in connect.ts** (AC: #3, #5)
+  - [x] 3.1 Implement `$api.useMutation('put', '/api/courses/{slug}/lessons/{id}')`
+  - [x] 3.2 Handle `onSuccess`: invalidate course query, show toast, close modal
+  - [x] 3.3 Handle `onError`: show error toast with message
+  - [x] 3.4 Implement dirty state check - skip API call if no changes (AC #5)
+  - [x] 3.5 Compare current values vs default values to detect changes
 
-- [ ] **Task 4: Implement validation and error handling** (AC: #4)
-  - [ ] 4.1 Reuse `lessonSchema` from LessonCreate/constants.ts
-  - [ ] 4.2 Configure `zodResolver` with same validation rules
-  - [ ] 4.3 Focus first invalid field on validation failure
-  - [ ] 4.4 Display inline errors using `FormMessage` component
+- [x] **Task 4: Implement validation and error handling** (AC: #4)
+  - [x] 4.1 Reuse `lessonSchema` from LessonCreate/constants.ts
+  - [x] 4.2 Configure `zodResolver` with same validation rules
+  - [x] 4.3 Focus first invalid field on validation failure
+  - [x] 4.4 Display inline errors using `FormMessage` component
 
-- [ ] **Task 5: Implement unsaved changes confirmation** (AC: #6)
-  - [ ] 5.1 Track dirty state with `formState.isDirty`
-  - [ ] 5.2 Intercept Cancel button click - show confirmation if dirty
-  - [ ] 5.3 Intercept Escape key - show confirmation if dirty
-  - [ ] 5.4 Intercept outside click - show confirmation if dirty
-  - [ ] 5.5 Reuse `AlertDialog` pattern from LessonCreate
+- [x] **Task 5: Implement unsaved changes confirmation** (AC: #6)
+  - [x] 5.1 Track dirty state with `formState.isDirty`
+  - [x] 5.2 Intercept Cancel button click - show confirmation if dirty
+  - [x] 5.3 Intercept Escape key - show confirmation if dirty
+  - [x] 5.4 Intercept outside click - show confirmation if dirty
+  - [x] 5.5 Reuse `AlertDialog` pattern from LessonCreate
 
-- [ ] **Task 6: Integrate with LessonListItem** (AC: #1)
-  - [ ] 6.1 Add `onEdit` callback prop to `LessonListItem` component
-  - [ ] 6.2 Connect edit button click to trigger onEdit with lesson data
-  - [ ] 6.3 Update `LessonList` to pass onEdit handler to each item
-  - [ ] 6.4 Update `CourseDetail/connect.ts` to manage LessonEdit modal state
-  - [ ] 6.5 Pass selected lesson data to LessonEdit modal
+- [x] **Task 6: Integrate with CourseDetail container** (AC: #1)
+  - [x] 6.1 LessonListItem already has `onEdit` callback prop wired up
+  - [x] 6.2 LessonList already passes onEdit handler to each item
+  - [x] 6.3 Update `CourseDetail/connect.ts` to manage LessonEdit modal state
+  - [x] 6.4 Pass selected lesson data to LessonEdit modal
+  - [x] 6.5 Wire up LessonEdit modal open/close handlers
+
+- [x] **Task 7: Testing and validation** (AC: #1-6)
+  - [x] 7.1 Run `bun typecheck` - passed
+  - [x] 7.2 Run `bun lint:fix` - passed
+  - [ ] 7.3 Manual test: modal opens with pre-populated data (all fields)
+  - [ ] 7.4 Manual test: form submission with valid changed data
+  - [ ] 7.5 Manual test: form submission with no changes (verify no API call)
+  - [ ] 7.6 Manual test: form submission with invalid data (verify inline errors)
+  - [ ] 7.7 Manual test: unsaved changes confirmation (Cancel, Escape, outside click)
+  - [ ] 7.8 Manual test: list updates after successful edit
 
 - [ ] **Task 7: Testing and validation** (AC: #1-6)
   - [ ] 7.1 Test modal opens with pre-populated data (all fields)
@@ -315,19 +325,38 @@ Per project testing standards:
 
 ### Agent Model Used
 
-<!-- Will be filled by dev agent -->
+Claude Opus 4.5 (Preview)
 
 ### Debug Log References
 
-<!-- Will be filled by dev agent -->
+None - implementation passed typecheck and lint on first attempt.
 
 ### Completion Notes List
 
-<!-- Will be filled by dev agent -->
+1. **Container Pattern Applied**: Created LessonEdit container following same pattern as LessonCreate - separate `connect.ts` for logic, `index.tsx` for UI, `types.ts` for interfaces, `constants.ts` re-exports from LessonCreate.
+
+2. **Schema Reuse**: `constants.ts` re-exports `lessonSchema`, `TONE_OPTIONS`, `LessonFormData`, and `ToneValue` from LessonCreate - no duplication.
+
+3. **Form Pre-population**: `defaultValues` in `useForm` populated from `lesson` prop with proper field mapping (camelCase to API snake_case).
+
+4. **Dirty State Optimization**: AC #5 implemented - `onSubmit` checks `isDirty` and closes modal without API call if no changes.
+
+5. **Unsaved Changes Dialog**: AC #6 implemented via `showDiscardDialog` state and `AlertDialog` - triggers on Cancel, Escape, and outside click via `onOpenChange` handler.
+
+6. **API Endpoint**: Used `PUT /api/courses/{slug}/lessons/{id}` as per OpenAPI spec (not PATCH as initially in story - corrected based on api.d.ts).
+
+7. **LessonList Integration**: `LessonListItem` already had `onEdit` prop from Story 3.1 - only needed to wire up CourseDetail state management.
+
+8. **Selected Lesson State**: Added `selectedLesson: Lesson | null` to CourseDetail connect to pass lesson data to edit modal.
 
 ### File List
 
-<!-- Will be filled by dev agent with NEW/MODIFIED/DELETED markers -->
+- NEW: `src/containers/Main/LessonEdit/types.ts` - LessonEditProps interface
+- NEW: `src/containers/Main/LessonEdit/constants.ts` - Re-exports from LessonCreate
+- NEW: `src/containers/Main/LessonEdit/connect.ts` - Form logic, mutation, dirty state handling
+- NEW: `src/containers/Main/LessonEdit/index.tsx` - Modal UI with form and AlertDialog
+- MODIFIED: `src/containers/Main/CourseDetail/connect.ts` - Added edit modal state and handlers
+- MODIFIED: `src/containers/Main/CourseDetail/index.tsx` - Added LessonEdit import and modal render
 
 ---
 
