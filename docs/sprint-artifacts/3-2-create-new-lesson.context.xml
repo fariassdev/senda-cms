@@ -1,0 +1,201 @@
+<story-context id="3-2-create-new-lesson" v="1.0">
+  <metadata>
+    <epicId>3</epicId>
+    <storyId>3.2</storyId>
+    <title>Create New Lesson</title>
+    <status>drafted</status>
+    <generatedAt>2025-11-29</generatedAt>
+    <generator>BMAD Story Context Workflow</generator>
+    <sourceStoryPath>docs/sprint-artifacts/3-2-create-new-lesson.md</sourceStoryPath>
+  </metadata>
+
+  <story>
+    <asA>Content Manager</asA>
+    <iWant>to add a new lesson to a course</iWant>
+    <soThat>I can expand the course content as needed</soThat>
+    <tasks>
+      <task id="1" title="Create LessonCreate container structure" acs="1,2">
+        <subtask id="1.1">Create `src/containers/Main/LessonCreate/` directory</subtask>
+        <subtask id="1.2">Create `connect.ts` with form setup and mutation logic</subtask>
+        <subtask id="1.3">Create `constants.ts` with Zod validation schema</subtask>
+        <subtask id="1.4">Create `types.ts` with local type definitions</subtask>
+        <subtask id="1.5">Create `index.tsx` with modal dialog and form UI</subtask>
+      </task>
+      <task id="2" title="Implement Zod validation schema" acs="2,4">
+        <subtask id="2.1">Define `lessonSchema` with all field validations</subtask>
+        <subtask id="2.2">Export `LessonFormData` type from schema inference</subtask>
+        <subtask id="2.3">Define tone options as const array for dropdown</subtask>
+      </task>
+      <task id="3" title="Implement form logic in connect.ts" acs="2,3,4">
+        <subtask id="3.1">Set up `useForm` with `zodResolver` and default values</subtask>
+        <subtask id="3.2">Implement `$api.useMutation('post', '/api/courses/{slug}/lessons')`</subtask>
+        <subtask id="3.3">Handle `onSuccess`: invalidate queries, show toast, close modal</subtask>
+        <subtask id="3.4">Handle `onError`: show error toast with message</subtask>
+        <subtask id="3.5">Implement dirty state tracking for unsaved changes warning</subtask>
+      </task>
+      <task id="4" title="Create modal dialog UI" acs="1,2,5,6">
+        <subtask id="4.1">Use `Dialog` from shadcn/ui as base component</subtask>
+        <subtask id="4.2">Implement form fields with `Form`, `FormField`, `FormItem`, `FormLabel`, `FormControl`, `FormMessage`</subtask>
+        <subtask id="4.3">Create tone `Select` dropdown with options</subtask>
+        <subtask id="4.4">Add "Cancel" and "Create Lesson" buttons with loading states</subtask>
+        <subtask id="4.5">Implement unsaved changes confirmation with `AlertDialog`</subtask>
+      </task>
+      <task id="5" title="Integrate with CourseDetail page" acs="1,3">
+        <subtask id="5.1">Add "Add Lesson" button to CourseDetail header (enable button from Story 3.1)</subtask>
+        <subtask id="5.2">Import and render `LessonCreate` modal with open/close state</subtask>
+        <subtask id="5.3">Pass `courseSlug` and `onSuccess` callback to modal</subtask>
+        <subtask id="5.4">Pass `nextLessonNumber` for automatic ordering</subtask>
+      </task>
+      <task id="6" title="Enable 'Add First Lesson' CTA in empty state" acs="1">
+        <subtask id="6.1">Update `LessonListEmpty.tsx` to enable the CTA button</subtask>
+        <subtask id="6.2">Connect CTA click to open LessonCreate modal</subtask>
+      </task>
+      <task id="7" title="Testing and validation" acs="1-6">
+        <subtask id="7.1">Test form submission with valid data (verify lesson appears in list)</subtask>
+        <subtask id="7.2">Test form submission with invalid data (verify inline errors)</subtask>
+        <subtask id="7.3">Test modal close behaviors (Cancel, Escape, outside click)</subtask>
+        <subtask id="7.4">Test unsaved changes confirmation dialog</subtask>
+        <subtask id="7.5">Run `bun typecheck` and `bun lint:fix`</subtask>
+      </task>
+    </tasks>
+  </story>
+
+  <acceptanceCriteria>
+    <criterion id="1">Given I am on the course detail page, When I click the "Add Lesson" button, Then a modal dialog opens with a creation form.</criterion>
+    <criterion id="2">Given the lesson creation modal is open, Then the form includes: Title (required, min 3 characters, max 100), Duration in minutes (required, number input, min 1, max 120), Core Practice (required, describes the main meditation practice), Key Point (required, the central learning outcome), Tone (required, dropdown: Calming, Energizing, Neutral, Guided Visualization).</criterion>
+    <criterion id="3">Given I complete the form with valid data and click "Create Lesson", Then: The lesson is created with status PENDING, The lesson appears at the end of the lesson list, A success toast shows: "Lesson created successfully", The modal closes automatically.</criterion>
+    <criterion id="4">Given I submit the form with invalid data, Then: Inline validation errors appear below each invalid field, The form does not submit, Focus moves to the first invalid field.</criterion>
+    <criterion id="5">Given I click outside the modal or press Escape, Then: The modal closes without saving, If I had entered data, a confirmation dialog appears: "Discard changes?".</criterion>
+    <criterion id="6">Given I click the "Cancel" button in the modal, Then: If no changes made, modal closes immediately, If changes made, confirmation dialog appears: "Discard changes?".</criterion>
+  </acceptanceCriteria>
+
+  <artifacts>
+    <docs>
+      <doc path="docs/architecture.md" title="Architecture Document" section="Container Pattern" snippet="Container Pattern: connect.ts handles ALL business logic, data fetching, form handling. index.tsx is purely presentational. No business logic in component files." />
+      <doc path="docs/architecture.md" title="Architecture Document" section="Form Management" snippet="Form Management: React Hook Form + Zod for declarative forms with schema validation. Use zodResolver for React Hook Form integration." />
+      <doc path="docs/architecture.md" title="Architecture Document" section="OpenAPI-First" snippet="All API interactions use openapi-react-query with auto-generated types. Use $api.useMutation for POST/PUT/DELETE operations." />
+      <doc path="docs/ux-design-specification.md" title="UX Design Specification" section="Modal Patterns" snippet="Medium modals: 600px max-width (default for most forms). Dismiss via click outside, Escape key, or close button. Focus first input on open." />
+      <doc path="docs/ux-design-specification.md" title="UX Design Specification" section="Form Patterns" snippet="Labels above input (stacked). Required fields with asterisk (*). Validation on blur. Red border + error message below for errors." />
+      <doc path="docs/ux-design-specification.md" title="UX Design Specification" section="Button Hierarchy" snippet="Primary: Solid cyan (#7dcfff) for main actions like 'Create Lesson'. Secondary: Transparent with cyan border for 'Cancel'." />
+      <doc path="docs/ux-design-specification.md" title="UX Design Specification" section="Feedback Patterns" snippet="Success toast: Green background, 4s auto-dismiss. On successful mutation, show toast and navigate/close modal." />
+      <doc path="docs/epics.md" title="Epics Document" section="Story 3.2" snippet="Create New Lesson story: Modal dialog for lesson creation with title, duration, core practice, key point, and tone fields." />
+      <doc path="docs/sprint-artifacts/3-1-display-lesson-list.md" title="Story 3.1 Implementation" section="Dev Agent Record" snippet="Story 3.1 created: StatusBadge, LessonListItem, LessonList, LessonListEmpty components. LessonListEmpty has disabled 'Add First Lesson' button." />
+      <doc path=".github/copilot-instructions.md" title="Copilot Instructions" section="Adding a New Container" snippet="Container structure: index.tsx (view), connect.ts (data logic), types.ts (local types), constants.ts (Zod schemas). Use $api hooks from @/lib/api." />
+    </docs>
+    <code>
+      <file path="src/containers/Main/CourseDetail/connect.ts" kind="container-hook" symbol="useConnect" lines="1-111" reason="Primary hook for CourseDetail page. Need to integrate lesson creation modal state and pass callbacks. Already has lessons query that needs cache invalidation on create." />
+      <file path="src/containers/Main/CourseDetail/index.tsx" kind="container-view" symbol="CourseDetail" lines="1-327" reason="Main component where 'Add Lesson' button and LessonCreate modal will be rendered. Currently has LessonList integrated." />
+      <file path="src/components/LessonListEmpty.tsx" kind="component" symbol="LessonListEmpty" lines="1-27" reason="Empty state component with disabled 'Add First Lesson' button. Needs to accept onAddLesson callback and enable the button." />
+      <file path="src/lib/api.ts" kind="utility" symbol="$api" reason="OpenAPI client for mutations. Use $api.useMutation('post', '/api/courses/{slug}/lessons')." />
+      <file path="src/lib/utils.ts" kind="utility" symbol="cn, formatTimestamp" lines="1-24" reason="Utility functions including cn() for className merging." />
+      <file path="src/types/models.ts" kind="types" symbol="Lesson, CreateLessonData" lines="1-18" reason="Type exports for Lesson and CreateLessonData schemas from OpenAPI." />
+      <file path="src/containers/Main/CourseCreate/constants.ts" kind="reference" symbol="courseSchema" reason="Reference for Zod schema pattern used in other containers. Follow same pattern for lessonSchema." />
+      <file path="src/containers/Main/CourseCreate/connect.ts" kind="reference" symbol="useConnect" reason="Reference for mutation pattern with toast notifications and query invalidation." />
+      <file path="src/components/ui/dialog.tsx" kind="shadcn-component" symbol="Dialog, DialogContent, DialogHeader" reason="shadcn/ui Dialog component for modal implementation." />
+      <file path="src/components/ui/form.tsx" kind="shadcn-component" symbol="Form, FormField, FormItem" reason="shadcn/ui Form components for React Hook Form integration." />
+      <file path="src/components/ui/select.tsx" kind="shadcn-component" symbol="Select, SelectTrigger, SelectValue" reason="shadcn/ui Select component for tone dropdown." />
+    </code>
+    <dependencies>
+      <package name="react-hook-form" version="7.63.0" purpose="Form state management with minimal re-renders" />
+      <package name="@hookform/resolvers" version="5.2.2" purpose="Zod resolver for React Hook Form" />
+      <package name="zod" version="4.1.11" purpose="Schema validation for form data" />
+      <package name="sonner" version="2.0.7" purpose="Toast notifications for success/error feedback" />
+      <package name="@tanstack/react-query" version="5.90.2" purpose="Query client for cache invalidation" />
+      <package name="openapi-react-query" version="0.5.0" purpose="Auto-generated React Query hooks from OpenAPI" />
+      <package name="lucide-react" version="0.544.0" purpose="Icons: Plus, Loader2, X for modal and buttons" />
+      <package name="@radix-ui/react-dialog" version="1.1.15" purpose="Dialog primitive used by shadcn/ui Dialog" />
+      <package name="@radix-ui/react-select" version="2.2.6" purpose="Select primitive used by shadcn/ui Select" />
+    </dependencies>
+  </artifacts>
+
+  <constraints>
+    <constraint type="architecture">Follow Container Pattern: connect.ts for ALL logic, index.tsx purely presentational</constraint>
+    <constraint type="architecture">Use OpenAPI-first approach: $api.useMutation for lesson creation, never manual fetch</constraint>
+    <constraint type="architecture">Types from @/types/models (Lesson, CreateLessonData), NOT directly from api.d.ts</constraint>
+    <constraint type="code-style">Use interface over type for object shapes</constraint>
+    <constraint type="code-style">Single quotes for strings, consistent type imports (import type { X } from 'y')</constraint>
+    <constraint type="code-style">Tailwind classes inline, no CSS modules</constraint>
+    <constraint type="validation">Form validation with Zod schemas defined in constants.ts</constraint>
+    <constraint type="mutation">On successful mutation: invalidate queries with queryClient.invalidateQueries()</constraint>
+    <constraint type="ux">Toast notifications via sonner: toast.success() and toast.error()</constraint>
+    <constraint type="ux">Modal focus management: auto-focus first input on open, trap focus within modal</constraint>
+    <constraint type="accessibility">All form fields must have proper labels and error associations</constraint>
+    <constraint type="accessibility">Button aria-labels for icon-only buttons</constraint>
+    <constraint type="testing">Run bun typecheck and bun lint:fix before marking complete</constraint>
+  </constraints>
+
+  <interfaces>
+    <interface name="CreateLessonEndpoint" kind="REST" path="POST /api/courses/{slug}/lessons">
+      <request>
+        <body>
+          {
+            "lesson": {
+              "lesson_number": number,
+              "title": string,
+              "core_practice": string,
+              "key_point": string,
+              "tone": string,
+              "duration_minutes": number
+            }
+          }
+        </body>
+      </request>
+      <response status="201">
+        {
+          "lesson": LessonData
+        }
+      </response>
+    </interface>
+    <interface name="LessonData" kind="schema" path="src/types/api.d.ts">
+      <definition>
+        {
+          id: number;
+          lessonNumber: number;
+          title: string;
+          corePractice: string;
+          keyPoint: string;
+          tone: string;
+          durationMinutes: number;
+          status: string;  // "PENDING" for new lessons
+          script?: Record&lt;string, never&gt; | null;
+          audioUrl: string | null;
+          scriptGeneratedAt: string | null;
+          audioGeneratedAt: string | null;
+          createdAt: string;
+          updatedAt: string;
+        }
+      </definition>
+    </interface>
+    <interface name="CreateLessonData" kind="schema" path="src/types/api.d.ts">
+      <definition>
+        {
+          lesson_number: number;
+          title: string;
+          core_practice: string;
+          key_point: string;
+          tone: string;
+          duration_minutes: number;
+        }
+      </definition>
+    </interface>
+  </interfaces>
+
+  <tests>
+    <standards>Project uses TypeScript strict mode with noUncheckedIndexedAccess. Pre-commit hooks run ESLint and Prettier. Manual testing required for UI interactions. Run bun typecheck for type validation and bun lint:fix for linting.</standards>
+    <locations>
+      <location>Manual testing via dev server (bun dev)</location>
+      <location>Type checking via bun typecheck</location>
+      <location>Linting via bun lint:fix</location>
+    </locations>
+    <ideas>
+      <idea acId="1">Test: Click "Add Lesson" button opens modal with form</idea>
+      <idea acId="2">Test: Verify all 5 form fields render with correct labels and validation rules</idea>
+      <idea acId="3">Test: Submit valid form data, verify lesson appears in list with PENDING status and toast shows</idea>
+      <idea acId="4">Test: Submit invalid data (empty title, duration 0), verify inline errors appear and form doesn't submit</idea>
+      <idea acId="5">Test: Enter data then click outside modal, verify confirmation dialog appears</idea>
+      <idea acId="6">Test: Click Cancel with no changes (modal closes) vs with changes (confirmation shows)</idea>
+      <idea acId="3">Test: Verify new lesson appears at end of list with correct lessonNumber</idea>
+      <idea acId="all">Test: Keyboard navigation through form fields and modal controls</idea>
+    </ideas>
+  </tests>
+</story-context>

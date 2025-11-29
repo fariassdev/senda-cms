@@ -25,7 +25,7 @@ development_status:
   
   # Epic 3: Lesson Management 🎯 CURRENT
   3-1-display-lesson-list: review
-  3-2-create-new-lesson: backlog
+  3-2-create-new-lesson: ready
   3-3-edit-existing-lesson: backlog
   3-4-delete-lesson: backlog
   3-5-reorder-lessons-drag-drop: backlog
@@ -73,5 +73,5 @@ sprint_total: 6
 # Overall progress
 total_stories: 25
 stories_done: 0
-stories_in_progress: 0
-stories_backlog: 24
+stories_in_progress: 1
+stories_backlog: 23
