@@ -1,0 +1,730 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Senda CMS - Color Theme Explorer</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
+            background: #0f1419;
+            color: #e1e8ed;
+            padding: 2rem;
+        }
+
+        .header {
+            text-align: center;
+            margin-bottom: 3rem;
+        }
+
+        .header h1 {
+            font-size: 2.5rem;
+            margin-bottom: 0.5rem;
+            background: linear-gradient(135deg, #00d4ff, #00a8cc);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+
+        .header p {
+            color: #8899a6;
+            font-size: 1.1rem;
+        }
+
+        .theme-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(500px, 1fr));
+            gap: 2rem;
+            margin-bottom: 3rem;
+        }
+
+        .theme-card {
+            background: #1a2b3c;
+            border-radius: 16px;
+            padding: 2rem;
+            border: 2px solid transparent;
+            transition: all 0.3s ease;
+        }
+
+        .theme-card:hover {
+            border-color: #00d4ff;
+            transform: translateY(-4px);
+            box-shadow: 0 8px 32px rgba(0, 212, 255, 0.15);
+        }
+
+        .theme-name {
+            font-size: 1.5rem;
+            font-weight: 600;
+            margin-bottom: 0.5rem;
+        }
+
+        .theme-description {
+            color: #8899a6;
+            margin-bottom: 1.5rem;
+            font-size: 0.95rem;
+        }
+
+        .color-palette {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(100px, 1fr));
+            gap: 1rem;
+            margin-bottom: 2rem;
+        }
+
+        .color-swatch {
+            text-align: center;
+        }
+
+        .color-box {
+            width: 100%;
+            height: 80px;
+            border-radius: 8px;
+            margin-bottom: 0.5rem;
+            border: 1px solid rgba(255,255,255,0.1);
+            position: relative;
+            cursor: pointer;
+            transition: transform 0.2s ease;
+        }
+
+        .color-box:hover {
+            transform: scale(1.05);
+        }
+
+        .color-label {
+            font-size: 0.75rem;
+            font-weight: 500;
+            margin-bottom: 0.25rem;
+            color: #e1e8ed;
+        }
+
+        .color-value {
+            font-size: 0.7rem;
+            color: #8899a6;
+            font-family: 'Courier New', monospace;
+        }
+
+        .components-demo {
+            margin-top: 2rem;
+        }
+
+        .demo-section {
+            margin-bottom: 2rem;
+        }
+
+        .demo-title {
+            font-size: 0.9rem;
+            font-weight: 600;
+            color: #8899a6;
+            text-transform: uppercase;
+            letter-spacing: 0.05em;
+            margin-bottom: 1rem;
+        }
+
+        /* Buttons */
+        .button-group {
+            display: flex;
+            gap: 1rem;
+            flex-wrap: wrap;
+        }
+
+        .btn {
+            padding: 0.75rem 1.5rem;
+            border-radius: 8px;
+            border: none;
+            font-weight: 500;
+            font-size: 0.95rem;
+            cursor: pointer;
+            transition: all 0.2s ease;
+            display: inline-flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        .btn-primary {
+            background: var(--primary);
+            color: var(--primary-contrast);
+        }
+
+        .btn-primary:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 4px 12px rgba(0, 212, 255, 0.4);
+        }
+
+        .btn-secondary {
+            background: transparent;
+            color: var(--primary);
+            border: 2px solid var(--primary);
+        }
+
+        .btn-secondary:hover {
+            background: var(--primary);
+            color: var(--primary-contrast);
+        }
+
+        .btn-danger {
+            background: var(--error);
+            color: white;
+        }
+
+        .btn-disabled {
+            background: #2a3f54;
+            color: #5a6d7f;
+            cursor: not-allowed;
+        }
+
+        /* Cards */
+        .card {
+            background: var(--card-bg);
+            border-radius: 12px;
+            padding: 1.5rem;
+            border: 1px solid var(--border);
+            margin-bottom: 1rem;
+        }
+
+        .card-title {
+            font-size: 1.1rem;
+            font-weight: 600;
+            margin-bottom: 0.5rem;
+        }
+
+        .card-description {
+            color: #8899a6;
+            font-size: 0.9rem;
+            margin-bottom: 1rem;
+        }
+
+        .progress-bar {
+            width: 100%;
+            height: 8px;
+            background: #2a3f54;
+            border-radius: 4px;
+            overflow: hidden;
+            margin-bottom: 0.5rem;
+        }
+
+        .progress-fill {
+            height: 100%;
+            background: var(--primary);
+            border-radius: 4px;
+            transition: width 0.3s ease;
+        }
+
+        .progress-info {
+            display: flex;
+            justify-content: space-between;
+            font-size: 0.85rem;
+            color: #8899a6;
+        }
+
+        /* Status badges */
+        .badge {
+            display: inline-block;
+            padding: 0.35rem 0.75rem;
+            border-radius: 6px;
+            font-size: 0.8rem;
+            font-weight: 500;
+            margin-right: 0.5rem;
+        }
+
+        .badge-success {
+            background: rgba(34, 197, 94, 0.15);
+            color: #22c55e;
+            border: 1px solid rgba(34, 197, 94, 0.3);
+        }
+
+        .badge-warning {
+            background: rgba(251, 146, 60, 0.15);
+            color: #fb923c;
+            border: 1px solid rgba(251, 146, 60, 0.3);
+        }
+
+        .badge-error {
+            background: rgba(239, 68, 68, 0.15);
+            color: #ef4444;
+            border: 1px solid rgba(239, 68, 68, 0.3);
+        }
+
+        .badge-info {
+            background: rgba(59, 130, 246, 0.15);
+            color: #3b82f6;
+            border: 1px solid rgba(59, 130, 246, 0.3);
+        }
+
+        /* Forms */
+        .form-group {
+            margin-bottom: 1.5rem;
+        }
+
+        .form-label {
+            display: block;
+            margin-bottom: 0.5rem;
+            font-weight: 500;
+            font-size: 0.9rem;
+        }
+
+        .form-input {
+            width: 100%;
+            padding: 0.75rem;
+            background: #0f1419;
+            border: 2px solid #2a3f54;
+            border-radius: 8px;
+            color: #e1e8ed;
+            font-size: 0.95rem;
+            transition: all 0.2s ease;
+        }
+
+        .form-input:focus {
+            outline: none;
+            border-color: var(--primary);
+            box-shadow: 0 0 0 3px rgba(0, 212, 255, 0.1);
+        }
+
+        .form-input.error {
+            border-color: var(--error);
+        }
+
+        .form-error {
+            color: var(--error);
+            font-size: 0.85rem;
+            margin-top: 0.5rem;
+        }
+
+        /* Comparison Toggle */
+        .comparison-toggle {
+            position: fixed;
+            top: 2rem;
+            right: 2rem;
+            background: #1a2b3c;
+            padding: 1rem;
+            border-radius: 12px;
+            border: 2px solid #00d4ff;
+            z-index: 1000;
+        }
+
+        .comparison-toggle label {
+            display: block;
+            margin-bottom: 0.5rem;
+            font-size: 0.9rem;
+            font-weight: 600;
+        }
+
+        .comparison-toggle select {
+            padding: 0.5rem;
+            background: #0f1419;
+            color: #e1e8ed;
+            border: 1px solid #2a3f54;
+            border-radius: 6px;
+            font-size: 0.9rem;
+        }
+
+        /* Theme Variables */
+        .theme-1 {
+            --background: #0f1419;
+            --card-bg: #1a2b3c;
+            --border: #2a3f54;
+            --primary: #00d4ff;
+            --primary-contrast: #0f1419;
+            --success: #22c55e;
+            --warning: #fb923c;
+            --error: #ef4444;
+            --info: #3b82f6;
+        }
+
+        .theme-2 {
+            --background: #111827;
+            --card-bg: #1f2937;
+            --border: #374151;
+            --primary: #06b6d4;
+            --primary-contrast: #111827;
+            --success: #10b981;
+            --warning: #f59e0b;
+            --error: #f87171;
+            --info: #60a5fa;
+        }
+
+        .theme-3 {
+            --background: #0a0e27;
+            --card-bg: #151b3d;
+            --border: #1e2749;
+            --primary: #00e5ff;
+            --primary-contrast: #0a0e27;
+            --success: #4ade80;
+            --warning: #fbbf24;
+            --error: #fc8181;
+            --info: #38bdf8;
+        }
+
+        .theme-4 {
+            --background: #1a1d29;
+            --card-bg: #24283b;
+            --border: #343b58;
+            --primary: #7dcfff;
+            --primary-contrast: #1a1d29;
+            --success: #9ece6a;
+            --warning: #e0af68;
+            --error: #f7768e;
+            --info: #7aa2f7;
+        }
+
+        @media (max-width: 768px) {
+            .theme-grid {
+                grid-template-columns: 1fr;
+            }
+            
+            .comparison-toggle {
+                position: static;
+                margin-bottom: 2rem;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="header">
+        <h1>🎨 Senda CMS Color Themes</h1>
+        <p>Explora diferentes variaciones de la paleta oscura + cyan. Haz clic en los colores para copiar el código hex.</p>
+    </div>
+
+    <div class="theme-grid">
+        <!-- Theme 1: Original Mockup Style -->
+        <div class="theme-card theme-1">
+            <h2 class="theme-name">🌊 Meditation Dark (Recomendado)</h2>
+            <p class="theme-description">Basado directamente en tus mockups - Dark teal calmado con cyan vibrante. Perfecto para contenido de meditación.</p>
+            
+            <div class="color-palette">
+                <div class="color-swatch">
+                    <div class="color-box" style="background: #0f1419" onclick="copyColor('#0f1419')"></div>
+                    <div class="color-label">Background</div>
+                    <div class="color-value">#0f1419</div>
+                </div>
+                <div class="color-swatch">
+                    <div class="color-box" style="background: #1a2b3c" onclick="copyColor('#1a2b3c')"></div>
+                    <div class="color-label">Card</div>
+                    <div class="color-value">#1a2b3c</div>
+                </div>
+                <div class="color-swatch">
+                    <div class="color-box" style="background: #00d4ff" onclick="copyColor('#00d4ff')"></div>
+                    <div class="color-label">Primary</div>
+                    <div class="color-value">#00d4ff</div>
+                </div>
+                <div class="color-swatch">
+                    <div class="color-box" style="background: #22c55e" onclick="copyColor('#22c55e')"></div>
+                    <div class="color-label">Success</div>
+                    <div class="color-value">#22c55e</div>
+                </div>
+                <div class="color-swatch">
+                    <div class="color-box" style="background: #fb923c" onclick="copyColor('#fb923c')"></div>
+                    <div class="color-label">Warning</div>
+                    <div class="color-value">#fb923c</div>
+                </div>
+                <div class="color-swatch">
+                    <div class="color-box" style="background: #ef4444" onclick="copyColor('#ef4444')"></div>
+                    <div class="color-label">Error</div>
+                    <div class="color-value">#ef4444</div>
+                </div>
+            </div>
+
+            <div class="components-demo">
+                <div class="demo-section">
+                    <div class="demo-title">Botones</div>
+                    <div class="button-group">
+                        <button class="btn btn-primary">✨ Generate with AI</button>
+                        <button class="btn btn-secondary">Add New Lesson</button>
+                        <button class="btn btn-danger">Delete Course</button>
+                        <button class="btn btn-disabled">Processing...</button>
+                    </div>
+                </div>
+
+                <div class="demo-section">
+                    <div class="demo-title">Course Card</div>
+                    <div class="card">
+                        <div class="card-title">Mindfulness for Beginners</div>
+                        <div class="card-description">A 10-day introduction to the core principles of mindfulness meditation.</div>
+                        <div class="progress-bar">
+                            <div class="progress-fill" style="width: 75%"></div>
+                        </div>
+                        <div class="progress-info">
+                            <span>Generation Progress</span>
+                            <span>75%</span>
+                        </div>
+                        <div style="margin-top: 1rem;">
+                            <span class="badge badge-success">Published</span>
+                            <span style="color: #8899a6; font-size: 0.85rem;">Updated 2 days ago</span>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="demo-section">
+                    <div class="demo-title">Status Badges</div>
+                    <div>
+                        <span class="badge badge-success">Published</span>
+                        <span class="badge badge-warning">In Progress</span>
+                        <span class="badge badge-error">Error</span>
+                        <span class="badge badge-info">Processing Audio</span>
+                    </div>
+                </div>
+
+                <div class="demo-section">
+                    <div class="demo-title">Form Input</div>
+                    <div class="form-group">
+                        <label class="form-label">Course Title *</label>
+                        <input type="text" class="form-input" placeholder="e.g., Introduction to Mindfulness" value="Deep Sleep Hypnosis">
+                    </div>
+                    <div class="form-group">
+                        <label class="form-label">Key Themes/Keywords</label>
+                        <input type="text" class="form-input error" value="focus, breathing, body scan">
+                        <div class="form-error">Please add at least 3 keywords</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Theme 2: Softer Cyan -->
+        <div class="theme-card theme-2">
+            <h2 class="theme-name">🌙 Softer Cyan</h2>
+            <p class="theme-description">Versión más suave - Cyan menos intenso para una experiencia aún más relajante.</p>
+            
+            <div class="color-palette">
+                <div class="color-swatch">
+                    <div class="color-box" style="background: #111827" onclick="copyColor('#111827')"></div>
+                    <div class="color-label">Background</div>
+                    <div class="color-value">#111827</div>
+                </div>
+                <div class="color-swatch">
+                    <div class="color-box" style="background: #1f2937" onclick="copyColor('#1f2937')"></div>
+                    <div class="color-label">Card</div>
+                    <div class="color-value">#1f2937</div>
+                </div>
+                <div class="color-swatch">
+                    <div class="color-box" style="background: #06b6d4" onclick="copyColor('#06b6d4')"></div>
+                    <div class="color-label">Primary</div>
+                    <div class="color-value">#06b6d4</div>
+                </div>
+                <div class="color-swatch">
+                    <div class="color-box" style="background: #10b981" onclick="copyColor('#10b981')"></div>
+                    <div class="color-label">Success</div>
+                    <div class="color-value">#10b981</div>
+                </div>
+                <div class="color-swatch">
+                    <div class="color-box" style="background: #f59e0b" onclick="copyColor('#f59e0b')"></div>
+                    <div class="color-label">Warning</div>
+                    <div class="color-value">#f59e0b</div>
+                </div>
+                <div class="color-swatch">
+                    <div class="color-box" style="background: #f87171" onclick="copyColor('#f87171')"></div>
+                    <div class="color-label">Error</div>
+                    <div class="color-value">#f87171</div>
+                </div>
+            </div>
+
+            <div class="components-demo">
+                <div class="demo-section">
+                    <div class="demo-title">Botones</div>
+                    <div class="button-group">
+                        <button class="btn btn-primary">✨ Generate with AI</button>
+                        <button class="btn btn-secondary">Add New Lesson</button>
+                    </div>
+                </div>
+
+                <div class="demo-section">
+                    <div class="card">
+                        <div class="card-title">Stress Reduction Series</div>
+                        <div class="card-description">A comprehensive series for managing daily stress and building resilience.</div>
+                        <div class="progress-bar">
+                            <div class="progress-fill" style="width: 33%"></div>
+                        </div>
+                        <div class="progress-info">
+                            <span>Generation Progress</span>
+                            <span>33%</span>
+                        </div>
+                        <div style="margin-top: 1rem;">
+                            <span class="badge badge-warning">In Progress</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Theme 3: Electric Cyan -->
+        <div class="theme-card theme-3">
+            <h2 class="theme-name">⚡ Electric Cyan</h2>
+            <p class="theme-description">Cyan más brillante y energético - para una interfaz más dinámica y moderna.</p>
+            
+            <div class="color-palette">
+                <div class="color-swatch">
+                    <div class="color-box" style="background: #0a0e27" onclick="copyColor('#0a0e27')"></div>
+                    <div class="color-label">Background</div>
+                    <div class="color-value">#0a0e27</div>
+                </div>
+                <div class="color-swatch">
+                    <div class="color-box" style="background: #151b3d" onclick="copyColor('#151b3d')"></div>
+                    <div class="color-label">Card</div>
+                    <div class="color-value">#151b3d</div>
+                </div>
+                <div class="color-swatch">
+                    <div class="color-box" style="background: #00e5ff" onclick="copyColor('#00e5ff')"></div>
+                    <div class="color-label">Primary</div>
+                    <div class="color-value">#00e5ff</div>
+                </div>
+                <div class="color-swatch">
+                    <div class="color-box" style="background: #4ade80" onclick="copyColor('#4ade80')"></div>
+                    <div class="color-label">Success</div>
+                    <div class="color-value">#4ade80</div>
+                </div>
+                <div class="color-swatch">
+                    <div class="color-box" style="background: #fbbf24" onclick="copyColor('#fbbf24')"></div>
+                    <div class="color-label">Warning</div>
+                    <div class="color-value">#fbbf24</div>
+                </div>
+                <div class="color-swatch">
+                    <div class="color-box" style="background: #fc8181" onclick="copyColor('#fc8181')"></div>
+                    <div class="color-label">Error</div>
+                    <div class="color-value">#fc8181</div>
+                </div>
+            </div>
+
+            <div class="components-demo">
+                <div class="demo-section">
+                    <div class="demo-title">Botones</div>
+                    <div class="button-group">
+                        <button class="btn btn-primary">✨ Generate with AI</button>
+                        <button class="btn btn-secondary">Add New Lesson</button>
+                    </div>
+                </div>
+
+                <div class="demo-section">
+                    <div class="card">
+                        <div class="card-title">Anxiety Relief</div>
+                        <div class="card-description">Learn techniques to manage anxiety with these guided sessions.</div>
+                        <div class="progress-bar">
+                            <div class="progress-fill" style="width: 100%"></div>
+                        </div>
+                        <div class="progress-info">
+                            <span>Generation Progress</span>
+                            <span>100%</span>
+                        </div>
+                        <div style="margin-top: 1rem;">
+                            <span class="badge badge-success">Published</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Theme 4: Tokyo Night -->
+        <div class="theme-card theme-4">
+            <h2 class="theme-name">🌃 Tokyo Night</h2>
+            <p class="theme-description">Inspirado en el popular tema de código - Tonos azul-púrpura con cyan más pastel.</p>
+            
+            <div class="color-palette">
+                <div class="color-swatch">
+                    <div class="color-box" style="background: #1a1d29" onclick="copyColor('#1a1d29')"></div>
+                    <div class="color-label">Background</div>
+                    <div class="color-value">#1a1d29</div>
+                </div>
+                <div class="color-swatch">
+                    <div class="color-box" style="background: #24283b" onclick="copyColor('#24283b')"></div>
+                    <div class="color-label">Card</div>
+                    <div class="color-value">#24283b</div>
+                </div>
+                <div class="color-swatch">
+                    <div class="color-box" style="background: #7dcfff" onclick="copyColor('#7dcfff')"></div>
+                    <div class="color-label">Primary</div>
+                    <div class="color-value">#7dcfff</div>
+                </div>
+                <div class="color-swatch">
+                    <div class="color-box" style="background: #9ece6a" onclick="copyColor('#9ece6a')"></div>
+                    <div class="color-label">Success</div>
+                    <div class="color-value">#9ece6a</div>
+                </div>
+                <div class="color-swatch">
+                    <div class="color-box" style="background: #e0af68" onclick="copyColor('#e0af68')"></div>
+                    <div class="color-label">Warning</div>
+                    <div class="color-value">#e0af68</div>
+                </div>
+                <div class="color-swatch">
+                    <div class="color-box" style="background: #f7768e" onclick="copyColor('#f7768e')"></div>
+                    <div class="color-label">Error</div>
+                    <div class="color-value">#f7768e</div>
+                </div>
+            </div>
+
+            <div class="components-demo">
+                <div class="demo-section">
+                    <div class="demo-title">Botones</div>
+                    <div class="button-group">
+                        <button class="btn btn-primary">✨ Generate with AI</button>
+                        <button class="btn btn-secondary">Add New Lesson</button>
+                    </div>
+                </div>
+
+                <div class="demo-section">
+                    <div class="card">
+                        <div class="card-title">Focus & Concentration</div>
+                        <div class="card-description">Improve your focus with these specially designed meditation tracks.</div>
+                        <div class="progress-bar">
+                            <div class="progress-fill" style="width: 100%"></div>
+                        </div>
+                        <div class="progress-info">
+                            <span>Generation Progress</span>
+                            <span>100%</span>
+                        </div>
+                        <div style="margin-top: 1rem;">
+                            <span class="badge badge-success">Published</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div style="text-align: center; margin-top: 3rem; padding: 2rem; background: #1a2b3c; border-radius: 12px;">
+        <h3 style="margin-bottom: 1rem;">💡 Instrucciones</h3>
+        <p style="color: #8899a6; max-width: 600px; margin: 0 auto;">
+            Haz clic en cualquier color para copiar su código hex al portapapeles. 
+            Explora cada tema interactuando con los componentes. 
+            <strong style="color: #00d4ff;">El Tema 1 "Meditation Dark"</strong> está basado directamente en tus mockups.
+        </p>
+    </div>
+
+    <script>
+        function copyColor(color) {
+            navigator.clipboard.writeText(color).then(() => {
+                // Show temporary feedback
+                const notification = document.createElement('div');
+                notification.textContent = `Copiado: ${color}`;
+                notification.style.cssText = `
+                    position: fixed;
+                    top: 50%;
+                    left: 50%;
+                    transform: translate(-50%, -50%);
+                    background: #00d4ff;
+                    color: #0f1419;
+                    padding: 1rem 2rem;
+                    border-radius: 8px;
+                    font-weight: 600;
+                    z-index: 10000;
+                    animation: fadeInOut 1.5s ease-in-out;
+                `;
+                document.body.appendChild(notification);
+                setTimeout(() => notification.remove(), 1500);
+            });
+        }
+
+        // Add CSS animation
+        const style = document.createElement('style');
+        style.textContent = `
+            @keyframes fadeInOut {
+                0%, 100% { opacity: 0; transform: translate(-50%, -50%) scale(0.8); }
+                50% { opacity: 1; transform: translate(-50%, -50%) scale(1); }
+            }
+        `;
+        document.head.appendChild(style);
+    </script>
+</body>
+</html>

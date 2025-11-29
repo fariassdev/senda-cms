@@ -1,0 +1,136 @@
+# Workflow Status - BMad Method
+# This tracks progress through BMM methodology Analysis, Planning, and Solutioning phases.
+# Implementation phase is tracked separately in sprint-status.yaml
+
+# STATUS DEFINITIONS:
+# ==================
+# Initial Status (before completion):
+#   - required: Must be completed to progress
+#   - optional: Can be completed but not required
+#   - recommended: Strongly suggested but not required
+#   - conditional: Required only if certain conditions met (e.g., if_has_ui)
+#
+# Completion Status:
+#   - {file-path}: File created/found (e.g., "docs/product-brief.md")
+#   - skipped: Optional/conditional workflow that was skipped
+
+generated: "2025-11-28"
+project: "senda-cms"
+project_type: "Meditation course management system"
+selected_track: "bmad-method"
+field_type: "brownfield"
+workflow_path: ".bmad/bmm/workflows/workflow-status/paths/method-brownfield.yaml"
+
+workflow_status:
+  # PREREQUISITE: Documentation (for brownfield)
+  - workflow: "document-project"
+    phase: "prerequisite"
+    status: "skipped"
+    required: true
+    conditional: "if_undocumented"
+    agent: "analyst"
+    command: "*document-project"
+    note: "Project already documented via implementation-roadmap.md and existing code"
+
+  # PHASE 0: Discovery (Optional)
+  - workflow: "brainstorm-project"
+    phase: 0
+    status: "optional"
+    optional: true
+    agent: "analyst"
+    command: "*brainstorm-project"
+    note: "Optional creative exploration - not selected"
+
+  - workflow: "research"
+    phase: 0
+    status: "optional"
+    optional: true
+    agent: "analyst"
+    command: "*research"
+    note: "Optional domain analysis - not selected"
+
+  - workflow: "product-brief"
+    phase: 0
+    status: "optional"
+    optional: true
+    agent: "analyst"
+    command: "*product-brief"
+    note: "Optional strategic planning - not selected"
+
+  # PHASE 1: Planning
+  - workflow: "prd"
+    phase: 1
+    status: "docs/PRD.md"
+    required: true
+    agent: "pm"
+    command: "*create-prd"
+    output: "docs/PRD.md"
+    note: "Comprehensive PRD completed - covers all features and requirements"
+
+  - workflow: "validate-prd"
+    phase: 1
+    status: "optional"
+    optional: true
+    agent: "pm"
+    command: "*validate-prd"
+    note: "Optional validation - can be run to validate PRD quality"
+
+  - workflow: "create-design"
+    phase: 1
+    status: "docs/ux-design-specification.md"
+    conditional: "if_has_ui"
+    agent: "ux-designer"
+    command: "*create-design"
+    output: "docs/ux-design-specification.md"
+    note: "UI/UX design complete - pastel meditation theme with AI-first workflows"
+
+  # PHASE 2: Solutioning
+  - workflow: "create-architecture"
+    phase: 2
+    status: "docs/architecture.md"
+    recommended: true
+    agent: "architect"
+    command: "*create-architecture"
+    output: "docs/architecture.md"
+    note: "Architecture complete - OpenAPI-first, Container pattern, MVP-focused decisions"
+
+  - workflow: "create-epics-and-stories"
+    phase: 2
+    status: "required"
+    required: true
+    agent: "pm"
+    command: "*create-epics-and-stories"
+    note: "Break down PRD into implementable epics and stories"
+
+  - workflow: "test-design"
+    phase: 2
+    status: "recommended"
+    recommended: true
+    agent: "tea"
+    command: "*test-design"
+    note: "System-level testability assessment"
+
+  - workflow: "validate-architecture"
+    phase: 2
+    status: "optional"
+    optional: true
+    agent: "architect"
+    command: "*validate-architecture"
+    note: "Optional architecture validation"
+
+  - workflow: "implementation-readiness"
+    phase: 2
+    status: "required"
+    required: true
+    agent: "architect"
+    command: "*implementation-readiness"
+    note: "Gate check: Validates all artifacts before implementation"
+
+  # PHASE 3: Implementation
+  - workflow: "sprint-planning"
+    phase: 3
+    status: "required"
+    required: true
+    agent: "sm"
+    command: "*sprint-planning"
+    note: "Creates sprint plan with stories from epics"
