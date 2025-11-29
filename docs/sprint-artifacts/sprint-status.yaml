@@ -24,7 +24,7 @@ development_status:
   # (All stories in Epic 2 were completed as part of Phase 3-4)
   
   # Epic 3: Lesson Management 🎯 CURRENT
-  3-1-display-lesson-list: in-progress
+  3-1-display-lesson-list: review
   3-2-create-new-lesson: backlog
   3-3-edit-existing-lesson: backlog
   3-4-delete-lesson: backlog

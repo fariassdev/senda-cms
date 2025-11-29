@@ -11,6 +11,7 @@ import {
 import Image from 'next/image';
 import Link from 'next/link';
 
+import { LessonList } from '@/components/LessonList';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
 import {
@@ -40,11 +41,15 @@ import type { CourseDetailProps } from './types';
 export default function CourseDetail({ courseSlug }: CourseDetailProps) {
   const {
     course,
+    lessons,
     form,
     isLoading,
     isError,
     error,
     refetch,
+    isLessonsLoading,
+    isLessonsError,
+    refetchLessons,
     isUpdating,
     onSubmit,
   } = useConnect(courseSlug);
@@ -214,10 +219,12 @@ export default function CourseDetail({ courseSlug }: CourseDetailProps) {
                   </CardDescription>
                 </CardHeader>
                 <CardContent>
-                  <p className="text-muted-foreground">
-                    Lesson management interface coming soon. Use the course
-                    generation response to see lesson details.
-                  </p>
+                  <LessonList
+                    lessons={lessons}
+                    isLoading={isLessonsLoading}
+                    isError={isLessonsError}
+                    onRetry={refetchLessons}
+                  />
                 </CardContent>
               </Card>
 

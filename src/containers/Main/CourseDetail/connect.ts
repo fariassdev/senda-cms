@@ -5,6 +5,8 @@ import { useForm } from 'react-hook-form';
 import { toast } from 'sonner';
 
 import { $api } from '@/lib/api';
+import type { Lesson } from '@/types/models';
+
 import { courseUpdateSchema, type CourseUpdateFormData } from './constants';
 
 export default function useConnect(courseSlug: string) {
@@ -23,10 +25,10 @@ export default function useConnect(courseSlug: string) {
 
   const {
     data: courseResponse,
-    isLoading,
-    isError,
-    error,
-    refetch,
+    isLoading: isCourseLoading,
+    isError: isCourseError,
+    error: courseError,
+    refetch: refetchCourse,
   } = $api.useQuery('get', '/api/courses/{slug}', {
     params: {
       path: {
@@ -36,6 +38,22 @@ export default function useConnect(courseSlug: string) {
   });
 
   const course = courseResponse?.course;
+
+  // Fetch lessons for this course
+  const {
+    data: lessonsResponse,
+    isLoading: isLessonsLoading,
+    isError: isLessonsError,
+    refetch: refetchLessons,
+  } = $api.useQuery('get', '/api/courses/{slug}/lessons', {
+    params: {
+      path: {
+        slug: courseSlug,
+      },
+    },
+  });
+
+  const lessons: Lesson[] | undefined = lessonsResponse?.lessons;
 
   // Update form when course data is loaded
   useEffect(() => {
@@ -73,7 +91,7 @@ export default function useConnect(courseSlug: string) {
 
       toast.success('Course updated successfully');
 
-      refetch();
+      refetchCourse();
 
       await queryClient.invalidateQueries({
         queryKey: ['get', '/api/courses'],
@@ -97,11 +115,15 @@ export default function useConnect(courseSlug: string) {
 
   return {
     course,
+    lessons,
     form,
-    isLoading,
-    isError,
-    error,
-    refetch,
+    isLoading: isCourseLoading,
+    isError: isCourseError,
+    error: courseError,
+    refetch: refetchCourse,
+    isLessonsLoading,
+    isLessonsError,
+    refetchLessons,
     isUpdating: updateCourseMutation.isPending,
     onSubmit,
   };

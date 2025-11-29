@@ -39,46 +39,46 @@ so that I can understand the complete course structure and each lesson's status.
 
 ## Tasks / Subtasks
 
-- [ ] **Task 1: Create LessonListItem component** (AC: #2, #3)
-  - [ ] 1.1 Create `src/components/LessonListItem.tsx` with TypeScript props interface
-  - [ ] 1.2 Implement row layout with drag handle, title, duration, status badge, timestamp, actions
-  - [ ] 1.3 Add status badge with semantic color mapping based on lesson status
-  - [ ] 1.4 Implement pulse animation for GENERATING states using Tailwind `animate-pulse`
-  - [ ] 1.5 Format timestamps with date-fns (relative < 7 days, absolute >= 7 days)
+- [x] **Task 1: Create LessonListItem component** (AC: #2, #3)
+  - [x] 1.1 Create `src/components/LessonListItem.tsx` with TypeScript props interface
+  - [x] 1.2 Implement row layout with drag handle, title, duration, status badge, timestamp, actions
+  - [x] 1.3 Add status badge with semantic color mapping based on lesson status
+  - [x] 1.4 Implement pulse animation for GENERATING states using Tailwind `animate-pulse`
+  - [x] 1.5 Format timestamps with date-fns (relative < 7 days, absolute >= 7 days)
 
-- [ ] **Task 2: Create StatusBadge component** (AC: #3)
-  - [ ] 2.1 Create `src/components/StatusBadge.tsx` component
-  - [ ] 2.2 Implement color mapping for all lesson statuses (PENDING, SCRIPT_GENERATING, etc.)
-  - [ ] 2.3 Add icon + text pattern for accessibility (not color-only)
-  - [ ] 2.4 Add pulse animation variant for generating states
+- [x] **Task 2: Create StatusBadge component** (AC: #3)
+  - [x] 2.1 Create `src/components/StatusBadge.tsx` component
+  - [x] 2.2 Implement color mapping for all lesson statuses (PENDING, SCRIPT_GENERATING, etc.)
+  - [x] 2.3 Add icon + text pattern for accessibility (not color-only)
+  - [x] 2.4 Add pulse animation variant for generating states
 
-- [ ] **Task 3: Create LessonList component with data fetching** (AC: #1, #5, #6)
-  - [ ] 3.1 Update `CourseDetail/connect.ts` to fetch lessons via `$api.useQuery('get', '/api/courses/{slug}/lessons')`
-  - [ ] 3.2 Create `src/components/LessonList.tsx` to render list of `LessonListItem` components
-  - [ ] 3.3 Order lessons by `lessonNumber` field from API response
-  - [ ] 3.4 Implement loading skeleton for lesson list
-  - [ ] 3.5 Implement error state with retry functionality
+- [x] **Task 3: Create LessonList component with data fetching** (AC: #1, #5, #6)
+  - [x] 3.1 Update `CourseDetail/connect.ts` to fetch lessons via `$api.useQuery('get', '/api/courses/{slug}/lessons')`
+  - [x] 3.2 Create `src/components/LessonList.tsx` to render list of `LessonListItem` components
+  - [x] 3.3 Order lessons by `lessonNumber` field from API response
+  - [x] 3.4 Implement loading skeleton for lesson list
+  - [x] 3.5 Implement error state with retry functionality
 
-- [ ] **Task 4: Create LessonListEmpty component** (AC: #4)
-  - [ ] 4.1 Create empty state component with icon, title, description
-  - [ ] 4.2 Add "Add First Lesson" CTA button (placeholder - disabled for now, enabled in Story 3.2)
-  - [ ] 4.3 Style with dashed border container per UX spec
+- [x] **Task 4: Create LessonListEmpty component** (AC: #4)
+  - [x] 4.1 Create empty state component with icon, title, description
+  - [x] 4.2 Add "Add First Lesson" CTA button (placeholder - disabled for now, enabled in Story 3.2)
+  - [x] 4.3 Style with dashed border container per UX spec
 
-- [ ] **Task 5: Integrate LessonList into CourseDetail** (AC: #1)
-  - [ ] 5.1 Replace placeholder text in CourseDetail Lessons section
-  - [ ] 5.2 Render LessonList component with lessons from API
-  - [ ] 5.3 Handle empty/loading/error states appropriately
+- [x] **Task 5: Integrate LessonList into CourseDetail** (AC: #1)
+  - [x] 5.1 Replace placeholder text in CourseDetail Lessons section
+  - [x] 5.2 Render LessonList component with lessons from API
+  - [x] 5.3 Handle empty/loading/error states appropriately
 
-- [ ] **Task 6: Add date-fns dependency** (AC: #2)
-  - [ ] 6.1 Install date-fns: `bun add --exact date-fns`
-  - [ ] 6.2 Create utility function for timestamp formatting in `src/lib/utils.ts`
+- [x] **Task 6: Add date-fns dependency** (AC: #2)
+  - [x] 6.1 Install date-fns: `bun add --exact date-fns`
+  - [x] 6.2 Create utility function for timestamp formatting in `src/lib/utils.ts`
 
-- [ ] **Task 7: Testing and validation** (AC: #1-6)
-  - [ ] 7.1 Test with course that has lessons (verify ordering, status colors)
-  - [ ] 7.2 Test with course that has no lessons (verify empty state)
-  - [ ] 7.3 Test loading state (verify skeletons appear)
-  - [ ] 7.4 Verify ARIA labels and keyboard accessibility
-  - [ ] 7.5 Run `bun typecheck` and `bun lint:fix`
+- [x] **Task 7: Testing and validation** (AC: #1-6)
+  - [x] 7.1 Test with course that has lessons (verify ordering, status colors)
+  - [x] 7.2 Test with course that has no lessons (verify empty state)
+  - [x] 7.3 Test loading state (verify skeletons appear)
+  - [x] 7.4 Verify ARIA labels and keyboard accessibility
+  - [x] 7.5 Run `bun typecheck` and `bun lint:fix`
 
 ## Dev Notes
 
@@ -252,6 +252,7 @@ Claude Opus 4.5 (Preview)
 
 ## Change Log
 
-| Date       | Author         | Change                                        |
-| ---------- | -------------- | --------------------------------------------- |
-| 2025-11-28 | SM Agent (Bob) | Initial story creation from Epic 3, Story 3.1 |
+| Date       | Author             | Change                                                        |
+| ---------- | ------------------ | ------------------------------------------------------------- |
+| 2025-11-28 | SM Agent (Bob)     | Initial story creation from Epic 3, Story 3.1                 |
+| 2025-11-29 | Dev Agent (Amelia) | Implementation complete - all ACs satisfied, ready for review |
