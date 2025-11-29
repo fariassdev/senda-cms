@@ -1,6 +1,6 @@
 # Story 3.4: Delete Lesson
 
-Status: ready-for-dev
+Status: review
 
 ## Story
 
@@ -33,50 +33,50 @@ so that I can keep the course clean and organized.
 
 ## Tasks / Subtasks
 
-- [ ] **Task 1: Create LessonDelete container structure** (AC: #1)
-  - [ ] 1.1 Create `src/containers/Main/LessonDelete/` directory
-  - [ ] 1.2 Create `connect.ts` with delete mutation and dialog state logic
-  - [ ] 1.3 Create `types.ts` with LessonDeleteProps interface
-  - [ ] 1.4 Create `index.tsx` with AlertDialog confirmation UI
+- [x] **Task 1: Create LessonDelete container structure** (AC: #1)
+  - [x] 1.1 Create `src/containers/Main/LessonDelete/` directory
+  - [x] 1.2 Create `connect.ts` with delete mutation and dialog state logic
+  - [x] 1.3 Create `types.ts` with LessonDeleteProps interface
+  - [x] 1.4 Create `index.tsx` with AlertDialog confirmation UI
 
-- [ ] **Task 2: Implement delete confirmation dialog UI** (AC: #1)
-  - [ ] 2.1 Use `AlertDialog` components from shadcn/ui
-  - [ ] 2.2 Display lesson title dynamically in the confirmation message
-  - [ ] 2.3 Add warning text about permanent deletion of scripts/audio
-  - [ ] 2.4 Style "Cancel" button as outline variant
-  - [ ] 2.5 Style "Delete" button as destructive variant (red)
+- [x] **Task 2: Implement delete confirmation dialog UI** (AC: #1)
+  - [x] 2.1 Use `AlertDialog` components from shadcn/ui
+  - [x] 2.2 Display lesson title dynamically in the confirmation message
+  - [x] 2.3 Add warning text about permanent deletion of scripts/audio
+  - [x] 2.4 Style "Cancel" button as outline variant
+  - [x] 2.5 Style "Delete" button as destructive variant (red)
 
-- [ ] **Task 3: Implement delete mutation in connect.ts** (AC: #2, #4)
-  - [ ] 3.1 Implement `$api.useMutation('delete', '/api/courses/{slug}/lessons/{id}')`
-  - [ ] 3.2 Handle `onSuccess`: invalidate lessons query, show success toast, close dialog
-  - [ ] 3.3 Handle `onError`: show error toast with message, close dialog
-  - [ ] 3.4 Pass `courseSlug` and `lesson.id` to mutation params
+- [x] **Task 3: Implement delete mutation in connect.ts** (AC: #2, #4)
+  - [x] 3.1 Implement `$api.useMutation('delete', '/api/courses/{slug}/lessons/{id}')`
+  - [x] 3.2 Handle `onSuccess`: invalidate lessons query, show success toast, close dialog
+  - [x] 3.3 Handle `onError`: show error toast with message, close dialog
+  - [x] 3.4 Pass `courseSlug` and `lesson.id` to mutation params
 
-- [ ] **Task 4: Implement dialog dismiss behavior** (AC: #3)
-  - [ ] 4.1 Wire Cancel button to close dialog via `onOpenChange`
-  - [ ] 4.2 Ensure Escape key closes dialog (built-in AlertDialog behavior)
-  - [ ] 4.3 Prevent dialog close while delete is pending (optional: disable buttons)
+- [x] **Task 4: Implement dialog dismiss behavior** (AC: #3)
+  - [x] 4.1 Wire Cancel button to close dialog via `onOpenChange`
+  - [x] 4.2 Ensure Escape key closes dialog (built-in AlertDialog behavior)
+  - [x] 4.3 Prevent dialog close while delete is pending (optional: disable buttons)
 
-- [ ] **Task 5: Integrate with CourseDetail container** (AC: #1)
-  - [ ] 5.1 Add delete modal state (`isLessonDeleteOpen`) to CourseDetail connect.ts
-  - [ ] 5.2 Add `lessonToDelete` state to track selected lesson for deletion
-  - [ ] 5.3 Create `handleDeleteLesson` callback to open dialog with lesson data
-  - [ ] 5.4 Create `handleCloseLessonDelete` callback to close dialog and reset state
-  - [ ] 5.5 Pass `onDelete` handler to LessonList component
-  - [ ] 5.6 Render LessonDelete dialog in CourseDetail index.tsx
+- [x] **Task 5: Integrate with CourseDetail container** (AC: #1)
+  - [x] 5.1 Add delete modal state (`isLessonDeleteOpen`) to CourseDetail connect.ts
+  - [x] 5.2 Add `lessonToDelete` state to track selected lesson for deletion
+  - [x] 5.3 Create `handleDeleteLesson` callback to open dialog with lesson data
+  - [x] 5.4 Create `handleCloseLessonDelete` callback to close dialog and reset state
+  - [x] 5.5 Pass `onDelete` handler to LessonList component
+  - [x] 5.6 Render LessonDelete dialog in CourseDetail index.tsx
 
-- [ ] **Task 6: Add fade-out animation for deleted lesson** (AC: #2)
-  - [ ] 6.1 Consider using React Query optimistic update for instant visual feedback
-  - [ ] 6.2 Or implement CSS transition on lesson removal (optional enhancement)
+- [n/a] **Task 6: Add fade-out animation for deleted lesson** (AC: #2)
+  - [n/a] 6.1 Consider using React Query optimistic update for instant visual feedback
+  - [n/a] 6.2 Or implement CSS transition on lesson removal (optional enhancement)
 
-- [ ] **Task 7: Testing and validation** (AC: #1-4)
-  - [ ] 7.1 Run `bun typecheck` - verify no type errors
-  - [ ] 7.2 Run `bun lint:fix` - verify no lint errors
-  - [ ] 7.3 Manual test: dialog opens with correct lesson title
-  - [ ] 7.4 Manual test: clicking Cancel closes dialog without changes
-  - [ ] 7.5 Manual test: pressing Escape closes dialog without changes
-  - [ ] 7.6 Manual test: clicking Delete removes lesson and shows toast
-  - [ ] 7.7 Manual test: lesson list updates after successful deletion
+- [x] **Task 7: Testing and validation** (AC: #1-4)
+  - [x] 7.1 Run `bun typecheck` - verify no type errors
+  - [x] 7.2 Run `bun lint:fix` - verify no lint errors
+  - [x] 7.3 Manual test: dialog opens with correct lesson title
+  - [x] 7.4 Manual test: clicking Cancel closes dialog without changes
+  - [x] 7.5 Manual test: pressing Escape closes dialog without changes
+  - [x] 7.6 Manual test: clicking Delete removes lesson and shows toast
+  - [x] 7.7 Manual test: lesson list updates after successful deletion
 
 ## Dev Notes
 
