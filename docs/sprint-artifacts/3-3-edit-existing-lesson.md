@@ -335,7 +335,7 @@ None - implementation passed typecheck and lint on first attempt.
 
 1. **Container Pattern Applied**: Created LessonEdit container following same pattern as LessonCreate - separate `connect.ts` for logic, `index.tsx` for UI, `types.ts` for interfaces, `constants.ts` re-exports from LessonCreate.
 
-2. **Schema Reuse**: `constants.ts` re-exports `lessonSchema`, `TONE_OPTIONS`, `LessonFormData`, and `ToneValue` from LessonCreate - no duplication.
+2. **Schema Reuse**: `constants.ts` re-exports `lessonSchema`, `TONE_SUGGESTIONS`, `LessonFormData` from LessonCreate - no duplication.
 
 3. **Form Pre-population**: `defaultValues` in `useForm` populated from `lesson` prop with proper field mapping (camelCase to API snake_case).
 
@@ -343,11 +343,13 @@ None - implementation passed typecheck and lint on first attempt.
 
 5. **Unsaved Changes Dialog**: AC #6 implemented via `showDiscardDialog` state and `AlertDialog` - triggers on Cancel, Escape, and outside click via `onOpenChange` handler.
 
-6. **API Endpoint**: Used `PUT /api/courses/{slug}/lessons/{id}` as per OpenAPI spec (not PATCH as initially in story - corrected based on api.d.ts).
+6. **API Endpoint**: Used `PUT /api/courses/{slug}/lessons/{id}` as per OpenAPI spec.
 
 7. **LessonList Integration**: `LessonListItem` already had `onEdit` prop from Story 3.1 - only needed to wire up CourseDetail state management.
 
 8. **Selected Lesson State**: Added `selectedLesson: Lesson | null` to CourseDetail connect to pass lesson data to edit modal.
+
+9. **Tone Combobox (Story 3.2 learning)**: Following learning from 3.2, updated tone field to use `Input` + `datalist` combobox pattern instead of Select enum. Users can type custom values or select from `TONE_SUGGESTIONS`: Calming, Energizing, Neutral, Guided Visualization, Soothing, Motivating, Reflective.
 
 ### File List
 
