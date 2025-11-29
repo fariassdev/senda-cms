@@ -1,0 +1,304 @@
+<story-context id="3-3-edit-existing-lesson" v="1.0">
+  <metadata>
+    <epicId>3</epicId>
+    <storyId>3</storyId>
+    <title>Edit Existing Lesson</title>
+    <status>ready-for-dev</status>
+    <generatedAt>2025-11-29</generatedAt>
+    <generator>BMAD Story Context Workflow</generator>
+    <sourceStoryPath>docs/sprint-artifacts/3-3-edit-existing-lesson.md</sourceStoryPath>
+  </metadata>
+
+  <story>
+    <asA>Content Manager</asA>
+    <iWant>to edit the details of an existing lesson</iWant>
+    <soThat>I can correct errors or update content</soThat>
+    <tasks>
+      <task id="1" ac="1,2" title="Create LessonEdit container structure">
+        <subtask>1.1 Create src/containers/Main/LessonEdit/ directory</subtask>
+        <subtask>1.2 Create connect.ts with form setup, pre-populated values, and mutation logic</subtask>
+        <subtask>1.3 Create constants.ts - reuse validation schema from LessonCreate</subtask>
+        <subtask>1.4 Create types.ts with LessonEditProps interface (including lesson data)</subtask>
+        <subtask>1.5 Create index.tsx with modal dialog and pre-populated form UI</subtask>
+      </task>
+      <task id="2" ac="1,2" title="Implement form pre-population logic">
+        <subtask>2.1 Accept lesson prop with current lesson data</subtask>
+        <subtask>2.2 Set form defaultValues from lesson data</subtask>
+        <subtask>2.3 Map lesson fields to form schema (handle field name differences if any)</subtask>
+        <subtask>2.4 Initialize tone dropdown with current lesson tone value</subtask>
+      </task>
+      <task id="3" ac="3,5" title="Implement update mutation in connect.ts">
+        <subtask>3.1 Implement $api.useMutation('put', '/api/courses/{slug}/lessons/{id}')</subtask>
+        <subtask>3.2 Handle onSuccess: invalidate course query, show toast, close modal</subtask>
+        <subtask>3.3 Handle onError: show error toast with message</subtask>
+        <subtask>3.4 Implement dirty state check - skip API call if no changes (AC #5)</subtask>
+        <subtask>3.5 Compare current values vs default values to detect changes</subtask>
+      </task>
+      <task id="4" ac="4" title="Implement validation and error handling">
+        <subtask>4.1 Reuse lessonSchema from LessonCreate/constants.ts</subtask>
+        <subtask>4.2 Configure zodResolver with same validation rules</subtask>
+        <subtask>4.3 Focus first invalid field on validation failure</subtask>
+        <subtask>4.4 Display inline errors using FormMessage component</subtask>
+      </task>
+      <task id="5" ac="6" title="Implement unsaved changes confirmation">
+        <subtask>5.1 Track dirty state with formState.isDirty</subtask>
+        <subtask>5.2 Intercept Cancel button click - show confirmation if dirty</subtask>
+        <subtask>5.3 Intercept Escape key - show confirmation if dirty</subtask>
+        <subtask>5.4 Intercept outside click - show confirmation if dirty</subtask>
+        <subtask>5.5 Reuse AlertDialog pattern from LessonCreate</subtask>
+      </task>
+      <task id="6" ac="1" title="Integrate with CourseDetail container">
+        <subtask>6.1 Add edit modal state and selected lesson to CourseDetail/connect.ts</subtask>
+        <subtask>6.2 Pass onEdit handler to LessonList component</subtask>
+        <subtask>6.3 Pass selected lesson data to LessonEdit modal</subtask>
+        <subtask>6.4 Wire up LessonEdit modal open/close handlers</subtask>
+      </task>
+      <task id="7" ac="1-6" title="Testing and validation">
+        <subtask>7.1 Test modal opens with pre-populated data (all fields)</subtask>
+        <subtask>7.2 Test form submission with valid changed data</subtask>
+        <subtask>7.3 Test form submission with no changes (verify no API call)</subtask>
+        <subtask>7.4 Test form submission with invalid data (verify inline errors)</subtask>
+        <subtask>7.5 Test unsaved changes confirmation (Cancel, Escape, outside click)</subtask>
+        <subtask>7.6 Verify list updates after successful edit</subtask>
+        <subtask>7.7 Run bun typecheck and bun lint:fix</subtask>
+      </task>
+    </tasks>
+  </story>
+
+  <acceptanceCriteria>
+    <ac id="1">Given I see the lesson list, When I click the edit icon (✏️) on a lesson row, Then a modal opens with the form pre-populated with current data.</ac>
+    <ac id="2">Given the edit modal is open, Then all fields are editable: Title (current value shown), Duration in minutes (current value shown), Core Practice (current value shown), Key Point (current value shown), Tone (current value shown in dropdown).</ac>
+    <ac id="3">Given I modify fields and click "Save Changes", Then: The changes are saved to the backend, A success toast shows: "Lesson updated", The list updates with new data, The modal closes.</ac>
+    <ac id="4">Given I submit with invalid data, Then: Inline validation errors appear below each invalid field, The form does not submit, Focus moves to the first invalid field.</ac>
+    <ac id="5">Given I haven't made changes and click "Save", Then the modal closes without API call.</ac>
+    <ac id="6">Given I have unsaved changes and click "Cancel" or press Escape, Then: A confirmation dialog appears: "Discard changes?", If confirmed modal closes without saving, If cancelled modal remains open.</ac>
+  </acceptanceCriteria>
+
+  <artifacts>
+    <docs>
+      <doc>
+        <path>docs/architecture.md</path>
+        <title>Senda CMS Architecture Document</title>
+        <section>Container Pattern</section>
+        <snippet>Containers have connect.ts for ALL logic (API calls, forms, effects). Components are pure presentational. Separation: index.tsx (UI component) + connect.ts (data logic, forms, mutations) + types.ts (local types) + constants.ts (Zod schemas).</snippet>
+      </doc>
+      <doc>
+        <path>docs/architecture.md</path>
+        <title>Senda CMS Architecture Document</title>
+        <section>Form Management: React Hook Form + Zod</section>
+        <snippet>Use React Hook Form with zodResolver for validation. Zod schemas defined in constants.ts. Form components use FormField, FormItem, FormLabel, FormControl, FormMessage from shadcn/ui.</snippet>
+      </doc>
+      <doc>
+        <path>docs/architecture.md</path>
+        <title>Senda CMS Architecture Document</title>
+        <section>API Architecture: OpenAPI-First</section>
+        <snippet>All API interactions use auto-generated hooks from openapi-react-query. Use $api.useMutation('put', '/api/courses/{slug}/lessons/{id}') for update operations. Invalidate queries on success.</snippet>
+      </doc>
+      <doc>
+        <path>docs/ux-design-specification.md</path>
+        <title>UX Design Specification</title>
+        <section>Modal &amp; Dialog Patterns</section>
+        <snippet>Medium modal: 600px max-width for most forms. Dismiss with click outside (with unsaved changes warning), Escape key, or close button. Focus trapped within modal. Return focus to trigger on close.</snippet>
+      </doc>
+      <doc>
+        <path>docs/ux-design-specification.md</path>
+        <title>UX Design Specification</title>
+        <section>Form Patterns</section>
+        <snippet>Validation onBlur for most fields. Error display with red border + message below. Required fields marked with asterisk. Help text connected via aria-describedby.</snippet>
+      </doc>
+      <doc>
+        <path>docs/epics.md</path>
+        <title>Epic 3: Lesson Management</title>
+        <section>Story 3.3: Edit Existing Lesson</section>
+        <snippet>Modal-based editing with pre-populated form. Reuse LessonForm component from Story 3.2. Use PATCH mutation with optimistic update for instant feedback.</snippet>
+      </doc>
+    </docs>
+    <code>
+      <file>
+        <path>src/containers/Main/LessonCreate/constants.ts</path>
+        <kind>constants</kind>
+        <symbol>lessonSchema, TONE_OPTIONS, LessonFormData, ToneValue</symbol>
+        <reason>REUSE these validation schema and constants for LessonEdit - exact same validation rules apply</reason>
+        <snippet>
+export const lessonSchema = z.object({
+  title: z.string().min(3).max(100),
+  durationMinutes: z.number().min(1).max(120),
+  corePractice: z.string().min(3),
+  keyPoint: z.string().min(3),
+  tone: z.enum(['calming', 'energizing', 'neutral', 'visualization']),
+});
+        </snippet>
+      </file>
+      <file>
+        <path>src/containers/Main/LessonCreate/connect.ts</path>
+        <kind>hook</kind>
+        <symbol>useConnect</symbol>
+        <reason>REFERENCE pattern for form setup with zodResolver, mutation handling with toast, and discard confirmation dialog flow</reason>
+      </file>
+      <file>
+        <path>src/containers/Main/LessonCreate/index.tsx</path>
+        <kind>component</kind>
+        <symbol>LessonCreate</symbol>
+        <reason>REFERENCE pattern for Dialog modal structure, Form fields layout, AlertDialog for discard confirmation</reason>
+      </file>
+      <file>
+        <path>src/components/LessonListItem.tsx</path>
+        <kind>component</kind>
+        <symbol>LessonListItem</symbol>
+        <reason>Already has onEdit callback prop wired up - edit button calls onEdit(lesson) when clicked</reason>
+        <snippet>
+interface LessonListItemProps {
+  lesson: Lesson;
+  onEdit?: (lesson: Lesson) => void;
+  onDelete?: (lesson: Lesson) => void;
+}
+// Edit button onClick={() => onEdit?.(lesson)}
+        </snippet>
+      </file>
+      <file>
+        <path>src/components/LessonList.tsx</path>
+        <kind>component</kind>
+        <symbol>LessonList</symbol>
+        <reason>Already accepts onEditLesson prop and passes it to LessonListItem as onEdit</reason>
+        <snippet>
+interface LessonListProps {
+  onEditLesson?: (lesson: Lesson) => void;
+  // ... other props
+}
+// Passes to LessonListItem: onEdit={onEditLesson}
+        </snippet>
+      </file>
+      <file>
+        <path>src/containers/Main/CourseDetail/connect.ts</path>
+        <kind>hook</kind>
+        <symbol>useConnect</symbol>
+        <reason>MODIFY to add edit modal state (isLessonEditOpen, selectedLesson) and handlers (handleEditLesson, handleCloseLessonEdit)</reason>
+      </file>
+      <file>
+        <path>src/containers/Main/CourseDetail/index.tsx</path>
+        <kind>component</kind>
+        <symbol>CourseDetail</symbol>
+        <reason>MODIFY to pass onEditLesson to LessonList and render LessonEdit modal with selected lesson</reason>
+      </file>
+      <file>
+        <path>src/types/models.ts</path>
+        <kind>types</kind>
+        <symbol>Lesson, UpdateLessonData</symbol>
+        <reason>Use Lesson type for pre-populating form, UpdateLessonData for mutation body</reason>
+      </file>
+    </code>
+    <dependencies>
+      <node>
+        <package>react-hook-form</package>
+        <version>7.63.0</version>
+        <usage>Form state management with useForm hook</usage>
+      </node>
+      <node>
+        <package>@hookform/resolvers</package>
+        <usage>zodResolver for Zod schema integration</usage>
+      </node>
+      <node>
+        <package>zod</package>
+        <version>4.1.11</version>
+        <usage>Form validation schema (reuse from LessonCreate)</usage>
+      </node>
+      <node>
+        <package>@tanstack/react-query</package>
+        <version>5.90.2</version>
+        <usage>useQueryClient for cache invalidation</usage>
+      </node>
+      <node>
+        <package>sonner</package>
+        <version>2.0.7</version>
+        <usage>Toast notifications for success/error feedback</usage>
+      </node>
+      <node>
+        <package>lucide-react</package>
+        <usage>Pencil, Loader2 icons</usage>
+      </node>
+    </dependencies>
+  </artifacts>
+
+  <constraints>
+    <constraint type="architecture">Container Pattern: All form logic, mutations, and state in connect.ts. index.tsx is purely presentational.</constraint>
+    <constraint type="architecture">OpenAPI-First: Use $api.useMutation('put', '/api/courses/{slug}/lessons/{id}') - never manual fetch calls.</constraint>
+    <constraint type="architecture">Types from models.ts: Import Lesson from @/types/models, not directly from api.d.ts.</constraint>
+    <constraint type="code-quality">Reuse lessonSchema from LessonCreate/constants.ts - do NOT duplicate validation logic.</constraint>
+    <constraint type="code-quality">Run bun typecheck before committing - TypeScript strict mode with noUncheckedIndexedAccess enabled.</constraint>
+    <constraint type="accessibility">Modal traps focus when open, Escape closes (with confirmation if dirty), submit button disabled during pending state.</constraint>
+    <constraint type="ux">Skip API call if form not dirty (AC #5) - optimize by checking formState.isDirty before mutation.</constraint>
+    <constraint type="ux">Unsaved changes confirmation uses AlertDialog component for consistent UX with LessonCreate.</constraint>
+  </constraints>
+
+  <interfaces>
+    <interface>
+      <name>Update Lesson API</name>
+      <kind>REST endpoint</kind>
+      <signature>PUT /api/courses/{slug}/lessons/{id}</signature>
+      <path>src/types/api.d.ts (line 356)</path>
+      <request>
+{
+  "lesson": {
+    "title"?: string | null,
+    "core_practice"?: string | null,
+    "key_point"?: string | null,
+    "tone"?: string | null,
+    "duration_minutes"?: number | null
+  }
+}
+      </request>
+      <response>
+{
+  "lesson": LessonData
+}
+      </response>
+    </interface>
+    <interface>
+      <name>LessonEditProps</name>
+      <kind>TypeScript interface</kind>
+      <signature>
+interface LessonEditProps {
+  courseSlug: string;
+  lesson: Lesson;
+  open: boolean;
+  onOpenChange: (open: boolean) => void;
+  onSuccess?: () => void;
+}
+      </signature>
+      <path>src/containers/Main/LessonEdit/types.ts (to create)</path>
+    </interface>
+    <interface>
+      <name>Query Invalidation Keys</name>
+      <kind>React Query cache keys</kind>
+      <signature>
+// Invalidate lessons list after update
+['get', '/api/courses/{slug}/lessons', { params: { path: { slug: courseSlug } } }]
+
+// Invalidate course detail for lesson count
+['get', '/api/courses/{slug}', { params: { path: { slug: courseSlug } } }]
+      </signature>
+    </interface>
+  </interfaces>
+
+  <tests>
+    <standards>
+      Per project standards, testing includes: TypeScript validation (bun typecheck), ESLint (bun lint:fix), and manual verification of acceptance criteria. No automated unit test framework currently configured.
+    </standards>
+    <locations>
+      Manual testing in development environment. Run bun dev, navigate to course detail page, test edit flow.
+    </locations>
+    <ideas>
+      <idea ac="1">Verify edit button click opens modal with all fields pre-populated with lesson data.</idea>
+      <idea ac="2">Verify all form fields are editable and show current values (title, duration, corePractice, keyPoint, tone dropdown).</idea>
+      <idea ac="3">Verify submitting changed data: API call made, success toast appears, list refreshes with new data, modal closes.</idea>
+      <idea ac="4">Verify validation: clear title field, submit, see inline error, focus on title input.</idea>
+      <idea ac="5">Verify no-change submission: open modal, click Save without changes, modal closes without API call (check Network tab).</idea>
+      <idea ac="6">Verify discard confirmation: change title, click Cancel, see "Discard changes?" dialog, click Discard, modal closes.</idea>
+      <idea ac="6">Verify discard confirmation cancel: change title, click Cancel, see dialog, click Keep Editing, modal stays open with changes.</idea>
+      <idea>Verify Escape key triggers discard confirmation when form is dirty.</idea>
+      <idea>Verify keyboard navigation: Tab through form fields, Enter submits form.</idea>
+      <idea>Run bun typecheck - should pass with no errors.</idea>
+      <idea>Run bun lint:fix - should pass with no errors.</idea>
+    </ideas>
+  </tests>
+</story-context>
