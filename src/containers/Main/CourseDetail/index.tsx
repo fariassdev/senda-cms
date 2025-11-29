@@ -261,26 +261,6 @@ export default function CourseDetail({ courseSlug }: CourseDetailProps) {
               </div>
             </form>
           </Form>
-
-          {/* LessonCreate Modal - Outside form to prevent submit interference */}
-          <LessonCreate
-            courseSlug={courseSlug}
-            nextLessonNumber={nextLessonNumber}
-            open={isLessonCreateOpen}
-            onOpenChange={handleCloseLessonCreate}
-            onSuccess={handleLessonCreateSuccess}
-          />
-
-          {/* LessonEdit Modal */}
-          {selectedLesson && (
-            <LessonEdit
-              courseSlug={courseSlug}
-              lesson={selectedLesson}
-              open={isLessonEditOpen}
-              onOpenChange={handleCloseLessonEdit}
-              onSuccess={handleLessonEditSuccess}
-            />
-          )}
         </div>
 
         {/* Right Sidebar - Course Image and Tags */}
@@ -350,6 +330,25 @@ export default function CourseDetail({ courseSlug }: CourseDetailProps) {
           </Card>
         </div>
       </div>
+
+      {/* Lesson Modals - Outside the form grid to prevent submit interference */}
+      <LessonCreate
+        courseSlug={courseSlug}
+        nextLessonNumber={nextLessonNumber}
+        open={isLessonCreateOpen}
+        onOpenChange={handleCloseLessonCreate}
+        onSuccess={handleLessonCreateSuccess}
+      />
+
+      {selectedLesson && (
+        <LessonEdit
+          courseSlug={courseSlug}
+          lesson={selectedLesson}
+          open={isLessonEditOpen}
+          onOpenChange={handleCloseLessonEdit}
+          onSuccess={handleLessonEditSuccess}
+        />
+      )}
     </div>
   );
 }

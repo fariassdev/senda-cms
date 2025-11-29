@@ -177,11 +177,11 @@ export default function LessonEdit({
                     <FormControl>
                       <Input
                         placeholder="Type or select a tone (e.g., Calming, Energizing)"
-                        list="tone-suggestions"
+                        list="tone-suggestions-edit"
                         {...field}
                       />
                     </FormControl>
-                    <datalist id="tone-suggestions">
+                    <datalist id="tone-suggestions-edit">
                       {TONE_SUGGESTIONS.map((tone) => (
                         <option key={tone} value={tone} />
                       ))}
