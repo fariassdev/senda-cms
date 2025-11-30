@@ -1,4 +1,5 @@
 import { Check, Circle, Loader2, X } from 'lucide-react';
+import React from 'react';
 
 import { Badge } from '@/components/ui/badge';
 import { cn } from '@/lib/utils';
