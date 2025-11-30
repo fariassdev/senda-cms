@@ -24,7 +24,7 @@
       <task id="2" title="Implement dynamic polling in CourseDetail connect.ts" ac="2,6">
         <subtask id="2.1">Add refetchInterval callback function to useQuery</subtask>
         <subtask id="2.2">Implement hasGeneratingLessons helper function</subtask>
-        <subtask id="2.3">Return 5000ms interval when generating, false otherwise</subtask>
+        <subtask id="2.3">Return 3000ms interval when generating, false otherwise</subtask>
         <subtask id="2.4">Add previousLessonsRef to track status changes between polls</subtask>
       </task>
       <task id="3" title="Implement status change detection" ac="3,4,5,7">
@@ -41,7 +41,7 @@
       </task>
       <task id="5" title="Create polling constants" ac="2">
         <subtask id="5.1">Add constants.ts to CourseDetail container</subtask>
-        <subtask id="5.2">Define POLLING_INTERVAL = 5000 constant</subtask>
+        <subtask id="5.2">Define POLLING_INTERVAL = 3000 constant</subtask>
         <subtask id="5.3">Define GENERATING_STATUSES array</subtask>
       </task>
       <task id="6" title="Update LessonReorder to support polling" ac="8">
@@ -143,7 +143,7 @@
         <path>docs/architecture.md</path>
         <title>Architecture Document</title>
         <section>Real-time Updates: React Query Polling</section>
-        <snippet>Simple polling for generation progress tracking. Use refetchInterval option in React Query with callback function that returns 5000 when generating or false otherwise.</snippet>
+        <snippet>Simple polling for generation progress tracking. Use refetchInterval option in React Query with callback function that returns 3000 when generating or false otherwise.</snippet>
       </doc>
       <doc>
         <path>docs/architecture.md</path>
@@ -202,7 +202,7 @@
         <kind>constants</kind>
         <symbol>courseUpdateSchema</symbol>
         <lines>1-15</lines>
-        <reason>Existing constants file. Need to add POLLING_INTERVAL = 5000 and GENERATING_STATUSES array.</reason>
+        <reason>Existing constants file. Need to add POLLING_INTERVAL = 3000 and GENERATING_STATUSES array.</reason>
       </file>
       <file>
         <path>src/containers/Main/LessonReorder/connect.ts</path>
@@ -274,7 +274,7 @@ $api.useQuery('get', '/api/courses/{slug}/lessons', {
     const hasGenerating = lessons?.some(l => 
       l.status === 'SCRIPT_GENERATING' || l.status === 'AUDIO_GENERATING'
     );
-    return hasGenerating ? 5000 : false;
+    return hasGenerating ? 3000 : false;
   },
 })
       </signature>
@@ -311,7 +311,7 @@ toast.error(message: string): void
     <standards>
       Per project testing standards, this story requires manual testing to verify:
       - Animated badge appears for GENERATING statuses with pulse animation
-      - Polling interval is 5000ms when generating lessons exist
+      - Polling interval is 3000ms when generating lessons exist
       - Polling stops when no generating lessons remain
       - Toast notifications appear for each status transition
       - Multiple simultaneous transitions show multiple toasts

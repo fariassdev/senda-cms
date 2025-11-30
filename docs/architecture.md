@@ -523,7 +523,7 @@ const { data: lesson } = $api.useQuery('get', '/api/lessons/{id}', {
     // Only poll if status is GENERATING
     const status = data?.status;
     return status === 'SCRIPT_GENERATING' || status === 'AUDIO_GENERATING'
-      ? 5000 // Poll every 5s
+      ? 3000 // Poll every 3s
       : false; // Stop polling when complete/failed
   },
 });
