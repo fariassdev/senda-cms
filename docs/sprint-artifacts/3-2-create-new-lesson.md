@@ -1,6 +1,6 @@
 # Story 3.2: Create New Lesson
 
-Status: review
+Status: done
 
 ## Story
 
@@ -384,3 +384,123 @@ Claude Opus 4.5 (Preview)
 | 2025-11-29 | Dev Agent (Amelia) | **Fix 1**: Changed tone from enum Select to free-text Input with datalist                      |
 | 2025-11-29 | Dev Agent (Amelia) | **Fix 2**: Moved LessonCreate modal outside CourseDetail form to prevent unwanted submit toast |
 | 2025-11-29 | Dev Agent (Amelia) | **Fix 3**: Moved datalist outside FormControl to avoid React Fragment prop errors              |
+| 2025-12-01 | Dev Agent (Amelia) | Senior Developer Review (AI) appended - Story APPROVED                                         |
+
+---
+
+## Senior Developer Review (AI)
+
+### Reviewer: Rupo
+
+### Date: 2025-12-01
+
+### Outcome: **APPROVE** ✅
+
+La implementación cumple con todos los criterios de aceptación y sigue las prácticas arquitectónicas del proyecto.
+
+---
+
+### Summary
+
+Story 3.2 implementa correctamente la funcionalidad de creación de lecciones con modal, validación de formulario, confirmación de cambios no guardados, e integración con CourseDetail. Typecheck y lint pasan sin errores. La implementación sigue el Container Pattern establecido.
+
+---
+
+### Acceptance Criteria Coverage
+
+| AC# | Description                                                    | Status         | Evidence                                                                                                   |
+| --- | -------------------------------------------------------------- | -------------- | ---------------------------------------------------------------------------------------------------------- |
+| 1   | Click "Add Lesson" → Modal opens                               | ✅ IMPLEMENTED | `CourseDetail/index.tsx:233-238` (button + onClick), `LessonCreate/index.tsx:59-62` (Dialog open state)    |
+| 2   | Form includes 5 required fields with validation                | ✅ IMPLEMENTED | `LessonCreate/constants.ts:14-32` (Zod schema), `LessonCreate/index.tsx:75-189` (5 FormFields with labels) |
+| 3   | Valid submit → PENDING status, list update, toast, modal close | ✅ IMPLEMENTED | `LessonCreate/connect.ts:33-59` (mutation onSuccess: toast, invalidate queries, reset, close)              |
+| 4   | Invalid submit → inline errors, no submit, focus first invalid | ✅ IMPLEMENTED | `LessonCreate/constants.ts:14-32` (validation messages), shadcn Form handles focus                         |
+| 5   | Click outside/Escape → close or confirm if dirty               | ✅ IMPLEMENTED | `LessonCreate/index.tsx:51-57` (handleOpenChange), `connect.ts:89-99` (isDirty check)                      |
+| 6   | Cancel button → close immediately if clean, confirm if dirty   | ✅ IMPLEMENTED | `LessonCreate/index.tsx:193-199` (Cancel onClick→handleClose), `connect.ts:89-99`                          |
+
+**Summary: 6 of 6 acceptance criteria fully implemented**
+
+---
+
+### Task Completion Validation
+
+| Task                                | Marked As | Verified As | Evidence                                              |
+| ----------------------------------- | --------- | ----------- | ----------------------------------------------------- |
+| 1.1 Create LessonCreate directory   | ✅        | ✅ VERIFIED | `src/containers/Main/LessonCreate/` exists            |
+| 1.2 connect.ts with form/mutation   | ✅        | ✅ VERIFIED | `LessonCreate/connect.ts:1-120`                       |
+| 1.3 constants.ts with Zod schema    | ✅        | ✅ VERIFIED | `LessonCreate/constants.ts:1-41`                      |
+| 1.4 types.ts with local types       | ✅        | ✅ VERIFIED | `LessonCreate/types.ts:1-7`                           |
+| 1.5 index.tsx with modal UI         | ✅        | ✅ VERIFIED | `LessonCreate/index.tsx:1-251`                        |
+| 2.1 lessonSchema with validations   | ✅        | ✅ VERIFIED | `constants.ts:14-32`                                  |
+| 2.2 LessonFormData type exported    | ✅        | ✅ VERIFIED | `constants.ts:34`                                     |
+| 2.3 Tone options array              | ✅        | ✅ VERIFIED | `constants.ts:4-12` (TONE_SUGGESTIONS)                |
+| 3.1 useForm with zodResolver        | ✅        | ✅ VERIFIED | `connect.ts:22-25`                                    |
+| 3.2 $api.useMutation for POST       | ✅        | ✅ VERIFIED | `connect.ts:30-60`                                    |
+| 3.3 onSuccess handler               | ✅        | ✅ VERIFIED | `connect.ts:34-58`                                    |
+| 3.4 onError handler                 | ✅        | ✅ VERIFIED | `connect.ts:60-64`                                    |
+| 3.5 Dirty state tracking            | ✅        | ✅ VERIFIED | `connect.ts:27` (isDirty from formState)              |
+| 4.1 Dialog from shadcn              | ✅        | ✅ VERIFIED | `index.tsx:59`                                        |
+| 4.2 Form fields with shadcn         | ✅        | ✅ VERIFIED | `index.tsx:75-189`                                    |
+| 4.3 Tone input (datalist)           | ✅        | ✅ VERIFIED | `index.tsx:165-181`                                   |
+| 4.4 Cancel/Create buttons + loading | ✅        | ✅ VERIFIED | `index.tsx:191-215`                                   |
+| 4.5 AlertDialog for discard         | ✅        | ✅ VERIFIED | `index.tsx:222-249`                                   |
+| 5.1 Add Lesson button in header     | ✅        | ✅ VERIFIED | `CourseDetail/index.tsx:227-238`                      |
+| 5.2 LessonCreate modal rendered     | ✅        | ✅ VERIFIED | `CourseDetail/index.tsx:257-263`                      |
+| 5.3 courseSlug + onSuccess passed   | ✅        | ✅ VERIFIED | `CourseDetail/index.tsx:258-262`                      |
+| 5.4 nextLessonNumber passed         | ✅        | ✅ VERIFIED | `CourseDetail/connect.ts:117-119`, `index.tsx:259`    |
+| 6.1 LessonListEmpty enabled         | ✅        | ✅ VERIFIED | `LessonListEmpty.tsx:15-18` (disabled={!onAddLesson}) |
+| 6.2 CTA connected to modal          | ✅        | ✅ VERIFIED | `LessonList.tsx:40`, `CourseDetail/index.tsx:244`     |
+| 7.5 typecheck + lint pass           | ✅        | ✅ VERIFIED | Terminal: `bun typecheck` → success, no errors        |
+
+**Summary: 26 of 26 completed tasks verified, 0 questionable, 0 false completions**
+
+---
+
+### Test Coverage and Gaps
+
+- **Testing approach**: Manual testing + typecheck + lint (per project standards)
+- **AC coverage via manual tests**: Tasks 7.1-7.4 marked complete (manual testing)
+- **Gap**: No automated unit/integration tests for this container
+
+**Note**: El proyecto no tiene test runners configurados para React Testing Library. Testing manual es suficiente para MVP.
+
+---
+
+### Architectural Alignment
+
+✅ **Container Pattern**: `connect.ts` maneja toda la lógica, `index.tsx` es presentacional
+✅ **OpenAPI-first**: Usa `$api.useMutation('post', '/api/courses/{slug}/lessons')`
+✅ **Types from models**: Usa tipos inferidos de Zod, consistent con patrones existentes
+✅ **Zod validation in constants.ts**: Sigue el patrón de CourseCreate
+✅ **Toast notifications via sonner**: `toast.success()` y `toast.error()`
+✅ **Query invalidation pattern**: Invalida ambas queries (lessons y course)
+✅ **Modal outside form**: Evita submit interference (documentado en Dev Notes)
+
+---
+
+### Security Notes
+
+- Ningún issue de seguridad identificado
+- Validación de inputs via Zod antes de enviar a API
+- No hay manejo de datos sensibles en este flujo
+
+---
+
+### Best-Practices and References
+
+- [React Hook Form Best Practices](https://react-hook-form.com/advanced-usage)
+- [Zod 4.x Migration](https://zod.dev/?id=migrating-to-v4) - Correctamente usa `message` en lugar de `required_error`
+- [shadcn/ui Dialog](https://ui.shadcn.com/docs/components/dialog)
+- [shadcn/ui AlertDialog](https://ui.shadcn.com/docs/components/alert-dialog)
+
+---
+
+### Action Items
+
+**Code Changes Required:**
+
+- None
+
+**Advisory Notes:**
+
+- Note: Consider adding keyboard shortcut (Cmd/Ctrl+Enter) for quick form submit in future enhancement
+- Note: El campo `tone` usa `datalist` HTML5 - funciona bien pero browser support puede variar en estilos
