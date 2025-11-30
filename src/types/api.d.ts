@@ -365,6 +365,26 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
+    "/api/courses/{slug}/lessons/reorder": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        /**
+         * Reorder Lessons
+         * @description Reorder lessons for a course.
+         */
+        patch: operations["reorder_lessons_api_courses__slug__lessons_reorder_patch"];
+        trace?: never;
+    };
     "/api/courses/{slug}/lessons/{id}/generate-script": {
         parameters: {
             query?: never;
@@ -870,7 +890,7 @@ export interface components {
             /** Status */
             status: string;
             /** Script */
-            script?: Record<string, never> | null;
+            script?: components["schemas"]["ScriptPartResponse"][] | null;
             /** Audiourl */
             audioUrl: string | null;
             /** Scriptgeneratedat */
@@ -975,6 +995,27 @@ export interface components {
             token: string;
             /** Id */
             id: number;
+        };
+        /** ReorderLessonItem */
+        ReorderLessonItem: {
+            /**
+             * Lesson Id
+             * @description The ID of the lesson to reorder
+             */
+            lesson_id: number;
+            /**
+             * Lesson Number
+             * @description The new position/order number
+             */
+            lesson_number: number;
+        };
+        /** ReorderLessonsRequest */
+        ReorderLessonsRequest: {
+            /**
+             * Lessons
+             * @description List of lessons with their new order
+             */
+            lessons: components["schemas"]["ReorderLessonItem"][];
         };
         /**
          * ScriptGenerationResponse
@@ -1978,6 +2019,41 @@ export interface operations {
                     [name: string]: unknown;
                 };
                 content?: never;
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
+    reorder_lessons_api_courses__slug__lessons_reorder_patch: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                slug: string;
+            };
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["ReorderLessonsRequest"];
+            };
+        };
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["LessonsListResponse"];
+                };
             };
             /** @description Validation Error */
             422: {
