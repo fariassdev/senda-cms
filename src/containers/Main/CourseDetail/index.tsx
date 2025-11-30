@@ -36,6 +36,7 @@ import { Skeleton } from '@/components/ui/skeleton';
 import { Switch } from '@/components/ui/switch';
 import { Textarea } from '@/components/ui/textarea';
 import LessonCreate from '@/containers/Main/LessonCreate';
+import LessonEdit from '@/containers/Main/LessonEdit';
 
 import useConnect from './connect';
 import type { CourseDetailProps } from './types';
@@ -59,6 +60,11 @@ export default function CourseDetail({ courseSlug }: CourseDetailProps) {
     handleOpenLessonCreate,
     handleCloseLessonCreate,
     handleLessonCreateSuccess,
+    isLessonEditOpen,
+    selectedLesson,
+    handleEditLesson,
+    handleCloseLessonEdit,
+    handleLessonEditSuccess,
   } = useConnect(courseSlug);
   if (isLoading) {
     return <CourseDetailSkeleton />;
@@ -242,6 +248,7 @@ export default function CourseDetail({ courseSlug }: CourseDetailProps) {
                     isError={isLessonsError}
                     onRetry={refetchLessons}
                     onAddLesson={handleOpenLessonCreate}
+                    onEditLesson={handleEditLesson}
                   />
                 </CardContent>
               </Card>
@@ -254,15 +261,6 @@ export default function CourseDetail({ courseSlug }: CourseDetailProps) {
               </div>
             </form>
           </Form>
-
-          {/* LessonCreate Modal - Outside form to prevent submit interference */}
-          <LessonCreate
-            courseSlug={courseSlug}
-            nextLessonNumber={nextLessonNumber}
-            open={isLessonCreateOpen}
-            onOpenChange={handleCloseLessonCreate}
-            onSuccess={handleLessonCreateSuccess}
-          />
         </div>
 
         {/* Right Sidebar - Course Image and Tags */}
@@ -332,6 +330,25 @@ export default function CourseDetail({ courseSlug }: CourseDetailProps) {
           </Card>
         </div>
       </div>
+
+      {/* Lesson Modals - Outside the form grid to prevent submit interference */}
+      <LessonCreate
+        courseSlug={courseSlug}
+        nextLessonNumber={nextLessonNumber}
+        open={isLessonCreateOpen}
+        onOpenChange={handleCloseLessonCreate}
+        onSuccess={handleLessonCreateSuccess}
+      />
+
+      {selectedLesson && (
+        <LessonEdit
+          courseSlug={courseSlug}
+          lesson={selectedLesson}
+          open={isLessonEditOpen}
+          onOpenChange={handleCloseLessonEdit}
+          onSuccess={handleLessonEditSuccess}
+        />
+      )}
     </div>
   );
 }

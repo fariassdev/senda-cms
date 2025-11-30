@@ -12,6 +12,8 @@ import { courseUpdateSchema, type CourseUpdateFormData } from './constants';
 export default function useConnect(courseSlug: string) {
   const queryClient = useQueryClient();
   const [isLessonCreateOpen, setIsLessonCreateOpen] = useState(false);
+  const [isLessonEditOpen, setIsLessonEditOpen] = useState(false);
+  const [selectedLesson, setSelectedLesson] = useState<Lesson | null>(null);
 
   const form = useForm<CourseUpdateFormData>({
     resolver: zodResolver(courseUpdateSchema),
@@ -131,6 +133,23 @@ export default function useConnect(courseSlug: string) {
     refetchLessons();
   };
 
+  // Lesson Edit Modal handlers
+  const handleEditLesson = (lesson: Lesson) => {
+    setSelectedLesson(lesson);
+    setIsLessonEditOpen(true);
+  };
+
+  const handleCloseLessonEdit = (open: boolean) => {
+    setIsLessonEditOpen(open);
+    if (!open) {
+      setSelectedLesson(null);
+    }
+  };
+
+  const handleLessonEditSuccess = () => {
+    refetchLessons();
+  };
+
   return {
     course,
     lessons,
@@ -149,5 +168,10 @@ export default function useConnect(courseSlug: string) {
     handleOpenLessonCreate,
     handleCloseLessonCreate,
     handleLessonCreateSuccess,
+    isLessonEditOpen,
+    selectedLesson,
+    handleEditLesson,
+    handleCloseLessonEdit,
+    handleLessonEditSuccess,
   };
 }
