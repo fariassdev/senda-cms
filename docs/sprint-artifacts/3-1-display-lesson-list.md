@@ -82,8 +82,8 @@ so that I can understand the complete course structure and each lesson's status.
 
 ## Review Follow-ups (AI)
 
-- [ ] [AI-Review][Low] Add unit tests for StatusBadge component color mapping (file: src/components/StatusBadge.test.tsx)
-- [ ] [AI-Review][Low] Add unit tests for formatTimestamp utility function (file: src/lib/utils.test.ts)
+- [x] [AI-Review][Low] Add unit tests for StatusBadge component color mapping (file: src/components/StatusBadge.test.tsx)
+- [x] [AI-Review][Low] Add unit tests for formatTimestamp utility function (file: src/lib/utils.test.ts)
 
 ## Dev Notes
 
@@ -375,8 +375,8 @@ Summary: 7 of 7 completed tasks verified, 0 questionable, 0 falsely marked compl
 
 **Code Changes Required:**
 
-- [ ] [Low] Add unit tests for StatusBadge component color mapping (file: src/components/StatusBadge.test.tsx)
-- [ ] [Low] Add unit tests for formatTimestamp utility function (file: src/lib/utils.test.ts)
+- [x] [Low] Add unit tests for StatusBadge component color mapping (file: src/components/StatusBadge.test.tsx)
+- [x] [Low] Add unit tests for formatTimestamp utility function (file: src/lib/utils.test.ts)
 
 **Advisory Notes:**
 
