@@ -1,0 +1,225 @@
+<story-context id="3-1-display-lesson-list" v="1.0">
+  <metadata>
+    <epicId>3</epicId>
+    <storyId>1</storyId>
+    <title>Display Lesson List in Course Detail</title>
+    <status>ready-for-dev</status>
+    <generatedAt>2025-11-28</generatedAt>
+    <generator>BMAD Story Context Workflow</generator>
+    <sourceStoryPath>docs/sprint-artifacts/3-1-display-lesson-list.md</sourceStoryPath>
+  </metadata>
+
+  <story>
+    <asA>Content Manager</asA>
+    <iWant>to see all lessons of a course in an organized list</iWant>
+    <soThat>I can understand the complete course structure and each lesson's status</soThat>
+    <tasks>
+      <task id="1" name="Create LessonListItem component">
+        <subtask id="1.1">Create src/components/LessonListItem.tsx with TypeScript props interface</subtask>
+        <subtask id="1.2">Implement row layout with drag handle, title, duration, status badge, timestamp, actions</subtask>
+        <subtask id="1.3">Add status badge with semantic color mapping based on lesson status</subtask>
+        <subtask id="1.4">Implement pulse animation for GENERATING states using Tailwind animate-pulse</subtask>
+        <subtask id="1.5">Format timestamps with date-fns (relative &lt; 7 days, absolute &gt;= 7 days)</subtask>
+      </task>
+      <task id="2" name="Create StatusBadge component">
+        <subtask id="2.1">Create src/components/StatusBadge.tsx component</subtask>
+        <subtask id="2.2">Implement color mapping for all lesson statuses (PENDING, SCRIPT_GENERATING, etc.)</subtask>
+        <subtask id="2.3">Add icon + text pattern for accessibility (not color-only)</subtask>
+        <subtask id="2.4">Add pulse animation variant for generating states</subtask>
+      </task>
+      <task id="3" name="Create LessonList component with data fetching">
+        <subtask id="3.1">Update CourseDetail/connect.ts to fetch lessons via $api.useQuery('get', '/api/courses/{slug}/lessons')</subtask>
+        <subtask id="3.2">Create src/components/LessonList.tsx to render list of LessonListItem components</subtask>
+        <subtask id="3.3">Order lessons by lessonNumber field from API response</subtask>
+        <subtask id="3.4">Implement loading skeleton for lesson list</subtask>
+        <subtask id="3.5">Implement error state with retry functionality</subtask>
+      </task>
+      <task id="4" name="Create LessonListEmpty component">
+        <subtask id="4.1">Create empty state component with icon, title, description</subtask>
+        <subtask id="4.2">Add "Add First Lesson" CTA button (placeholder - disabled for now)</subtask>
+        <subtask id="4.3">Style with dashed border container per UX spec</subtask>
+      </task>
+      <task id="5" name="Integrate LessonList into CourseDetail">
+        <subtask id="5.1">Replace placeholder text in CourseDetail Lessons section</subtask>
+        <subtask id="5.2">Render LessonList component with lessons from API</subtask>
+        <subtask id="5.3">Handle empty/loading/error states appropriately</subtask>
+      </task>
+      <task id="6" name="Add date-fns dependency">
+        <subtask id="6.1">Install date-fns: bun add --exact date-fns</subtask>
+        <subtask id="6.2">Create utility function for timestamp formatting in src/lib/utils.ts</subtask>
+      </task>
+      <task id="7" name="Testing and validation">
+        <subtask id="7.1">Test with course that has lessons (verify ordering, status colors)</subtask>
+        <subtask id="7.2">Test with course that has no lessons (verify empty state)</subtask>
+        <subtask id="7.3">Test loading state (verify skeletons appear)</subtask>
+        <subtask id="7.4">Verify ARIA labels and keyboard accessibility</subtask>
+        <subtask id="7.5">Run bun typecheck and bun lint:fix</subtask>
+      </task>
+    </tasks>
+  </story>
+
+  <acceptanceCriteria>
+    <criterion id="AC1">Given I am on the course detail page with lessons, When the page loads, Then I see a table/list with all lessons ordered by lessonNumber field.</criterion>
+    <criterion id="AC2">Given the lesson list is displayed, Then each row displays: Drag handle (⋮⋮) for reordering (placeholder for Story 3.5), Lesson title (primary text), Duration in minutes, Status badge with semantic colors, Last updated timestamp (relative format &lt; 7 days, absolute &gt;= 7 days), Actions menu (edit, delete icons).</criterion>
+    <criterion id="AC3">Given lessons have different statuses, Then status badges use semantic colors: PENDING grey (#6b7280), SCRIPT_GENERATING/AUDIO_GENERATING blue (#7aa2f7) with pulse animation, SCRIPT_COMPLETED orange (#e0af68), COMPLETED green (#9ece6a), FAILED states red (#f7768e).</criterion>
+    <criterion id="AC4">Given a course has no lessons, When I view the course detail, Then I see an empty state with: Icon (document with plus), Title "No lessons yet", Description "Create your first lesson to start building this course", CTA button "Add First Lesson" (primary cyan).</criterion>
+    <criterion id="AC5">Given lessons are loading, Then I see skeleton placeholders matching the list layout.</criterion>
+    <criterion id="AC6">Given an API error occurs while fetching lessons, Then I see an error state with retry button.</criterion>
+  </acceptanceCriteria>
+
+  <artifacts>
+    <docs>
+      <doc path="docs/architecture.md" title="Architecture Document" section="Container Pattern">
+        Container Pattern: connect.ts handles ALL business logic, data fetching, form handling. index.tsx is pure presentational.
+      </doc>
+      <doc path="docs/architecture.md" title="Architecture Document" section="OpenAPI-First">
+        Use $api.useQuery and $api.useMutation from @/lib/api. Types are auto-generated in @/types/api.d.ts.
+      </doc>
+      <doc path="docs/ux-design-specification.md" title="UX Design Specification" section="Status Badge">
+        Status badges use semantic colors: PENDING grey, GENERATING blue with pulse, COMPLETED green, FAILED red. Always include icon + text.
+      </doc>
+      <doc path="docs/ux-design-specification.md" title="UX Design Specification" section="Date/Time Patterns">
+        Relative timestamps for items &lt; 7 days old ("2 hours ago"). Absolute timestamps for items &gt;= 7 days ("Nov 28, 2025").
+      </doc>
+      <doc path="docs/ux-design-specification.md" title="UX Design Specification" section="Empty State Patterns">
+        Empty states include centered icon (64px), title, description, and primary CTA button. Use dashed border container.
+      </doc>
+      <doc path="docs/epics.md" title="Epic Breakdown" section="Story 3.1">
+        Complete story specification including acceptance criteria and technical notes for lesson list display.
+      </doc>
+    </docs>
+
+    <code>
+      <file path="src/containers/Main/CourseDetail/connect.ts" kind="container-logic" symbol="useConnect" lines="1-89" reason="Main data fetching hook for course detail. Needs to add lessons query.">
+        <currentState>Fetches course data via $api.useQuery('get', '/api/courses/{slug}'). Needs extension to fetch lessons.</currentState>
+      </file>
+      <file path="src/containers/Main/CourseDetail/index.tsx" kind="component" symbol="CourseDetail" lines="1-300" reason="Main course detail component. Contains Lessons section placeholder that needs to be replaced with LessonList.">
+        <currentState>Has placeholder text "Lesson management interface coming soon" in Lessons Card section.</currentState>
+      </file>
+      <file path="src/types/models.ts" kind="types" symbol="Lesson" lines="1-30" reason="Type definitions for Lesson model from OpenAPI schema.">
+        <exports>Lesson, LessonGenerationData, CreateLessonData, UpdateLessonData</exports>
+      </file>
+      <file path="src/types/api.d.ts" kind="types" symbol="LessonData" lines="700-750" reason="Auto-generated LessonData schema with all lesson fields including status.">
+        <schema>
+          id: number, lessonNumber: number, title: string, corePractice: string, keyPoint: string, 
+          tone: string, durationMinutes: number, status: string, script: Record | null, 
+          audioUrl: string | null, scriptGeneratedAt: string | null, audioGeneratedAt: string | null,
+          createdAt: string (ISO 8601), updatedAt: string (ISO 8601)
+        </schema>
+      </file>
+      <file path="src/components/ui/badge.tsx" kind="component" symbol="Badge" lines="1-50" reason="shadcn/ui Badge component for status indicators. Use as base for StatusBadge.">
+        <variants>default, secondary, destructive, outline</variants>
+      </file>
+      <file path="src/components/ui/skeleton.tsx" kind="component" symbol="Skeleton" reason="shadcn/ui Skeleton component for loading states."/>
+      <file path="src/components/ui/table.tsx" kind="component" symbol="Table" reason="shadcn/ui Table component for lesson list structure."/>
+      <file path="src/lib/utils.ts" kind="utility" symbol="cn" lines="1-7" reason="Utility functions. Add formatTimestamp function here."/>
+      <file path="src/lib/api.ts" kind="api-client" symbol="$api" reason="OpenAPI React Query client for data fetching."/>
+    </code>
+
+    <dependencies>
+      <node>
+        <package name="date-fns" version="to-be-installed" purpose="Timestamp formatting with formatDistance, format, differenceInDays"/>
+        <package name="lucide-react" version="installed" purpose="Icons: GripVertical, Pencil, Trash2, Plus, FileText, Clock, RefreshCw, Check, X, Circle, Loader2"/>
+        <package name="@tanstack/react-query" version="5.90.2" purpose="Server state management via $api hooks"/>
+        <package name="sonner" version="2.0.7" purpose="Toast notifications"/>
+        <package name="tailwindcss" version="4.1.13" purpose="Styling including animate-pulse for generating states"/>
+      </node>
+    </dependencies>
+  </artifacts>
+
+  <constraints>
+    <constraint type="pattern">Container Pattern: All data fetching must be in connect.ts, not in component files.</constraint>
+    <constraint type="pattern">OpenAPI-First: Use $api.useQuery from @/lib/api, never manual fetch calls.</constraint>
+    <constraint type="pattern">Type Safety: Import Lesson type from @/types/models, not directly from api.d.ts.</constraint>
+    <constraint type="style">Tailwind: Use utility classes only, no CSS modules.</constraint>
+    <constraint type="ux">Status indicators must include icon + text, never color alone (accessibility).</constraint>
+    <constraint type="ux">Timestamps: Use relative format for &lt;7 days, absolute for &gt;=7 days.</constraint>
+    <constraint type="component">New components go in src/components/ (not in containers).</constraint>
+    <constraint type="dependency">Use bun add --exact for new dependencies.</constraint>
+  </constraints>
+
+  <interfaces>
+    <interface name="LessonsListResponse" kind="API response" path="src/types/api.d.ts">
+      <signature>{ lessons: LessonData[], lessonsCount: number }</signature>
+    </interface>
+    <interface name="LessonData" kind="API schema" path="src/types/api.d.ts">
+      <signature>
+        {
+          id: number;
+          lessonNumber: number;
+          title: string;
+          corePractice: string;
+          keyPoint: string;
+          tone: string;
+          durationMinutes: number;
+          status: string;
+          script?: Record&lt;string, never&gt; | null;
+          audioUrl: string | null;
+          scriptGeneratedAt: string | null;
+          audioGeneratedAt: string | null;
+          createdAt: string;
+          updatedAt: string;
+        }
+      </signature>
+    </interface>
+    <interface name="Lessons API Endpoint" kind="REST endpoint" path="/api/courses/{slug}/lessons">
+      <signature>GET /api/courses/{slug}/lessons → LessonsListResponse</signature>
+    </interface>
+    <interface name="useConnect" kind="hook" path="src/containers/Main/CourseDetail/connect.ts">
+      <signature>useConnect(courseSlug: string) → { course, lessons, lessonsQuery, form, isLoading, isError, ... }</signature>
+    </interface>
+  </interfaces>
+
+  <tests>
+    <standards>
+      Manual testing focus for MVP. Run bun typecheck and bun lint:fix before commit.
+      Husky pre-commit hooks validate TypeScript and ESLint automatically.
+    </standards>
+    <locations>
+      No dedicated test directory yet. Testing is manual + TypeScript validation.
+    </locations>
+    <ideas>
+      <idea acRef="AC1">Verify lessons are ordered by lessonNumber ascending after API response.</idea>
+      <idea acRef="AC2">Test each column renders correctly: drag handle visible, title, duration with "min" suffix, status badge, relative/absolute timestamp, action icons.</idea>
+      <idea acRef="AC3">Test status badge colors: create lessons with each status value and verify correct color/icon/animation.</idea>
+      <idea acRef="AC4">Navigate to course with zero lessons, verify empty state appears with correct icon, title, description, and disabled CTA button.</idea>
+      <idea acRef="AC5">Throttle network or add artificial delay, verify skeletons appear matching lesson row layout.</idea>
+      <idea acRef="AC6">Simulate API error, verify error message and retry button appear. Click retry, verify refetch is triggered.</idea>
+    </ideas>
+  </tests>
+
+  <statusMapping>
+    <status value="PENDING" color="#6b7280" tailwind="text-muted-foreground" icon="Circle" animation="none"/>
+    <status value="SCRIPT_GENERATING" color="#7aa2f7" tailwind="text-blue-400" icon="Loader2" animation="animate-spin"/>
+    <status value="AUDIO_GENERATING" color="#7aa2f7" tailwind="text-blue-400" icon="Loader2" animation="animate-spin"/>
+    <status value="SCRIPT_COMPLETED" color="#e0af68" tailwind="text-orange-400" icon="Circle" animation="none" description="Half-filled"/>
+    <status value="AUDIO_COMPLETED" color="#9ece6a" tailwind="text-green-400" icon="Check" animation="none"/>
+    <status value="SCRIPT_FAILED" color="#f7768e" tailwind="text-red-400" icon="X" animation="none"/>
+    <status value="AUDIO_FAILED" color="#f7768e" tailwind="text-red-400" icon="X" animation="none"/>
+  </statusMapping>
+
+  <timestampFormatting>
+    <pattern>
+      import { formatDistance, format, differenceInDays } from 'date-fns';
+      
+      export function formatTimestamp(dateString: string): string {
+        const date = new Date(dateString);
+        const now = new Date();
+        const daysDiff = differenceInDays(now, date);
+        
+        if (daysDiff &lt; 7) {
+          return formatDistance(date, now, { addSuffix: true }); // "2 hours ago"
+        }
+        return format(date, 'MMM d, yyyy'); // "Nov 28, 2025"
+      }
+    </pattern>
+  </timestampFormatting>
+
+  <implementationNotes>
+    <note priority="high">The Lessons section in CourseDetail/index.tsx currently shows placeholder text. Replace the entire CardContent section with LessonList component.</note>
+    <note priority="high">Add lessons query to connect.ts using: $api.useQuery('get', '/api/courses/{slug}/lessons', { params: { path: { slug: courseSlug } } })</note>
+    <note priority="medium">Drag handle in LessonListItem should be visual placeholder only (Story 3.5 implements actual drag-and-drop).</note>
+    <note priority="medium">"Add First Lesson" button in empty state should be disabled until Story 3.2 is implemented.</note>
+    <note priority="low">Consider using Table component from shadcn/ui for semantic HTML, but card-based layout also acceptable for mobile responsiveness.</note>
+  </implementationNotes>
+</story-context>
