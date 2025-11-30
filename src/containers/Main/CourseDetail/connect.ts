@@ -4,6 +4,7 @@ import { useEffect, useState } from 'react';
 import { useForm } from 'react-hook-form';
 import { toast } from 'sonner';
 
+import { useLessonReorder } from '@/containers/Main/LessonReorder';
 import { $api } from '@/lib/api';
 import type { Lesson } from '@/types/models';
 
@@ -169,6 +170,14 @@ export default function useConnect(courseSlug: string) {
     refetchLessons();
   };
 
+  // Lesson Reorder handlers (AC3, AC4)
+  const { handleReorderLessons, isReordering } = useLessonReorder({
+    courseSlug,
+    onSuccess: () => {
+      refetchLessons();
+    },
+  });
+
   return {
     course,
     lessons,
@@ -197,5 +206,7 @@ export default function useConnect(courseSlug: string) {
     handleDeleteLesson,
     handleCloseLessonDelete,
     handleLessonDeleteSuccess,
+    handleReorderLessons,
+    isReordering,
   };
 }

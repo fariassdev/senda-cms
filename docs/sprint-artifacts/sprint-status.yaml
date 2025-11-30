@@ -28,7 +28,7 @@ development_status:
   3-2-create-new-lesson: review
   3-3-edit-existing-lesson: review
   3-4-delete-lesson: review
-  3-5-reorder-lessons-drag-drop: ready-for-dev
+  3-5-reorder-lessons-drag-drop: review
   3-6-realtime-status-indicators: backlog
   
   # Epic 4: AI Script Generation ⏳ PENDING

@@ -12,7 +12,7 @@ import {
 import Image from 'next/image';
 import Link from 'next/link';
 
-import { LessonList } from '@/components/LessonList';
+import { SortableLessonList } from '@/components/SortableLessonList';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
 import {
@@ -71,6 +71,8 @@ export default function CourseDetail({ courseSlug }: CourseDetailProps) {
     handleDeleteLesson,
     handleCloseLessonDelete,
     handleLessonDeleteSuccess,
+    handleReorderLessons,
+    isReordering,
   } = useConnect(courseSlug);
   if (isLoading) {
     return <CourseDetailSkeleton />;
@@ -248,7 +250,7 @@ export default function CourseDetail({ courseSlug }: CourseDetailProps) {
                   </Button>
                 </CardHeader>
                 <CardContent>
-                  <LessonList
+                  <SortableLessonList
                     lessons={lessons}
                     isLoading={isLessonsLoading}
                     isError={isLessonsError}
@@ -256,6 +258,8 @@ export default function CourseDetail({ courseSlug }: CourseDetailProps) {
                     onAddLesson={handleOpenLessonCreate}
                     onEditLesson={handleEditLesson}
                     onDeleteLesson={handleDeleteLesson}
+                    onReorder={handleReorderLessons}
+                    isReordering={isReordering}
                   />
                 </CardContent>
               </Card>
