@@ -7,6 +7,7 @@ import {
   CalendarIcon,
   TagIcon,
   ImageIcon,
+  Plus,
 } from 'lucide-react';
 import Image from 'next/image';
 import Link from 'next/link';
@@ -34,6 +35,7 @@ import { Input } from '@/components/ui/input';
 import { Skeleton } from '@/components/ui/skeleton';
 import { Switch } from '@/components/ui/switch';
 import { Textarea } from '@/components/ui/textarea';
+import LessonCreate from '@/containers/Main/LessonCreate';
 
 import useConnect from './connect';
 import type { CourseDetailProps } from './types';
@@ -52,6 +54,11 @@ export default function CourseDetail({ courseSlug }: CourseDetailProps) {
     refetchLessons,
     isUpdating,
     onSubmit,
+    isLessonCreateOpen,
+    nextLessonNumber,
+    handleOpenLessonCreate,
+    handleCloseLessonCreate,
+    handleLessonCreateSuccess,
   } = useConnect(courseSlug);
   if (isLoading) {
     return <CourseDetailSkeleton />;
@@ -209,14 +216,24 @@ export default function CourseDetail({ courseSlug }: CourseDetailProps) {
 
               {/* Lessons Section */}
               <Card>
-                <CardHeader>
-                  <CardTitle className="flex items-center space-x-2">
-                    <BookOpenIcon className="h-5 w-5" />
-                    <span>Lessons</span>
-                  </CardTitle>
-                  <CardDescription>
-                    Manage individual meditation lessons for this course
-                  </CardDescription>
+                <CardHeader className="flex flex-row items-center justify-between space-y-0">
+                  <div className="space-y-1.5">
+                    <CardTitle className="flex items-center space-x-2">
+                      <BookOpenIcon className="h-5 w-5" />
+                      <span>Lessons</span>
+                    </CardTitle>
+                    <CardDescription>
+                      Manage individual meditation lessons for this course
+                    </CardDescription>
+                  </div>
+                  <Button
+                    type="button"
+                    onClick={handleOpenLessonCreate}
+                    className="bg-cyan-600 hover:bg-cyan-700"
+                  >
+                    <Plus className="mr-2 h-4 w-4" />
+                    Add Lesson
+                  </Button>
                 </CardHeader>
                 <CardContent>
                   <LessonList
@@ -224,6 +241,7 @@ export default function CourseDetail({ courseSlug }: CourseDetailProps) {
                     isLoading={isLessonsLoading}
                     isError={isLessonsError}
                     onRetry={refetchLessons}
+                    onAddLesson={handleOpenLessonCreate}
                   />
                 </CardContent>
               </Card>
@@ -236,6 +254,15 @@ export default function CourseDetail({ courseSlug }: CourseDetailProps) {
               </div>
             </form>
           </Form>
+
+          {/* LessonCreate Modal - Outside form to prevent submit interference */}
+          <LessonCreate
+            courseSlug={courseSlug}
+            nextLessonNumber={nextLessonNumber}
+            open={isLessonCreateOpen}
+            onOpenChange={handleCloseLessonCreate}
+            onSuccess={handleLessonCreateSuccess}
+          />
         </div>
 
         {/* Right Sidebar - Course Image and Tags */}
