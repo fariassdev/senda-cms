@@ -1,4 +1,5 @@
 import { useQueryClient } from '@tanstack/react-query';
+import { useCallback, useState } from 'react';
 import { toast } from 'sonner';
 
 import { $api } from '@/lib/api';
@@ -7,6 +8,7 @@ import type { Lesson } from '@/types/models';
 import { TOAST_MESSAGES } from './constants';
 import type {
   LessonReorderContext,
+  LessonReorderState,
   ReorderParams,
   UseLessonReorderOptions,
 } from './types';
@@ -41,11 +43,30 @@ function buildReorderRequest(orderedIds: number[]): ReorderParams {
   };
 }
 
+/**
+ * Get the original order of lesson IDs from lessons sorted by lessonNumber
+ */
+function getOriginalOrder(lessons: Lesson[] | undefined): number[] {
+  if (!lessons) return [];
+  return [...lessons]
+    .sort((a, b) => a.lessonNumber - b.lessonNumber)
+    .map((l) => l.id);
+}
+
+/**
+ * Check if two arrays of IDs are in the same order
+ */
+function arraysEqual(a: number[], b: number[]): boolean {
+  if (a.length !== b.length) return false;
+  return a.every((val, idx) => val === b[idx]);
+}
+
 export default function useLessonReorder({
   courseSlug,
   onSuccess,
 }: UseLessonReorderOptions) {
   const queryClient = useQueryClient();
+  const [pendingOrder, setPendingOrder] = useState<number[] | null>(null);
 
   const lessonsQueryKey = [
     'get',
@@ -106,6 +127,8 @@ export default function useLessonReorder({
 
       onSuccess: () => {
         toast.success(TOAST_MESSAGES.success);
+        // Clear pending order after successful save
+        setPendingOrder(null);
         onSuccess?.();
       },
 
@@ -119,8 +142,20 @@ export default function useLessonReorder({
     },
   );
 
-  const handleReorderLessons = (orderedIds: number[]) => {
-    const request = buildReorderRequest(orderedIds);
+  /**
+   * Handle local reorder - stores pending order without saving to API
+   */
+  const handleLocalReorder = useCallback((orderedIds: number[]) => {
+    setPendingOrder(orderedIds);
+  }, []);
+
+  /**
+   * Save pending order to API
+   */
+  const saveReorder = useCallback(() => {
+    if (!pendingOrder) return;
+
+    const request = buildReorderRequest(pendingOrder);
 
     reorderMutation.mutate({
       params: {
@@ -130,12 +165,62 @@ export default function useLessonReorder({
       },
       body: request,
     });
-  };
+  }, [pendingOrder, courseSlug, reorderMutation]);
+
+  /**
+   * Discard pending changes
+   */
+  const discardReorder = useCallback(() => {
+    setPendingOrder(null);
+  }, []);
+
+  /**
+   * Get reorder state with computed properties
+   */
+  const getReorderState = useCallback(
+    (lessons: Lesson[] | undefined): LessonReorderState => {
+      const originalOrder = getOriginalOrder(lessons);
+
+      // Determine if there are unsaved changes
+      const hasUnsavedChanges =
+        pendingOrder !== null && !arraysEqual(pendingOrder, originalOrder);
+
+      // Compute display lessons based on pending order or original
+      let displayLessons: Lesson[] = [];
+      if (lessons) {
+        if (pendingOrder) {
+          displayLessons = reorderLessonsInCache(lessons, pendingOrder);
+        } else {
+          displayLessons = [...lessons].sort(
+            (a, b) => a.lessonNumber - b.lessonNumber,
+          );
+        }
+      }
+
+      return {
+        pendingOrder,
+        hasUnsavedChanges,
+        displayLessons,
+      };
+    },
+    [pendingOrder],
+  );
+
+  /**
+   * Reset pending order when lessons change externally (e.g., after refetch)
+   */
+  const resetPendingOrder = useCallback(() => {
+    setPendingOrder(null);
+  }, []);
 
   return {
-    handleReorderLessons,
+    handleLocalReorder,
+    saveReorder,
+    discardReorder,
+    getReorderState,
+    resetPendingOrder,
     isReordering: reorderMutation.isPending,
   };
 }
 
-export { reorderLessonsInCache, buildReorderRequest };
+export { reorderLessonsInCache, buildReorderRequest, getOriginalOrder };

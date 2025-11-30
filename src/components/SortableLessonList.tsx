@@ -40,7 +40,7 @@ import {
 import type { Lesson } from '@/types/models';
 
 interface SortableLessonListProps {
-  lessons: Lesson[] | undefined;
+  lessons: Lesson[];
   isLoading: boolean;
   isError: boolean;
   onRetry: () => void;
@@ -64,26 +64,20 @@ export function SortableLessonList({
 }: SortableLessonListProps) {
   const [activeId, setActiveId] = useState<UniqueIdentifier | null>(null);
 
-  // Sort lessons by lessonNumber
-  const sortedLessons = useMemo(() => {
-    if (!lessons) return [];
-    return [...lessons].sort((a, b) => a.lessonNumber - b.lessonNumber);
-  }, [lessons]);
-
-  // Get lesson IDs for SortableContext
+  // Get lesson IDs for SortableContext (lessons are already sorted by parent)
   const lessonIds = useMemo(
-    () => sortedLessons.map((lesson) => lesson.id as UniqueIdentifier),
-    [sortedLessons],
+    () => lessons.map((lesson) => lesson.id as UniqueIdentifier),
+    [lessons],
   );
 
   // Get active lesson for DragOverlay
   const activeLesson = useMemo(
-    () => sortedLessons.find((lesson) => lesson.id === activeId),
-    [sortedLessons, activeId],
+    () => lessons.find((lesson) => lesson.id === activeId),
+    [lessons, activeId],
   );
 
   // Disable drag if only 1 lesson (AC6)
-  const isDragDisabled = sortedLessons.length <= 1;
+  const isDragDisabled = lessons.length <= 1;
 
   // Configure sensors for pointer and keyboard (AC5)
   const sensors = useSensors(
@@ -101,9 +95,9 @@ export function SortableLessonList({
   const announcements = useMemo(
     () => ({
       onDragStart({ active }: DragStartEvent) {
-        const lesson = sortedLessons.find((l) => l.id === active.id);
-        const position = sortedLessons.findIndex((l) => l.id === active.id) + 1;
-        return `Picked up lesson "${lesson?.title || active.id}". Position ${position} of ${sortedLessons.length}. Use arrow keys to move, Enter to drop, Escape to cancel.`;
+        const lesson = lessons.find((l) => l.id === active.id);
+        const position = lessons.findIndex((l) => l.id === active.id) + 1;
+        return `Picked up lesson "${lesson?.title || active.id}". Position ${position} of ${lessons.length}. Use arrow keys to move, Enter to drop, Escape to cancel.`;
       },
       onDragOver({
         active,
@@ -113,10 +107,9 @@ export function SortableLessonList({
         over: { id: UniqueIdentifier } | null;
       }) {
         if (over) {
-          const overPosition =
-            sortedLessons.findIndex((l) => l.id === over.id) + 1;
-          const lesson = sortedLessons.find((l) => l.id === active.id);
-          return `Lesson "${lesson?.title || active.id}" is over position ${overPosition} of ${sortedLessons.length}.`;
+          const overPosition = lessons.findIndex((l) => l.id === over.id) + 1;
+          const lesson = lessons.find((l) => l.id === active.id);
+          return `Lesson "${lesson?.title || active.id}" is over position ${overPosition} of ${lessons.length}.`;
         }
         return undefined;
       },
@@ -128,20 +121,19 @@ export function SortableLessonList({
         over: { id: UniqueIdentifier } | null;
       }) {
         if (over) {
-          const overPosition =
-            sortedLessons.findIndex((l) => l.id === over.id) + 1;
-          const lesson = sortedLessons.find((l) => l.id === active.id);
-          return `Lesson "${lesson?.title || active.id}" was dropped at position ${overPosition} of ${sortedLessons.length}.`;
+          const overPosition = lessons.findIndex((l) => l.id === over.id) + 1;
+          const lesson = lessons.find((l) => l.id === active.id);
+          return `Lesson "${lesson?.title || active.id}" was dropped at position ${overPosition} of ${lessons.length}.`;
         }
-        const lesson = sortedLessons.find((l) => l.id === active.id);
+        const lesson = lessons.find((l) => l.id === active.id);
         return `Lesson "${lesson?.title || active.id}" was dropped.`;
       },
       onDragCancel({ active }: { active: { id: UniqueIdentifier } }) {
-        const lesson = sortedLessons.find((l) => l.id === active.id);
+        const lesson = lessons.find((l) => l.id === active.id);
         return `Dragging cancelled. Lesson "${lesson?.title || active.id}" was returned to its original position.`;
       },
     }),
-    [sortedLessons],
+    [lessons],
   );
 
   const handleDragStart = (event: DragStartEvent) => {
@@ -158,17 +150,17 @@ export function SortableLessonList({
     }
 
     // Calculate new order
-    const oldIndex = sortedLessons.findIndex((l) => l.id === active.id);
-    const newIndex = sortedLessons.findIndex((l) => l.id === over.id);
+    const oldIndex = lessons.findIndex((l) => l.id === active.id);
+    const newIndex = lessons.findIndex((l) => l.id === over.id);
 
     if (oldIndex === -1 || newIndex === -1) {
       return;
     }
 
-    const reorderedLessons = arrayMove(sortedLessons, oldIndex, newIndex);
+    const reorderedLessons = arrayMove(lessons, oldIndex, newIndex);
     const orderedIds = reorderedLessons.map((l) => l.id);
 
-    // Call mutation handler (AC3)
+    // Notify parent of new order (local change, not saved yet)
     onReorder(orderedIds);
   };
 
@@ -184,7 +176,7 @@ export function SortableLessonList({
     return <LessonListError onRetry={onRetry} />;
   }
 
-  if (!lessons || lessons.length === 0) {
+  if (lessons.length === 0) {
     return <LessonListEmpty onAddLesson={onAddLesson} />;
   }
 
@@ -224,7 +216,7 @@ export function SortableLessonList({
             strategy={verticalListSortingStrategy}
           >
             <TableBody>
-              {sortedLessons.map((lesson) => (
+              {lessons.map((lesson) => (
                 <SortableLessonItem
                   key={lesson.id}
                   lesson={lesson}

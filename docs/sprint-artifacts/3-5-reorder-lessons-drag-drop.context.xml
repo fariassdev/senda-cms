@@ -1,10 +1,11 @@
-<story-context id="3-5-reorder-lessons-drag-drop" v="1.0">
+<story-context id="3-5-reorder-lessons-drag-drop" v="1.1">
   <metadata>
     <epicId>3</epicId>
     <storyId>3.5</storyId>
     <title>Reorder Lessons with Drag-and-Drop</title>
-    <status>ready-for-dev</status>
+    <status>review</status>
     <generatedAt>2025-11-30</generatedAt>
+    <updatedAt>2025-11-30</updatedAt>
     <generator>BMAD Story Context Workflow</generator>
     <sourceStoryPath>docs/sprint-artifacts/3-5-reorder-lessons-drag-drop.md</sourceStoryPath>
   </metadata>
@@ -21,17 +22,21 @@
       </task>
       <task id="2">Create LessonReorder container structure
         <subtask>2.1 Create src/containers/Main/LessonReorder/ directory</subtask>
-        <subtask>2.2 Create connect.ts with reorder mutation and optimistic update logic</subtask>
-        <subtask>2.3 Create types.ts with ReorderParams interface</subtask>
-        <subtask>2.4 Create constants.ts with any needed schemas</subtask>
+        <subtask>2.2 Create connect.ts with reorder mutation and local state management</subtask>
+        <subtask>2.3 Create types.ts with ReorderParams and LessonReorderState interfaces</subtask>
+        <subtask>2.4 Create constants.ts with toast messages and unsaved changes modal text</subtask>
       </task>
-      <task id="3">Implement reorder mutation in connect.ts
+      <task id="3">Implement reorder mutation in connect.ts with manual save
         <subtask>3.1 Implement $api.useMutation('patch', '/api/courses/{slug}/lessons/reorder') with proper body structure</subtask>
         <subtask>3.2 Build request body as { lessons: [{ lesson_id, lesson_number }] } from reordered items</subtask>
-        <subtask>3.3 Implement onMutate for optimistic updates (cache snapshot + update)</subtask>
-        <subtask>3.4 Implement onError with rollback to previous lesson order</subtask>
-        <subtask>3.5 Implement onSuccess with toast notification</subtask>
-        <subtask>3.6 Handle query cache invalidation for lessons query</subtask>
+        <subtask>3.3 Implement local state (pendingOrder) to track unsaved reorder changes</subtask>
+        <subtask>3.4 Implement handleLocalReorder to update local state without API call</subtask>
+        <subtask>3.5 Implement saveReorder to persist pending changes to API</subtask>
+        <subtask>3.6 Implement discardReorder to discard pending changes</subtask>
+        <subtask>3.7 Implement getReorderState to compute hasUnsavedChanges and displayLessons</subtask>
+        <subtask>3.8 Implement onMutate for optimistic updates (cache snapshot + update)</subtask>
+        <subtask>3.9 Implement onError with rollback to previous lesson order</subtask>
+        <subtask>3.10 Implement onSuccess with toast notification and clear pending order</subtask>
       </task>
       <task id="4">Create SortableLessonItem component
         <subtask>4.1 Create src/components/SortableLessonItem.tsx</subtask>
@@ -44,9 +49,9 @@
         <subtask>5.1 Create src/components/SortableLessonList.tsx</subtask>
         <subtask>5.2 Wrap table body with DndContext and SortableContext</subtask>
         <subtask>5.3 Configure closestCenter collision detection strategy</subtask>
-        <subtask>5.4 Implement handleDragEnd callback with reorder logic</subtask>
+        <subtask>5.4 Implement handleDragEnd callback to notify parent of local reorder</subtask>
         <subtask>5.5 Create custom DragOverlay for smooth dragging visualization</subtask>
-        <subtask>5.6 Add drop indicator line between rows during drag</subtask>
+        <subtask>5.6 Receive already-sorted lessons from parent (displayLessons)</subtask>
       </task>
       <task id="6">Implement keyboard accessibility
         <subtask>6.1 Configure KeyboardSensor from @dnd-kit with proper activation</subtask>
@@ -57,23 +62,33 @@
       </task>
       <task id="7">Integrate with CourseDetail container
         <subtask>7.1 Replace LessonList with SortableLessonList in CourseDetail</subtask>
-        <subtask>7.2 Pass courseSlug and mutation handlers from CourseDetail connect.ts</subtask>
-        <subtask>7.3 Add handleReorderLessons callback to CourseDetail connect.ts</subtask>
-        <subtask>7.4 Ensure edit/delete modals still function correctly with new structure</subtask>
+        <subtask>7.2 Pass displayLessons from reorderState to SortableLessonList</subtask>
+        <subtask>7.3 Add handleLocalReorder, saveReorder, discardReorder to connect.ts</subtask>
+        <subtask>7.4 Add "Save Changes" button that appears when hasUnsavedChanges is true</subtask>
+        <subtask>7.5 Ensure edit/delete modals still function correctly with new structure</subtask>
       </task>
-      <task id="8">Handle edge cases
-        <subtask>8.1 Disable drag when only 1 lesson exists</subtask>
-        <subtask>8.2 Handle concurrent updates (refetch on reorder complete)</subtask>
-        <subtask>8.3 Add loading state during reorder API call</subtask>
+      <task id="8">Implement unsaved changes confirmation modal
+        <subtask>8.1 Intercept navigation (Back to Courses) when hasUnsavedChanges is true</subtask>
+        <subtask>8.2 Show AlertDialog with Save/Discard/Cancel options</subtask>
+        <subtask>8.3 Handle Save and navigate after mutation completes</subtask>
+        <subtask>8.4 Handle Discard to clear pending changes and navigate</subtask>
+        <subtask>8.5 Handle Cancel to close modal and stay on page</subtask>
       </task>
-      <task id="9">Testing and validation
-        <subtask>9.1 Run bun typecheck - verify no type errors</subtask>
-        <subtask>9.2 Run bun lint:fix - verify no lint errors</subtask>
-        <subtask>9.3 Manual test: drag lesson to new position, verify order updates</subtask>
-        <subtask>9.4 Manual test: keyboard reorder with Tab → Enter → Arrow → Enter</subtask>
-        <subtask>9.5 Manual test: simulate API error, verify rollback</subtask>
-        <subtask>9.6 Manual test: verify edit/delete still work after reorder</subtask>
-        <subtask>9.7 Manual test: verify toast notifications appear correctly</subtask>
+      <task id="9">Handle edge cases
+        <subtask>9.1 Disable drag when only 1 lesson exists</subtask>
+        <subtask>9.2 Reset pending order when lessons data changes externally (add/edit/delete)</subtask>
+        <subtask>9.3 Add loading state during reorder API call</subtask>
+      </task>
+      <task id="10">Testing and validation
+        <subtask>10.1 Run bun typecheck - verify no type errors</subtask>
+        <subtask>10.2 Run bun lint:fix - verify no lint errors</subtask>
+        <subtask>10.3 Manual test: drag lesson to new position, verify Save Changes button appears</subtask>
+        <subtask>10.4 Manual test: click Save Changes, verify order persists and button disappears</subtask>
+        <subtask>10.5 Manual test: reorder then click Back, verify unsaved changes modal appears</subtask>
+        <subtask>10.6 Manual test: keyboard reorder with Tab → Enter → Arrow → Enter</subtask>
+        <subtask>10.7 Manual test: simulate API error, verify rollback</subtask>
+        <subtask>10.8 Manual test: verify edit/delete still work after reorder</subtask>
+        <subtask>10.9 Manual test: verify toast notifications appear correctly</subtask>
       </task>
     </tasks>
   </story>
@@ -89,9 +104,14 @@
       - Other lessons visually shift to make room for the drop target
     </criterion>
     <criterion id="AC3">Given I am dragging a lesson, When I drop the lesson in a new position, Then:
-      - The order updates immediately (optimistic update)
+      - The order updates immediately in the UI (local state)
+      - A "Save Changes" button appears next to "Add Lesson" button
+      - The order is NOT saved to backend until user clicks Save Changes
+    </criterion>
+    <criterion id="AC3b">Given I have pending reorder changes, When I click "Save Changes", Then:
       - The new order is saved to backend
       - A brief toast appears: "Order saved"
+      - The "Save Changes" button disappears
       - The lesson numbers update to reflect new positions
     </criterion>
     <criterion id="AC4">Given a reorder API request fails, Then:
@@ -108,6 +128,14 @@
     <criterion id="AC6">Given there is only 1 lesson, Then:
       - The drag handle is visible but non-functional (disabled state)
       - No reorder actions are possible
+    </criterion>
+    <criterion id="AC7">Given I have pending reorder changes, When I click "Back to Courses", Then:
+      - A confirmation modal appears with title "Unsaved Changes"
+      - Modal shows: "You have unsaved changes to the lesson order. Do you want to save them before leaving?"
+      - Three buttons: "Cancel", "Discard", "Save Changes"
+      - Cancel closes modal and stays on page
+      - Discard clears changes and navigates away
+      - Save Changes persists order then navigates away
     </criterion>
   </acceptanceCriteria>
 
@@ -297,7 +325,7 @@
 
   <tests>
     <standards>
-      Project uses manual testing for UI interactions. Run bun typecheck for type validation and bun lint:fix for linting. Playwright tests exist but focus on E2E flows. For this story, manual testing covers drag-and-drop, keyboard accessibility, optimistic updates, and error rollback scenarios.
+      Project uses manual testing for UI interactions. Run bun typecheck for type validation and bun lint:fix for linting. Playwright tests exist but focus on E2E flows. For this story, manual testing covers drag-and-drop, keyboard accessibility, manual save flow, unsaved changes modal, and error rollback scenarios.
     </standards>
     <locations>
       <location>tests/</location>
@@ -306,12 +334,18 @@
     <ideas>
       <idea acRef="AC1">Manual: Click and drag lesson row by handle, verify cursor change and ghost element appears</idea>
       <idea acRef="AC2">Manual: While dragging, hover over other positions, verify drop indicator line appears</idea>
-      <idea acRef="AC3">Manual: Drop lesson in new position, verify list reorders immediately and toast appears</idea>
-      <idea acRef="AC4">Manual: Simulate network error (disable network in DevTools), attempt reorder, verify rollback and error toast</idea>
+      <idea acRef="AC3">Manual: Drop lesson in new position, verify list reorders and Save Changes button appears</idea>
+      <idea acRef="AC3b">Manual: Click Save Changes, verify toast appears and button disappears</idea>
+      <idea acRef="AC4">Manual: Simulate network error (disable network in DevTools), attempt save, verify rollback and error toast</idea>
       <idea acRef="AC5">Manual: Tab to drag handle, press Enter, use Arrow keys to move, press Enter to confirm, verify screen reader announcements</idea>
       <idea acRef="AC6">Manual: With only 1 lesson, verify drag handle is visible but disabled (cursor-not-allowed)</idea>
+      <idea acRef="AC7">Manual: Reorder lessons, click Back to Courses, verify unsaved changes modal appears with 3 options</idea>
+      <idea acRef="AC7">Manual: In modal, click Cancel, verify stays on page with changes intact</idea>
+      <idea acRef="AC7">Manual: In modal, click Discard, verify navigates without saving</idea>
+      <idea acRef="AC7">Manual: In modal, click Save Changes, verify saves then navigates</idea>
       <idea>Regression: After reorder, verify edit and delete buttons still work correctly</idea>
       <idea>Regression: Verify status badges display correctly after reorder</idea>
+      <idea>Regression: Add/edit/delete a lesson, verify pending order is reset</idea>
     </ideas>
   </tests>
 </story-context>

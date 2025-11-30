@@ -22,3 +22,13 @@ export const TOAST_MESSAGES = {
   success: 'Order saved',
   error: 'Failed to update order. Please try again.',
 };
+
+// Unsaved changes modal messages
+export const UNSAVED_CHANGES = {
+  title: 'Unsaved Changes',
+  description:
+    'You have unsaved changes to the lesson order. Do you want to save them before leaving?',
+  saveButton: 'Save Changes',
+  discardButton: 'Discard',
+  cancelButton: 'Cancel',
+};

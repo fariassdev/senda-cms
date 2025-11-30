@@ -8,11 +8,22 @@ import {
   TagIcon,
   ImageIcon,
   Plus,
+  Save,
 } from 'lucide-react';
 import Image from 'next/image';
 import Link from 'next/link';
 
 import { SortableLessonList } from '@/components/SortableLessonList';
+import {
+  AlertDialog,
+  AlertDialogAction,
+  AlertDialogCancel,
+  AlertDialogContent,
+  AlertDialogDescription,
+  AlertDialogFooter,
+  AlertDialogHeader,
+  AlertDialogTitle,
+} from '@/components/ui/alert-dialog';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
 import {
@@ -38,6 +49,7 @@ import { Textarea } from '@/components/ui/textarea';
 import LessonCreate from '@/containers/Main/LessonCreate';
 import LessonDelete from '@/containers/Main/LessonDelete';
 import LessonEdit from '@/containers/Main/LessonEdit';
+import { UNSAVED_CHANGES } from '@/containers/Main/LessonReorder';
 
 import useConnect from './connect';
 import type { CourseDetailProps } from './types';
@@ -45,7 +57,6 @@ import type { CourseDetailProps } from './types';
 export default function CourseDetail({ courseSlug }: CourseDetailProps) {
   const {
     course,
-    lessons,
     form,
     isLoading,
     isError,
@@ -71,8 +82,15 @@ export default function CourseDetail({ courseSlug }: CourseDetailProps) {
     handleDeleteLesson,
     handleCloseLessonDelete,
     handleLessonDeleteSuccess,
-    handleReorderLessons,
+    handleLocalReorder,
+    saveReorder,
+    reorderState,
     isReordering,
+    isUnsavedChangesModalOpen,
+    handleNavigateWithCheck,
+    handleSaveAndNavigate,
+    handleDiscardAndNavigate,
+    handleCancelNavigation,
   } = useConnect(courseSlug);
   if (isLoading) {
     return <CourseDetailSkeleton />;
@@ -90,12 +108,17 @@ export default function CourseDetail({ courseSlug }: CourseDetailProps) {
     <div className="space-y-6">
       {/* Header with back button */}
       <div className="space-y-4">
-        <Link href="/courses">
-          <Button variant="ghost" className="mb-4">
-            <ArrowLeft className="mr-2 h-4 w-4" />
-            Back to Courses
-          </Button>
-        </Link>
+        <Button
+          variant="ghost"
+          className="mb-4"
+          onClick={(e) => {
+            e.preventDefault();
+            handleNavigateWithCheck('/courses');
+          }}
+        >
+          <ArrowLeft className="mr-2 h-4 w-4" />
+          Back to Courses
+        </Button>
         <div className="space-y-2">
           <h1 className="text-3xl font-bold tracking-tight">Course Details</h1>
           <p className="text-muted-foreground">
@@ -240,25 +263,39 @@ export default function CourseDetail({ courseSlug }: CourseDetailProps) {
                       Manage individual meditation lessons for this course
                     </CardDescription>
                   </div>
-                  <Button
-                    type="button"
-                    onClick={handleOpenLessonCreate}
-                    className="bg-cyan-600 hover:bg-cyan-700"
-                  >
-                    <Plus className="mr-2 h-4 w-4" />
-                    Add Lesson
-                  </Button>
+                  <div className="flex items-center gap-2">
+                    {reorderState.hasUnsavedChanges && (
+                      <Button
+                        type="button"
+                        variant="outline"
+                        onClick={saveReorder}
+                        disabled={isReordering}
+                        className="border-cyan-600 text-cyan-600 hover:bg-cyan-50 hover:text-cyan-700"
+                      >
+                        <Save className="mr-2 h-4 w-4" />
+                        {isReordering ? 'Saving...' : 'Save Changes'}
+                      </Button>
+                    )}
+                    <Button
+                      type="button"
+                      onClick={handleOpenLessonCreate}
+                      className="bg-cyan-600 hover:bg-cyan-700"
+                    >
+                      <Plus className="mr-2 h-4 w-4" />
+                      Add Lesson
+                    </Button>
+                  </div>
                 </CardHeader>
                 <CardContent>
                   <SortableLessonList
-                    lessons={lessons}
+                    lessons={reorderState.displayLessons}
                     isLoading={isLessonsLoading}
                     isError={isLessonsError}
                     onRetry={refetchLessons}
                     onAddLesson={handleOpenLessonCreate}
                     onEditLesson={handleEditLesson}
                     onDeleteLesson={handleDeleteLesson}
-                    onReorder={handleReorderLessons}
+                    onReorder={handleLocalReorder}
                     isReordering={isReordering}
                   />
                 </CardContent>
@@ -370,6 +407,41 @@ export default function CourseDetail({ courseSlug }: CourseDetailProps) {
           onSuccess={handleLessonDeleteSuccess}
         />
       )}
+
+      {/* Unsaved Changes Modal */}
+      <AlertDialog
+        open={isUnsavedChangesModalOpen}
+        onOpenChange={handleCancelNavigation}
+      >
+        <AlertDialogContent>
+          <AlertDialogHeader>
+            <AlertDialogTitle>{UNSAVED_CHANGES.title}</AlertDialogTitle>
+            <AlertDialogDescription>
+              {UNSAVED_CHANGES.description}
+            </AlertDialogDescription>
+          </AlertDialogHeader>
+          <AlertDialogFooter className="flex-col gap-2 sm:flex-row">
+            <AlertDialogCancel onClick={handleCancelNavigation}>
+              {UNSAVED_CHANGES.cancelButton}
+            </AlertDialogCancel>
+            <Button
+              variant="outline"
+              onClick={handleDiscardAndNavigate}
+              className="border-destructive text-destructive hover:bg-destructive/10"
+            >
+              {UNSAVED_CHANGES.discardButton}
+            </Button>
+            <AlertDialogAction
+              onClick={handleSaveAndNavigate}
+              disabled={isReordering}
+              className="bg-cyan-600 hover:bg-cyan-700"
+            >
+              <Save className="mr-2 h-4 w-4" />
+              {isReordering ? 'Saving...' : UNSAVED_CHANGES.saveButton}
+            </AlertDialogAction>
+          </AlertDialogFooter>
+        </AlertDialogContent>
+      </AlertDialog>
     </div>
   );
 }

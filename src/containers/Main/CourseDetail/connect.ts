@@ -1,6 +1,6 @@
 import { zodResolver } from '@hookform/resolvers/zod';
 import { useQueryClient } from '@tanstack/react-query';
-import { useEffect, useState } from 'react';
+import { useEffect, useMemo, useState } from 'react';
 import { useForm } from 'react-hook-form';
 import { toast } from 'sonner';
 
@@ -17,6 +17,11 @@ export default function useConnect(courseSlug: string) {
   const [isLessonDeleteOpen, setIsLessonDeleteOpen] = useState(false);
   const [selectedLesson, setSelectedLesson] = useState<Lesson | null>(null);
   const [lessonToDelete, setLessonToDelete] = useState<Lesson | null>(null);
+  const [isUnsavedChangesModalOpen, setIsUnsavedChangesModalOpen] =
+    useState(false);
+  const [pendingNavigationUrl, setPendingNavigationUrl] = useState<
+    string | null
+  >(null);
 
   const form = useForm<CourseUpdateFormData>({
     resolver: zodResolver(courseUpdateSchema),
@@ -170,13 +175,69 @@ export default function useConnect(courseSlug: string) {
     refetchLessons();
   };
 
-  // Lesson Reorder handlers (AC3, AC4)
-  const { handleReorderLessons, isReordering } = useLessonReorder({
+  // Lesson Reorder handlers (AC3, AC4) - Now with local state
+  const {
+    handleLocalReorder,
+    saveReorder,
+    discardReorder,
+    getReorderState,
+    resetPendingOrder,
+    isReordering,
+  } = useLessonReorder({
     courseSlug,
     onSuccess: () => {
       refetchLessons();
     },
   });
+
+  // Get computed reorder state
+  const reorderState = useMemo(
+    () => getReorderState(lessons),
+    [getReorderState, lessons],
+  );
+
+  // Reset pending order when lessons data changes externally (e.g., after add/edit/delete)
+  useEffect(() => {
+    resetPendingOrder();
+  }, [lessonsResponse, resetPendingOrder]);
+
+  // Unsaved changes modal handlers
+  const handleNavigateWithCheck = (url: string) => {
+    if (reorderState.hasUnsavedChanges) {
+      setPendingNavigationUrl(url);
+      setIsUnsavedChangesModalOpen(true);
+    } else {
+      // Navigate directly if no unsaved changes
+      window.location.href = url;
+    }
+  };
+
+  const handleSaveAndNavigate = async () => {
+    saveReorder();
+    setIsUnsavedChangesModalOpen(false);
+    // Navigate after save - the mutation will complete and then navigate
+    if (pendingNavigationUrl) {
+      // Small delay to allow toast to show
+      setTimeout(() => {
+        window.location.href = pendingNavigationUrl;
+      }, 500);
+    }
+    setPendingNavigationUrl(null);
+  };
+
+  const handleDiscardAndNavigate = () => {
+    discardReorder();
+    setIsUnsavedChangesModalOpen(false);
+    if (pendingNavigationUrl) {
+      window.location.href = pendingNavigationUrl;
+    }
+    setPendingNavigationUrl(null);
+  };
+
+  const handleCancelNavigation = () => {
+    setIsUnsavedChangesModalOpen(false);
+    setPendingNavigationUrl(null);
+  };
 
   return {
     course,
@@ -206,7 +267,17 @@ export default function useConnect(courseSlug: string) {
     handleDeleteLesson,
     handleCloseLessonDelete,
     handleLessonDeleteSuccess,
-    handleReorderLessons,
+    // Reorder handlers (updated)
+    handleLocalReorder,
+    saveReorder,
+    discardReorder,
+    reorderState,
     isReordering,
+    // Unsaved changes modal
+    isUnsavedChangesModalOpen,
+    handleNavigateWithCheck,
+    handleSaveAndNavigate,
+    handleDiscardAndNavigate,
+    handleCancelNavigation,
   };
 }
