@@ -382,7 +382,7 @@ This document provides the complete epic and story breakdown for Senda CMS, deco
       (l) =>
         l.status === 'SCRIPT_GENERATING' || l.status === 'AUDIO_GENERATING',
     );
-    return hasGenerating ? 5000 : false;
+    return hasGenerating ? 3000 : false;
   };
   ```
 - Badge with `animate-pulse` class from Tailwind

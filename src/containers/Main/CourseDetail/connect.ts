@@ -1,14 +1,20 @@
 import { zodResolver } from '@hookform/resolvers/zod';
 import { useQueryClient } from '@tanstack/react-query';
-import { useEffect, useMemo, useState } from 'react';
+import { useEffect, useMemo, useRef, useState } from 'react';
 import { useForm } from 'react-hook-form';
 import { toast } from 'sonner';
 
+import type { LessonStatus } from '@/components/StatusBadge';
 import { useLessonReorder } from '@/containers/Main/LessonReorder';
 import { $api } from '@/lib/api';
 import type { Lesson } from '@/types/models';
 
-import { courseUpdateSchema, type CourseUpdateFormData } from './constants';
+import {
+  courseUpdateSchema,
+  GENERATING_STATUSES,
+  POLLING_INTERVAL,
+  type CourseUpdateFormData,
+} from './constants';
 
 export default function useConnect(courseSlug: string) {
   const queryClient = useQueryClient();
@@ -22,6 +28,9 @@ export default function useConnect(courseSlug: string) {
   const [pendingNavigationUrl, setPendingNavigationUrl] = useState<
     string | null
   >(null);
+
+  // Ref to track previous lessons for status change detection
+  const previousLessonsRef = useRef<Lesson[] | null>(null);
 
   const form = useForm<CourseUpdateFormData>({
     resolver: zodResolver(courseUpdateSchema),
@@ -50,7 +59,15 @@ export default function useConnect(courseSlug: string) {
 
   const course = courseResponse?.course;
 
-  // Fetch lessons for this course
+  // Helper function to check if any lessons are generating
+  const hasGeneratingLessons = (lessonsData: Lesson[] | undefined): boolean => {
+    if (!lessonsData) return false;
+    return lessonsData.some((lesson) =>
+      GENERATING_STATUSES.includes(lesson.status as LessonStatus),
+    );
+  };
+
+  // Fetch lessons for this course with dynamic polling
   const {
     data: lessonsResponse,
     isLoading: isLessonsLoading,
@@ -62,9 +79,48 @@ export default function useConnect(courseSlug: string) {
         slug: courseSlug,
       },
     },
+    refetchInterval: (query: {
+      state: { data?: { lessons?: Lesson[] } | undefined };
+    }) => {
+      const lessonsData = query.state.data?.lessons;
+      return hasGeneratingLessons(lessonsData) ? POLLING_INTERVAL : false;
+    },
   });
 
   const lessons: Lesson[] | undefined = lessonsResponse?.lessons;
+
+  // Detect status changes and show toast notifications
+  useEffect(() => {
+    if (!lessons) return;
+
+    const previousLessons = previousLessonsRef.current;
+    if (previousLessons) {
+      lessons.forEach((lesson) => {
+        const prev = previousLessons.find((p) => p.id === lesson.id);
+        if (!prev) return;
+
+        const wasGenerating = GENERATING_STATUSES.includes(
+          prev.status as LessonStatus,
+        );
+
+        if (wasGenerating && lesson.status === 'SCRIPT_COMPLETED') {
+          toast.success(`Script ready for ${lesson.title}`);
+        }
+        if (wasGenerating && lesson.status === 'AUDIO_COMPLETED') {
+          toast.success(`Audio ready for ${lesson.title}`);
+        }
+        if (
+          wasGenerating &&
+          (lesson.status === 'SCRIPT_FAILED' ||
+            lesson.status === 'AUDIO_FAILED')
+        ) {
+          toast.error(`Generation failed for ${lesson.title}`);
+        }
+      });
+    }
+
+    previousLessonsRef.current = lessons;
+  }, [lessons]);
 
   // Update form when course data is loaded
   useEffect(() => {
@@ -196,10 +252,29 @@ export default function useConnect(courseSlug: string) {
     [getReorderState, lessons],
   );
 
-  // Reset pending order when lessons data changes externally (e.g., after add/edit/delete)
+  // Track lesson IDs to detect structural changes (add/delete) vs status-only changes
+  const previousLessonIdsRef = useRef<string | null>(null);
+
+  // Reset pending order only when lessons are structurally changed (add/edit/delete)
+  // NOT when only status changes from polling
   useEffect(() => {
-    resetPendingOrder();
-  }, [lessonsResponse, resetPendingOrder]);
+    if (!lessons) return;
+
+    const currentLessonIds = lessons
+      .map((l) => l.id)
+      .sort((a, b) => a - b)
+      .join(',');
+
+    if (
+      previousLessonIdsRef.current !== null &&
+      previousLessonIdsRef.current !== currentLessonIds
+    ) {
+      // Lesson IDs changed = structural change, reset pending order
+      resetPendingOrder();
+    }
+
+    previousLessonIdsRef.current = currentLessonIds;
+  }, [lessons, resetPendingOrder]);
 
   // Unsaved changes modal handlers
   const handleNavigateWithCheck = (url: string) => {

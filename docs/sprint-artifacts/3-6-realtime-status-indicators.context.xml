@@ -1,0 +1,338 @@
+<story-context id=".bmad/bmm/workflows/4-implementation/story-context/template" v="1.0">
+  <metadata>
+    <epicId>3</epicId>
+    <storyId>6</storyId>
+    <title>Real-time Status Indicators</title>
+    <status>drafted</status>
+    <generatedAt>2025-11-30</generatedAt>
+    <generator>BMAD Story Context Workflow</generator>
+    <sourceStoryPath>docs/sprint-artifacts/3-6-realtime-status-indicators.md</sourceStoryPath>
+  </metadata>
+
+  <story>
+    <asA>Content Manager</asA>
+    <iWant>to see generation status update in real-time</iWant>
+    <soThat>I know when my scripts/audio are ready without refreshing</soThat>
+    <tasks>
+      <task id="1" title="Enhance StatusBadge component with animations" ac="1">
+        <subtask id="1.1">Add spinning icon for SCRIPT_GENERATING and AUDIO_GENERATING states</subtask>
+        <subtask id="1.2">Add animate-pulse class to generating status badges</subtask>
+        <subtask id="1.3">Add checkmark icon (✓) for SCRIPT_COMPLETED and COMPLETED states</subtask>
+        <subtask id="1.4">Add X icon (✕) for FAILED states</subtask>
+        <subtask id="1.5">Ensure icons are accessible with aria-labels</subtask>
+      </task>
+      <task id="2" title="Implement dynamic polling in CourseDetail connect.ts" ac="2,6">
+        <subtask id="2.1">Add refetchInterval callback function to useQuery</subtask>
+        <subtask id="2.2">Implement hasGeneratingLessons helper function</subtask>
+        <subtask id="2.3">Return 3000ms interval when generating, false otherwise</subtask>
+        <subtask id="2.4">Add previousLessonsRef to track status changes between polls</subtask>
+      </task>
+      <task id="3" title="Implement status change detection" ac="3,4,5,7">
+        <subtask id="3.1">Create usePreviousLessons hook or useRef to store previous data</subtask>
+        <subtask id="3.2">Compare current vs previous lesson statuses on each poll</subtask>
+        <subtask id="3.3">Detect transitions: GENERATING → COMPLETED, GENERATING → FAILED</subtask>
+        <subtask id="3.4">Extract lesson titles for notification messages</subtask>
+      </task>
+      <task id="4" title="Add toast notifications for status changes" ac="3,4,5,7">
+        <subtask id="4.1">Show success toast "Script ready for [title]" on SCRIPT_COMPLETED</subtask>
+        <subtask id="4.2">Show success toast "Audio ready for [title]" on COMPLETED (audio)</subtask>
+        <subtask id="4.3">Show error toast "Generation failed for [title]" on FAILED</subtask>
+        <subtask id="4.4">Handle multiple simultaneous transitions (multiple toasts)</subtask>
+      </task>
+      <task id="5" title="Create polling constants" ac="2">
+        <subtask id="5.1">Add constants.ts to CourseDetail container</subtask>
+        <subtask id="5.2">Define POLLING_INTERVAL = 3000 constant</subtask>
+        <subtask id="5.3">Define GENERATING_STATUSES array</subtask>
+      </task>
+      <task id="6" title="Update LessonReorder to support polling" ac="8">
+        <subtask id="6.1">Ensure pending order state resets when polled data changes</subtask>
+        <subtask id="6.2">Verify reorder state handles status transitions correctly</subtask>
+        <subtask id="6.3">Handle case where generating lesson becomes COMPLETED</subtask>
+      </task>
+      <task id="7" title="Testing and validation" ac="1-8">
+        <subtask id="7.1">Run bun typecheck - verify no type errors</subtask>
+        <subtask id="7.2">Run bun lint:fix - verify no lint errors</subtask>
+        <subtask id="7.3">Manual test: verify generating lessons show animated badge</subtask>
+        <subtask id="7.4">Manual test: verify polling stops when no generating lessons</subtask>
+        <subtask id="7.5">Manual test: verify toast appears on status completion</subtask>
+        <subtask id="7.6">Manual test: verify toast error appears on failure</subtask>
+        <subtask id="7.7">Manual test: verify multiple generating lessons poll correctly</subtask>
+        <subtask id="7.8">Manual test: navigate away and back, verify polling resumes</subtask>
+      </task>
+    </tasks>
+  </story>
+
+  <acceptanceCriteria>
+    <criterion id="1">
+      <given>a lesson has status SCRIPT_GENERATING or AUDIO_GENERATING</given>
+      <when>I view the lesson list</when>
+      <then>
+        - The status badge shows a pulse/spinner animation (blue #7aa2f7)
+        - The badge displays the generating status text with spinning icon
+      </then>
+    </criterion>
+    <criterion id="2">
+      <given>lessons are in a generating state</given>
+      <when>I view the course detail page</when>
+      <then>
+        - React Query polls the course endpoint every 5 seconds
+        - Polling is automatic and requires no user interaction
+      </then>
+    </criterion>
+    <criterion id="3">
+      <given>polling is active</given>
+      <when>a lesson's status changes to SCRIPT_COMPLETED</when>
+      <then>
+        - Polling stops for that lesson (no more generating lessons)
+        - Badge updates to orange (#e0af68) with checkmark icon
+        - Toast notification: "Script ready for [lesson title]"
+      </then>
+    </criterion>
+    <criterion id="4">
+      <given>polling is active</given>
+      <when>a lesson's status changes to COMPLETED</when>
+      <then>
+        - Polling stops for that lesson
+        - Badge updates to green (#9ece6a) with checkmark icon
+        - Toast notification: "Audio ready for [lesson title]"
+      </then>
+    </criterion>
+    <criterion id="5">
+      <given>polling is active</given>
+      <when>a lesson's status changes to FAILED</when>
+      <then>
+        - Polling stops for that lesson
+        - Badge updates to red (#f7768e) with X icon
+        - Toast error: "Generation failed for [lesson title]"
+      </then>
+    </criterion>
+    <criterion id="6">
+      <given>no lessons are in SCRIPT_GENERATING or AUDIO_GENERATING status</given>
+      <then>
+        - Polling is disabled (no unnecessary API calls)
+        - No refetchInterval is set on the query
+      </then>
+    </criterion>
+    <criterion id="7">
+      <given>multiple lessons are generating simultaneously</given>
+      <when>one completes</when>
+      <then>
+        - Toast notification appears for the completed lesson
+        - Polling continues for remaining generating lessons
+        - All status updates are tracked independently
+      </then>
+    </criterion>
+    <criterion id="8">
+      <given>I navigate away and return to the course detail page</given>
+      <then>
+        - Polling resumes if any lessons are still generating
+        - The correct generating animation is displayed
+      </then>
+    </criterion>
+  </acceptanceCriteria>
+
+  <artifacts>
+    <docs>
+      <doc>
+        <path>docs/PRD.md</path>
+        <title>Product Requirements Document</title>
+        <section>2.3.2 Feedback System</section>
+        <snippet>Toast notifications for actions, loading states and progress indicators, error messages with recovery options, success confirmations.</snippet>
+      </doc>
+      <doc>
+        <path>docs/architecture.md</path>
+        <title>Architecture Document</title>
+        <section>Real-time Updates: React Query Polling</section>
+        <snippet>Simple polling for generation progress tracking. Use refetchInterval option in React Query with callback function that returns 3000 when generating or false otherwise.</snippet>
+      </doc>
+      <doc>
+        <path>docs/architecture.md</path>
+        <title>Architecture Document</title>
+        <section>Error Handling Strategy</section>
+        <snippet>Toast Notifications (Sonner 2.0.7): Success: Green toast, 4s auto-dismiss. Error: Red toast, 6s auto-dismiss. Warning: Orange toast, 5s auto-dismiss. Info: Blue toast, 4s auto-dismiss.</snippet>
+      </doc>
+      <doc>
+        <path>docs/ux-design-specification.md</path>
+        <title>UX Design Specification</title>
+        <section>3.1 Color System - Semantic Colors</section>
+        <snippet>Success: #9ece6a (Published, completed, success messages). Warning: #e0af68 (In progress, draft, caution states). Error: #f7768e (Failed, errors, destructive actions). Info: #7aa2f7 (Processing, informational states).</snippet>
+      </doc>
+      <doc>
+        <path>docs/ux-design-specification.md</path>
+        <title>UX Design Specification</title>
+        <section>7.1 Consistency Rules - Feedback and Notifications</section>
+        <snippet>Loading States: Badge with animate-pulse class from Tailwind. Toast notifications triggered by comparing previous vs current status. Real-time polling updates via 5s interval.</snippet>
+      </doc>
+      <doc>
+        <path>docs/epics.md</path>
+        <title>Epic Breakdown</title>
+        <section>Story 3.6: Real-time Status Indicators</section>
+        <snippet>Use refetchInterval option in React Query with dynamic callback. Badge with animate-pulse class from Tailwind. Toast notifications triggered by comparing previous vs current status.</snippet>
+      </doc>
+      <doc>
+        <path>docs/sprint-artifacts/3-5-reorder-lessons-drag-drop.md</path>
+        <title>Story 3.5 - Previous Story</title>
+        <section>Implementation Patterns</section>
+        <snippet>LessonReorder container created for reorder state management. pendingOrder state must be preserved during polling updates. Cache invalidation with refetchLessons() works - polling will use same pattern.</snippet>
+      </doc>
+      <doc>
+        <path>.github/copilot-instructions.md</path>
+        <title>Copilot Instructions</title>
+        <section>Container Architecture</section>
+        <snippet>Containers have connect.ts for ALL logic (API calls, forms, effects). Components are pure presentational. Rule: Polling logic goes in connect.ts.</snippet>
+      </doc>
+    </docs>
+    <code>
+      <file>
+        <path>src/components/StatusBadge.tsx</path>
+        <kind>component</kind>
+        <symbol>StatusBadge, statusConfigMap</symbol>
+        <lines>1-84</lines>
+        <reason>Primary file to modify. Already has status config with colors and icons. Need to add pulse animation for GENERATING states and verify icon assignments match UX spec. Currently uses Loader2 with animate-spin for generating, Check for completed, X for failed.</reason>
+      </file>
+      <file>
+        <path>src/containers/Main/CourseDetail/connect.ts</path>
+        <kind>container-logic</kind>
+        <symbol>useConnect</symbol>
+        <lines>1-200</lines>
+        <reason>Main file for polling logic. Currently uses $api.useQuery without refetchInterval. Need to add dynamic refetchInterval callback, previousLessonsRef for status change detection, and useEffect for toast notifications on status transitions.</reason>
+      </file>
+      <file>
+        <path>src/containers/Main/CourseDetail/constants.ts</path>
+        <kind>constants</kind>
+        <symbol>courseUpdateSchema</symbol>
+        <lines>1-15</lines>
+        <reason>Existing constants file. Need to add POLLING_INTERVAL = 3000 and GENERATING_STATUSES array.</reason>
+      </file>
+      <file>
+        <path>src/containers/Main/LessonReorder/connect.ts</path>
+        <kind>container-logic</kind>
+        <symbol>useLessonReorder, getReorderState</symbol>
+        <lines>1-167</lines>
+        <reason>Related file for understanding reorder state management. getReorderState computes displayLessons from pendingOrder. Polling should update lessons without resetting pendingOrder unless explicit user action.</reason>
+      </file>
+      <file>
+        <path>src/components/SortableLessonList.tsx</path>
+        <kind>component</kind>
+        <symbol>SortableLessonList</symbol>
+        <lines>1-220</lines>
+        <reason>Renders lesson list with StatusBadge. Receives displayLessons from parent. Status changes from polling will automatically reflect through this component.</reason>
+      </file>
+      <file>
+        <path>src/types/models.ts</path>
+        <kind>types</kind>
+        <symbol>Lesson</symbol>
+        <lines>1-25</lines>
+        <reason>Lesson type from OpenAPI. The status field comes from API response as LessonStatus enum values.</reason>
+      </file>
+      <file>
+        <path>src/components/QueryProvider.tsx</path>
+        <kind>provider</kind>
+        <symbol>QueryProvider</symbol>
+        <lines>1-45</lines>
+        <reason>React Query configuration. Default staleTime is 5min, gcTime is 10min. refetchOnWindowFocus is disabled by default. Polling will override these for lessons query.</reason>
+      </file>
+      <file>
+        <path>src/lib/api.ts</path>
+        <kind>api-client</kind>
+        <symbol>$api</symbol>
+        <reason>OpenAPI client with auth middleware. Used for all API calls. The useQuery hook from $api supports refetchInterval option.</reason>
+      </file>
+    </code>
+    <dependencies>
+      <ecosystem name="node">
+        <package name="@tanstack/react-query" version="5.90.2">Server state management with polling support via refetchInterval</package>
+        <package name="sonner" version="2.0.7">Toast notifications (toast.success, toast.error)</package>
+        <package name="lucide-react" version="latest">Icons including Loader2, Check, X, Circle</package>
+        <package name="openapi-react-query" version="0.5.0">Auto-generated React Query hooks from OpenAPI</package>
+        <package name="tailwindcss" version="4.1.13">Utility classes including animate-spin, animate-pulse</package>
+      </ecosystem>
+    </dependencies>
+  </artifacts>
+
+  <constraints>
+    <constraint type="architecture">All polling logic MUST go in connect.ts following Container Pattern. StatusBadge component remains pure presentational.</constraint>
+    <constraint type="architecture">Use $api.useQuery from openapi-react-query - never write manual fetch calls.</constraint>
+    <constraint type="architecture">Status change detection uses React refs (useRef) to compare previous vs current lesson statuses.</constraint>
+    <constraint type="pattern">Use refetchInterval callback function (not static value) to dynamically enable/disable polling based on generating lessons.</constraint>
+    <constraint type="pattern">Toast notifications must use sonner library (toast.success, toast.error) - no other notification libraries.</constraint>
+    <constraint type="pattern">Animation classes use Tailwind utilities: animate-spin for spinning icons, animate-pulse for badge pulse effect.</constraint>
+    <constraint type="reorder-integration">Polling should NOT reset pendingOrder state. Only reset on explicit user actions (add/edit/delete lessons).</constraint>
+    <constraint type="accessibility">All status icons must have aria-hidden="true" since the status text provides the accessible name.</constraint>
+    <constraint type="testing">Run bun typecheck and bun lint:fix before marking story complete.</constraint>
+  </constraints>
+
+  <interfaces>
+    <interface>
+      <name>Lessons Query with Polling</name>
+      <kind>React Query Hook</kind>
+      <signature>
+$api.useQuery('get', '/api/courses/{slug}/lessons', {
+  params: { path: { slug: courseSlug } },
+  refetchInterval: (query) => {
+    const lessons = query.state.data?.lessons;
+    const hasGenerating = lessons?.some(l => 
+      l.status === 'SCRIPT_GENERATING' || l.status === 'AUDIO_GENERATING'
+    );
+    return hasGenerating ? 3000 : false;
+  },
+})
+      </signature>
+      <path>src/containers/Main/CourseDetail/connect.ts</path>
+    </interface>
+    <interface>
+      <name>LessonStatus Type</name>
+      <kind>TypeScript Union</kind>
+      <signature>
+type LessonStatus = 
+  | 'PENDING'
+  | 'SCRIPT_GENERATING'
+  | 'SCRIPT_COMPLETED'
+  | 'AUDIO_GENERATING'
+  | 'AUDIO_COMPLETED'
+  | 'SCRIPT_FAILED'
+  | 'AUDIO_FAILED';
+      </signature>
+      <path>src/components/StatusBadge.tsx</path>
+    </interface>
+    <interface>
+      <name>Toast API</name>
+      <kind>Function</kind>
+      <signature>
+import { toast } from 'sonner';
+toast.success(message: string): void
+toast.error(message: string): void
+      </signature>
+      <path>src/containers/Main/CourseDetail/connect.ts</path>
+    </interface>
+  </interfaces>
+
+  <tests>
+    <standards>
+      Per project testing standards, this story requires manual testing to verify:
+      - Animated badge appears for GENERATING statuses with pulse animation
+      - Polling interval is 3000ms when generating lessons exist
+      - Polling stops when no generating lessons remain
+      - Toast notifications appear for each status transition
+      - Multiple simultaneous transitions show multiple toasts
+      - Navigation away and back preserves correct state
+      - Reorder state is preserved during polling updates
+      - Accessibility: animated icons have aria-hidden="true"
+      
+      Run bun typecheck and bun lint:fix before completing story.
+    </standards>
+    <locations>
+      <location>tests/ (Playwright e2e tests - not required for this story)</location>
+      <location>Manual testing via browser developer tools</location>
+    </locations>
+    <ideas>
+      <idea ac="1">Verify StatusBadge renders with animate-pulse class for GENERATING statuses</idea>
+      <idea ac="1">Verify Loader2 icon has animate-spin class for spinning effect</idea>
+      <idea ac="2">Verify network tab shows polling requests every 5s when generating</idea>
+      <idea ac="3,4,5">Mock status change and verify toast appears with correct message</idea>
+      <idea ac="6">Verify no polling requests when all lessons have static status</idea>
+      <idea ac="7">Test with multiple lessons in GENERATING state, verify independent tracking</idea>
+      <idea ac="8">Navigate to /courses and back, verify polling resumes if lessons still generating</idea>
+    </ideas>
+  </tests>
+</story-context>

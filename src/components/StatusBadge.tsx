@@ -1,4 +1,4 @@
-import { Check, Circle, Loader2, X } from 'lucide-react';
+import { CheckCircle, Circle, Loader2, XCircle } from 'lucide-react';
 import React from 'react';
 
 import { Badge } from '@/components/ui/badge';
@@ -19,7 +19,8 @@ interface StatusConfig {
   icon: React.ComponentType<{ className?: string }>;
   colorClass: string;
   bgClass: string;
-  animate?: boolean;
+  animateSpin?: boolean;
+  animatePulse?: boolean;
 }
 
 const statusConfigMap: Record<LessonStatus, StatusConfig> = {
@@ -34,36 +35,38 @@ const statusConfigMap: Record<LessonStatus, StatusConfig> = {
     icon: Loader2,
     colorClass: 'text-blue-400',
     bgClass: 'bg-blue-500/10 border-blue-500/20',
-    animate: true,
+    animateSpin: true,
+    animatePulse: true,
   },
   AUDIO_GENERATING: {
     label: 'Generating Audio',
     icon: Loader2,
     colorClass: 'text-blue-400',
     bgClass: 'bg-blue-500/10 border-blue-500/20',
-    animate: true,
+    animateSpin: true,
+    animatePulse: true,
   },
   SCRIPT_COMPLETED: {
     label: 'Script Ready',
-    icon: Circle,
+    icon: CheckCircle,
     colorClass: 'text-orange-400',
     bgClass: 'bg-orange-500/10 border-orange-500/20',
   },
   AUDIO_COMPLETED: {
     label: 'Completed',
-    icon: Check,
+    icon: CheckCircle,
     colorClass: 'text-green-400',
     bgClass: 'bg-green-500/10 border-green-500/20',
   },
   SCRIPT_FAILED: {
     label: 'Script Failed',
-    icon: X,
+    icon: XCircle,
     colorClass: 'text-red-400',
     bgClass: 'bg-red-500/10 border-red-500/20',
   },
   AUDIO_FAILED: {
     label: 'Audio Failed',
-    icon: X,
+    icon: XCircle,
     colorClass: 'text-red-400',
     bgClass: 'bg-red-500/10 border-red-500/20',
   },
@@ -87,13 +90,18 @@ export function StatusBadge({ status, className }: StatusBadgeProps) {
   return (
     <Badge
       variant="outline"
-      className={cn(config.bgClass, config.colorClass, className)}
+      className={cn(
+        config.bgClass,
+        config.colorClass,
+        config.animatePulse && 'animate-pulse',
+        className,
+      )}
     >
       <Icon
         className={cn(
           'h-3 w-3',
           config.colorClass,
-          config.animate && 'animate-spin',
+          config.animateSpin && 'animate-spin',
         )}
         aria-hidden="true"
       />
