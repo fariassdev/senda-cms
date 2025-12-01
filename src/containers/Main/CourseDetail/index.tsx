@@ -289,6 +289,7 @@ export default function CourseDetail({ courseSlug }: CourseDetailProps) {
                 <CardContent>
                   <SortableLessonList
                     lessons={reorderState.displayLessons}
+                    courseSlug={courseSlug}
                     isLoading={isLessonsLoading}
                     isError={isLessonsError}
                     onRetry={refetchLessons}

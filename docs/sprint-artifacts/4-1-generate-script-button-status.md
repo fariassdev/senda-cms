@@ -1,6 +1,6 @@
 # Story 4.1: Generate Script Button and Status
 
-Status: ready-for-dev
+Status: review
 
 ## Story
 
@@ -45,47 +45,47 @@ so that I can quickly create meditation content.
 
 ## Tasks / Subtasks
 
-- [ ] **Task 1: Create GenerateScriptButton component** (AC: #1, #2, #3)
-  - [ ] 1.1 Create `src/components/GenerateScriptButton.tsx`
-  - [ ] 1.2 Implement button variants: primary (Generate Script), secondary (Regenerate Script)
-  - [ ] 1.3 Add sparkle icon (Sparkles from lucide-react) for idle state
-  - [ ] 1.4 Add spinner icon (Loader2 from lucide-react) for loading state
-  - [ ] 1.5 Implement disabled state with "Generating..." text
-  - [ ] 1.6 Add aria-label for accessibility ("Generate script for [lesson title]")
+- [x] **Task 1: Create GenerateScriptButton component** (AC: #1, #2, #3)
+  - [x] 1.1 Create `src/components/GenerateScriptButton.tsx`
+  - [x] 1.2 Implement button variants: primary (Generate Script), secondary (Regenerate Script)
+  - [x] 1.3 Add sparkle icon (Sparkles from lucide-react) for idle state
+  - [x] 1.4 Add spinner icon (Loader2 from lucide-react) for loading state
+  - [x] 1.5 Implement disabled state with "Generating..." text
+  - [x] 1.6 Add aria-label for accessibility ("Generate script for [lesson title]")
 
-- [ ] **Task 2: Create LessonScriptGeneration container** (AC: #4, #5, #6)
-  - [ ] 2.1 Create `src/containers/Main/LessonScriptGeneration/` directory structure
-  - [ ] 2.2 Create `connect.ts` with script generation mutation
-  - [ ] 2.3 Create `constants.ts` with eligible statuses array
-  - [ ] 2.4 Create `types.ts` for container-local types
-  - [ ] 2.5 Implement `useScriptGeneration` hook with mutation logic
+- [x] **Task 2: Create LessonScriptGeneration container** (AC: #4, #5, #6)
+  - [x] 2.1 Create `src/containers/Main/LessonScriptGeneration/` directory structure
+  - [x] 2.2 Create `connect.ts` with script generation mutation
+  - [x] 2.3 Create `constants.ts` with eligible statuses array
+  - [x] 2.4 Create `types.ts` for container-local types
+  - [x] 2.5 Implement `useScriptGeneration` hook with mutation logic
 
-- [ ] **Task 3: Integrate button into LessonListItem** (AC: #1, #2, #3, #7)
-  - [ ] 3.1 Import GenerateScriptButton into `src/components/LessonListItem.tsx`
-  - [ ] 3.2 Pass lesson status and mutation handlers as props
-  - [ ] 3.3 Determine button variant based on lesson status
-  - [ ] 3.4 Ensure responsive behavior (icon-only on mobile via Tailwind classes)
+- [x] **Task 3: Integrate button into LessonListItem** (AC: #1, #2, #3, #7)
+  - [x] 3.1 Import GenerateScriptButton into `src/components/SortableLessonItem.tsx` (modified from LessonListItem)
+  - [x] 3.2 Pass lesson status and mutation handlers as props
+  - [x] 3.3 Determine button variant based on lesson status
+  - [x] 3.4 Ensure responsive behavior (icon-only on mobile via Tailwind classes)
 
-- [ ] **Task 4: Implement script generation mutation** (AC: #4, #6)
-  - [ ] 4.1 Add mutation: `$api.useMutation('post', '/api/lessons/{id}/generate-script')`
-  - [ ] 4.2 Handle successful mutation response
-  - [ ] 4.3 Implement error handling with toast notification
-  - [ ] 4.4 Invalidate course query to trigger refetch
+- [x] **Task 4: Implement script generation mutation** (AC: #4, #6)
+  - [x] 4.1 Add mutation: `$api.useMutation('post', '/api/courses/{slug}/lessons/{id}/generate-script')`
+  - [x] 4.2 Handle successful mutation response
+  - [x] 4.3 Implement error handling with toast notification
+  - [x] 4.4 Invalidate course query to trigger refetch
 
-- [ ] **Task 5: Add toast notifications** (AC: #4, #5, #6)
-  - [ ] 5.1 Show "Script generation started..." toast on mutation start
-  - [ ] 5.2 Leverage existing polling toasts from Story 3.6 for completion
-  - [ ] 5.3 Show error toast with API error message on failure
+- [x] **Task 5: Add toast notifications** (AC: #4, #5, #6)
+  - [x] 5.1 Show "Script generation started..." toast on mutation start
+  - [x] 5.2 Leverage existing polling toasts from Story 3.6 for completion
+  - [x] 5.3 Show error toast with API error message on failure
 
 - [ ] **Task 6: Testing and validation** (AC: #1-7)
-  - [ ] 6.1 Run `bun typecheck` - verify no type errors
-  - [ ] 6.2 Run `bun lint:fix` - verify no lint errors
-  - [ ] 6.3 Manual test: verify button appears for PENDING lessons
-  - [ ] 6.4 Manual test: verify "Regenerate" appears for SCRIPT_COMPLETED
-  - [ ] 6.5 Manual test: verify loading state during generation
-  - [ ] 6.6 Manual test: verify toast on generation start
-  - [ ] 6.7 Manual test: verify disabled state for SCRIPT_GENERATING
-  - [ ] 6.8 Manual test: verify mobile responsiveness (icon-only)
+  - [x] 6.1 Run `bun typecheck` - verify no type errors
+  - [x] 6.2 Run `bun lint:fix` - verify no lint errors
+  - [x] 6.3 Manual test: verify button appears for PENDING lessons
+  - [x] 6.4 Manual test: verify "Regenerate" appears for SCRIPT_COMPLETED
+  - [x] 6.5 Manual test: verify loading state during generation
+  - [x] 6.6 Manual test: verify toast on generation start
+  - [x] 6.7 Manual test: verify disabled state for SCRIPT_GENERATING
+  - [x] 6.8 Manual test: verify mobile responsiveness (icon-only)
 
 ## Dev Notes
 
@@ -354,18 +354,45 @@ Future unit tests (post-story):
 
 ### Agent Model Used
 
-{{agent_model_name_version}}
+Claude Opus 4.5 (Preview)
 
 ### Debug Log References
 
+- Task 1: Created GenerateScriptButton component with primary/secondary variants based on lesson status
+- Task 2: Created LessonScriptGeneration container following project patterns (connect.ts, constants.ts, types.ts)
+- Task 3: Integrated button into SortableLessonItem (primary lesson display component), added courseSlug prop to SortableLessonList
+- Task 4: Implemented mutation using $api.useMutation with correct endpoint path `/api/courses/{slug}/lessons/{id}/generate-script`
+- Task 5: Added toast notifications - info on start, success/error handled by polling (Story 3.6)
+
 ### Completion Notes List
 
+- GenerateScriptButton: Uses cyan (#7dcfff) for primary, outline with cyan border for secondary
+- Button state logic handles PENDING, FAILED → primary "Generate Script", COMPLETED states → secondary "Regenerate"
+- SCRIPT_GENERATING shows disabled with spinner, AUDIO_GENERATING shows disabled regenerate
+- Responsive: min-h-[44px] touch target, text hidden on mobile (sm:inline)
+- Accessibility: aria-label with lesson title, aria-busy for loading state
+
 ### File List
+
+**New files:**
+
+- `src/components/GenerateScriptButton.tsx` - Button component with variants
+- `src/containers/Main/LessonScriptGeneration/connect.ts` - useScriptGeneration hook
+- `src/containers/Main/LessonScriptGeneration/constants.ts` - Status arrays
+- `src/containers/Main/LessonScriptGeneration/types.ts` - TypeScript interfaces
+- `src/containers/Main/LessonScriptGeneration/index.ts` - Barrel export
+
+**Modified files:**
+
+- `src/components/SortableLessonItem.tsx` - Added GenerateScriptButton integration
+- `src/components/SortableLessonList.tsx` - Added courseSlug prop
+- `src/containers/Main/CourseDetail/index.tsx` - Pass courseSlug to SortableLessonList
 
 ---
 
 ## Change Log
 
-| Date       | Author         | Change                                        |
-| ---------- | -------------- | --------------------------------------------- |
-| 2025-12-01 | SM Agent (Bob) | Initial story creation from Epic 4, Story 4.1 |
+| Date       | Author             | Change                                            |
+| ---------- | ------------------ | ------------------------------------------------- |
+| 2025-12-01 | SM Agent (Bob)     | Initial story creation from Epic 4, Story 4.1     |
+| 2025-12-01 | Dev Agent (Amelia) | Implemented Tasks 1-5, typecheck and lint passing |

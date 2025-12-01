@@ -43,6 +43,7 @@ interface SortableLessonListProps {
   lessons: Lesson[];
   isLoading: boolean;
   isError: boolean;
+  courseSlug: string;
   onRetry: () => void;
   onAddLesson?: () => void;
   onEditLesson?: (lesson: Lesson) => void;
@@ -55,6 +56,7 @@ export function SortableLessonList({
   lessons,
   isLoading,
   isError,
+  courseSlug,
   onRetry,
   onAddLesson,
   onEditLesson,
@@ -220,6 +222,7 @@ export function SortableLessonList({
                 <SortableLessonItem
                   key={lesson.id}
                   lesson={lesson}
+                  courseSlug={courseSlug}
                   disabled={isDragDisabled || isReordering}
                   onEdit={onEditLesson}
                   onDelete={onDeleteLesson}

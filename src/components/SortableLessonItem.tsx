@@ -4,14 +4,20 @@ import { CSS } from '@dnd-kit/utilities';
 import { Clock, GripVertical, Pencil, Trash2 } from 'lucide-react';
 import type { CSSProperties } from 'react';
 
+import {
+  GenerateScriptButton,
+  type LessonStatus,
+} from '@/components/GenerateScriptButton';
 import { StatusBadge } from '@/components/StatusBadge';
 import { Button } from '@/components/ui/button';
 import { TableCell, TableRow } from '@/components/ui/table';
+import { useScriptGeneration } from '@/containers/Main/LessonScriptGeneration';
 import { formatTimestamp } from '@/lib/utils';
 import type { Lesson } from '@/types/models';
 
 interface SortableLessonItemProps {
   lesson: Lesson;
+  courseSlug: string;
   disabled?: boolean;
   onEdit?: (lesson: Lesson) => void;
   onDelete?: (lesson: Lesson) => void;
@@ -19,6 +25,7 @@ interface SortableLessonItemProps {
 
 export function SortableLessonItem({
   lesson,
+  courseSlug,
   disabled = false,
   onEdit,
   onDelete,
@@ -33,6 +40,14 @@ export function SortableLessonItem({
   } = useSortable({
     id: lesson.id as UniqueIdentifier,
     disabled,
+  });
+
+  // Script generation hook
+  const { generateScript, isGenerating } = useScriptGeneration({
+    courseSlug,
+    lessonId: lesson.id,
+    lessonTitle: lesson.title,
+    status: lesson.status as LessonStatus,
   });
 
   const style: CSSProperties = {
@@ -96,6 +111,13 @@ export function SortableLessonItem({
       {/* Actions */}
       <TableCell>
         <div className="flex items-center gap-1">
+          <GenerateScriptButton
+            lessonId={lesson.id}
+            lessonTitle={lesson.title}
+            status={lesson.status as LessonStatus}
+            onGenerate={generateScript}
+            isGenerating={isGenerating}
+          />
           <Button
             type="button"
             variant="ghost"
