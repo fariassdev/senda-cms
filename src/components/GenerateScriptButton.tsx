@@ -1,19 +1,13 @@
 'use client';
 
 import { Loader2, Sparkles } from 'lucide-react';
-import { useCallback, useEffect, useState } from 'react';
+import { useCallback, useState } from 'react';
 
 import { ScriptConfigModal } from '@/components/ScriptConfigModal';
 import { Button } from '@/components/ui/button';
-import {
-  DEFAULT_SCRIPT_CONFIG,
-  getStorageKey,
-} from '@/containers/Main/LessonScriptGeneration';
-import type {
-  ScriptConfigFormData,
-  ToneValue,
-} from '@/containers/Main/LessonScriptGeneration';
+import type { LessonEditFormData } from '@/containers/Main/LessonScriptGeneration';
 import { cn } from '@/lib/utils';
+import type { Lesson } from '@/types/models';
 
 export type LessonStatus =
   | 'PENDING'
@@ -25,14 +19,12 @@ export type LessonStatus =
   | 'AUDIO_FAILED';
 
 interface GenerateScriptButtonProps {
-  lessonId: number;
-  lessonTitle: string;
-  lessonDuration: number;
-  keyThemes?: string[];
-  status: LessonStatus;
+  lesson: Lesson;
   courseSlug: string;
-  onGenerate: (config?: ScriptConfigFormData) => void;
+  onGenerate: () => void;
+  onUpdateAndGenerate: (data: LessonEditFormData) => Promise<void>;
   isGenerating?: boolean;
+  isUpdating?: boolean;
   className?: string;
 }
 
@@ -79,86 +71,33 @@ function getButtonState(status: LessonStatus, isGenerating: boolean) {
   };
 }
 
-/**
- * Load saved tone preference from localStorage
- */
-function getSavedTone(courseSlug: string): ToneValue | undefined {
-  if (typeof window === 'undefined') return undefined;
-  try {
-    const stored = localStorage.getItem(getStorageKey(courseSlug));
-    if (
-      stored &&
-      ['calming', 'energizing', 'neutral', 'visualization'].includes(stored)
-    ) {
-      return stored as ToneValue;
-    }
-  } catch {
-    // localStorage not available or parsing error
-  }
-  return undefined;
-}
-
-/**
- * Save tone preference to localStorage
- */
-function saveTone(courseSlug: string, tone: ToneValue): void {
-  if (typeof window === 'undefined') return;
-  try {
-    localStorage.setItem(getStorageKey(courseSlug), tone);
-  } catch {
-    // localStorage not available
-  }
-}
-
 export function GenerateScriptButton({
-  lessonTitle,
-  lessonDuration,
-  keyThemes = [],
-  status,
+  lesson,
   courseSlug,
   onGenerate,
+  onUpdateAndGenerate,
   isGenerating = false,
+  isUpdating = false,
   className,
 }: GenerateScriptButtonProps) {
+  const status = lesson.status as LessonStatus;
   const buttonState = getButtonState(status, isGenerating);
   const isPrimary = buttonState.variant === 'default';
 
   const [isModalOpen, setIsModalOpen] = useState(false);
-  const [savedTone, setSavedTone] = useState<ToneValue | undefined>(undefined);
-
-  // Load saved tone on mount
-  useEffect(() => {
-    setSavedTone(getSavedTone(courseSlug));
-  }, [courseSlug]);
 
   const handleClick = useCallback(
     (e: React.MouseEvent) => {
-      // Shift+Click bypasses modal with default settings
+      // Shift+Click bypasses modal and generates directly
       if (e.shiftKey) {
-        const defaultConfig: ScriptConfigFormData = {
-          ...DEFAULT_SCRIPT_CONFIG,
-          target_duration: lessonDuration,
-        };
-        onGenerate(defaultConfig);
+        onGenerate();
         return;
       }
 
       // Normal click opens configuration modal
       setIsModalOpen(true);
     },
-    [lessonDuration, onGenerate],
-  );
-
-  const handleGenerate = useCallback(
-    (config: ScriptConfigFormData) => {
-      // Save tone preference
-      saveTone(courseSlug, config.tone);
-      setSavedTone(config.tone);
-
-      // Trigger generation
-      onGenerate(config);
-    },
-    [courseSlug, onGenerate],
+    [onGenerate],
   );
 
   return (
@@ -184,7 +123,7 @@ export function GenerateScriptButton({
         )}
         onClick={handleClick}
         disabled={buttonState.disabled}
-        aria-label={`${buttonState.label} for ${lessonTitle}`}
+        aria-label={`${buttonState.label} for ${lesson.title}`}
         aria-busy={isGenerating || status === 'SCRIPT_GENERATING'}
         title="Hold Shift and click for quick generation with defaults"
       >
@@ -200,12 +139,12 @@ export function GenerateScriptButton({
       <ScriptConfigModal
         open={isModalOpen}
         onOpenChange={setIsModalOpen}
-        lessonTitle={lessonTitle}
-        lessonDuration={lessonDuration}
-        keyThemes={keyThemes}
-        defaultTone={savedTone ?? DEFAULT_SCRIPT_CONFIG.tone}
-        onGenerate={handleGenerate}
+        lesson={lesson}
+        courseSlug={courseSlug}
+        onGenerate={onGenerate}
+        onUpdateAndGenerate={onUpdateAndGenerate}
         isGenerating={isGenerating}
+        isUpdating={isUpdating}
       />
     </>
   );

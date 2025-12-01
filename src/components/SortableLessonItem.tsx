@@ -42,13 +42,14 @@ export function SortableLessonItem({
     disabled,
   });
 
-  // Script generation hook
-  const { generateScript, isGenerating } = useScriptGeneration({
-    courseSlug,
-    lessonId: lesson.id,
-    lessonTitle: lesson.title,
-    status: lesson.status as LessonStatus,
-  });
+  // Script generation hook - now returns extended interface
+  const { generateScript, updateAndGenerateScript, isGenerating, isUpdating } =
+    useScriptGeneration({
+      courseSlug,
+      lessonId: lesson.id,
+      lessonTitle: lesson.title,
+      status: lesson.status as LessonStatus,
+    });
 
   const style: CSSProperties = {
     transform: CSS.Transform.toString(transform),
@@ -57,10 +58,6 @@ export function SortableLessonItem({
     position: 'relative' as const,
     zIndex: isDragging ? 1 : 0,
   };
-
-  // Extract keyThemes from lesson if available
-  const keyThemes =
-    (lesson as Lesson & { keyThemes?: string[] }).keyThemes ?? [];
 
   return (
     <TableRow
@@ -116,14 +113,12 @@ export function SortableLessonItem({
       <TableCell className="text-right">
         <div className="flex items-center justify-end gap-1">
           <GenerateScriptButton
-            lessonId={lesson.id}
-            lessonTitle={lesson.title}
-            lessonDuration={lesson.durationMinutes}
-            keyThemes={keyThemes}
-            status={lesson.status as LessonStatus}
+            lesson={lesson}
             courseSlug={courseSlug}
             onGenerate={generateScript}
+            onUpdateAndGenerate={updateAndGenerateScript}
             isGenerating={isGenerating}
+            isUpdating={isUpdating}
           />
           <Button
             type="button"

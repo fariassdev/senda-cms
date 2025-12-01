@@ -1,10 +1,10 @@
 'use client';
 
 import { zodResolver } from '@hookform/resolvers/zod';
+import { Loader2 } from 'lucide-react';
 import { useEffect } from 'react';
 import { useForm } from 'react-hook-form';
 
-import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
 import {
   Dialog,
@@ -24,60 +24,67 @@ import {
   FormMessage,
 } from '@/components/ui/form';
 import { Input } from '@/components/ui/input';
-import {
-  Select,
-  SelectContent,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
-} from '@/components/ui/select';
 import { Textarea } from '@/components/ui/textarea';
+import { TONE_SUGGESTIONS } from '@/containers/Main/LessonCreate/constants';
 import {
+  lessonEditSchema,
   MAX_INSTRUCTIONS_LENGTH,
-  scriptConfigSchema,
-  TONE_OPTIONS,
 } from '@/containers/Main/LessonScriptGeneration';
 import type {
-  ScriptConfigFormData,
+  LessonEditFormData,
   ScriptConfigModalProps,
 } from '@/containers/Main/LessonScriptGeneration';
 
 export function ScriptConfigModal({
   open,
   onOpenChange,
-  lessonTitle,
-  lessonDuration,
-  keyThemes = [],
-  defaultTone = 'calming',
+  lesson,
   onGenerate,
+  onUpdateAndGenerate,
   isGenerating,
+  isUpdating,
 }: ScriptConfigModalProps) {
-  const form = useForm<ScriptConfigFormData>({
-    resolver: zodResolver(scriptConfigSchema),
+  const form = useForm<LessonEditFormData>({
+    resolver: zodResolver(lessonEditSchema),
     defaultValues: {
-      tone: defaultTone,
-      target_duration: lessonDuration,
+      title: lesson.title,
+      corePractice: lesson.corePractice,
+      keyPoint: lesson.keyPoint,
+      tone: lesson.tone,
+      durationMinutes: lesson.durationMinutes,
       instructions: '',
     },
   });
 
-  // Reset form when modal opens with new values
+  const { isDirty, isValid } = form.formState;
+  const isLoading = isGenerating || isUpdating;
+
+  // Reset form when modal opens with fresh lesson data
   useEffect(() => {
     if (open) {
       form.reset({
-        tone: defaultTone,
-        target_duration: lessonDuration,
+        title: lesson.title,
+        corePractice: lesson.corePractice,
+        keyPoint: lesson.keyPoint,
+        tone: lesson.tone,
+        durationMinutes: lesson.durationMinutes,
         instructions: '',
       });
     }
-  }, [open, defaultTone, lessonDuration, form]);
+  }, [open, lesson, form]);
 
   const instructionsValue = form.watch('instructions') ?? '';
   const charactersRemaining =
     MAX_INSTRUCTIONS_LENGTH - instructionsValue.length;
 
-  const handleSubmit = (data: ScriptConfigFormData) => {
-    onGenerate(data);
+  const handleSubmit = async (data: LessonEditFormData) => {
+    if (isDirty) {
+      // Form has changes - update lesson first, then generate
+      await onUpdateAndGenerate(data);
+    } else {
+      // No changes - just generate
+      onGenerate();
+    }
     onOpenChange(false);
   };
 
@@ -85,67 +92,133 @@ export function ScriptConfigModal({
     onOpenChange(false);
   };
 
+  // Dynamic button label based on form state
+  const getSubmitButtonLabel = () => {
+    if (isUpdating) return 'Saving...';
+    if (isGenerating) return 'Generating...';
+    if (isDirty) return 'Save & Generate';
+    return 'Generate';
+  };
+
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
       <DialogContent
-        className="sm:max-w-[600px] backdrop-blur-lg"
+        className="max-h-[90vh] overflow-y-auto sm:max-w-[600px] backdrop-blur-lg"
         aria-labelledby="script-config-title"
         aria-describedby="script-config-description"
       >
         <DialogHeader>
           <DialogTitle id="script-config-title">
-            Configure Script Generation
+            Review Lesson & Generate Script
           </DialogTitle>
           <DialogDescription id="script-config-description">
-            Set the tone and style for &ldquo;{lessonTitle}&rdquo; script
+            Review the lesson details before generating. Any changes will be
+            saved automatically.
           </DialogDescription>
         </DialogHeader>
 
         <Form {...form}>
           <form
             onSubmit={form.handleSubmit(handleSubmit)}
-            className="space-y-6"
+            className="space-y-5"
           >
-            {/* Tone Selector */}
+            {/* Lesson Title */}
+            <FormField
+              control={form.control}
+              name="title"
+              render={({ field }) => (
+                <FormItem>
+                  <FormLabel>Lesson Title</FormLabel>
+                  <FormControl>
+                    <Input
+                      placeholder="Enter lesson title"
+                      {...field}
+                      aria-describedby="title-error"
+                    />
+                  </FormControl>
+                  <FormMessage id="title-error" />
+                </FormItem>
+              )}
+            />
+
+            {/* Core Practice */}
+            <FormField
+              control={form.control}
+              name="corePractice"
+              render={({ field }) => (
+                <FormItem>
+                  <FormLabel>Core Practice</FormLabel>
+                  <FormControl>
+                    <Textarea
+                      placeholder="Describe the core meditation practice..."
+                      className="min-h-[80px] resize-none"
+                      {...field}
+                      aria-describedby="core-practice-help core-practice-error"
+                    />
+                  </FormControl>
+                  <FormDescription id="core-practice-help">
+                    The main technique or practice for this meditation
+                  </FormDescription>
+                  <FormMessage id="core-practice-error" />
+                </FormItem>
+              )}
+            />
+
+            {/* Key Point */}
+            <FormField
+              control={form.control}
+              name="keyPoint"
+              render={({ field }) => (
+                <FormItem>
+                  <FormLabel>Key Point</FormLabel>
+                  <FormControl>
+                    <Textarea
+                      placeholder="What is the key takeaway for this lesson..."
+                      className="min-h-[80px] resize-none"
+                      {...field}
+                      aria-describedby="key-point-help key-point-error"
+                    />
+                  </FormControl>
+                  <FormDescription id="key-point-help">
+                    The main insight or message the practitioner should gain
+                  </FormDescription>
+                  <FormMessage id="key-point-error" />
+                </FormItem>
+              )}
+            />
+
+            {/* Tone - Combobox with suggestions */}
             <FormField
               control={form.control}
               name="tone"
               render={({ field }) => (
                 <FormItem>
                   <FormLabel>Tone</FormLabel>
-                  <Select
-                    onValueChange={field.onChange}
-                    defaultValue={field.value}
-                    value={field.value}
-                  >
-                    <FormControl>
-                      <SelectTrigger
-                        className="w-full"
-                        aria-label="Select tone for script generation"
-                      >
-                        <SelectValue placeholder="Select a tone" />
-                      </SelectTrigger>
-                    </FormControl>
-                    <SelectContent>
-                      {TONE_OPTIONS.map((option) => (
-                        <SelectItem key={option.value} value={option.value}>
-                          {option.label}
-                        </SelectItem>
-                      ))}
-                    </SelectContent>
-                  </Select>
-                  <FormMessage />
+                  <FormControl>
+                    <Input
+                      placeholder="Type or select a tone (e.g., Calming, Energizing)"
+                      list="tone-suggestions-script-modal"
+                      {...field}
+                      aria-describedby="tone-error"
+                    />
+                  </FormControl>
+                  <datalist id="tone-suggestions-script-modal">
+                    {TONE_SUGGESTIONS.map((tone) => (
+                      <option key={tone} value={tone} />
+                    ))}
+                  </datalist>
+                  <FormMessage id="tone-error" />
                 </FormItem>
               )}
             />
 
-            {/* Target Duration */}
+            {/* Duration */}
             <FormField
               control={form.control}
-              name="target_duration"
+              name="durationMinutes"
               render={({ field }) => (
                 <FormItem>
-                  <FormLabel>Target Duration (minutes)</FormLabel>
+                  <FormLabel>Duration (minutes)</FormLabel>
                   <FormControl>
                     <Input
                       type="number"
@@ -157,7 +230,7 @@ export function ScriptConfigModal({
                     />
                   </FormControl>
                   <FormDescription id="duration-help">
-                    Adjustable from 1 to 120 minutes
+                    Target duration from 1 to 120 minutes
                   </FormDescription>
                   <FormMessage id="duration-error" />
                 </FormItem>
@@ -173,8 +246,8 @@ export function ScriptConfigModal({
                   <FormLabel>Additional Instructions (Optional)</FormLabel>
                   <FormControl>
                     <Textarea
-                      placeholder="Enter specific guidance for the script generation..."
-                      className="min-h-[100px] resize-none"
+                      placeholder="Enter any specific guidance for the script generation..."
+                      className="min-h-[80px] resize-none"
                       maxLength={MAX_INSTRUCTIONS_LENGTH}
                       {...field}
                       aria-describedby="instructions-help instructions-error"
@@ -197,27 +270,12 @@ export function ScriptConfigModal({
               )}
             />
 
-            {/* Key Themes Preview */}
-            {keyThemes.length > 0 && (
-              <div className="space-y-2">
-                <p className="text-sm font-medium leading-none">Key Themes</p>
-                <div
-                  className="flex flex-wrap gap-2"
-                  role="list"
-                  aria-label="Key themes for this lesson"
-                >
-                  {keyThemes.map((theme, index) => (
-                    <Badge
-                      key={index}
-                      variant="secondary"
-                      className="text-xs"
-                      role="listitem"
-                    >
-                      {theme}
-                    </Badge>
-                  ))}
-                </div>
-              </div>
+            {/* Dirty form indicator */}
+            {isDirty && (
+              <p className="text-sm text-amber-500" role="status">
+                ⚠️ You have unsaved changes. They will be saved before
+                generating.
+              </p>
             )}
 
             <DialogFooter className="gap-2 sm:gap-0">
@@ -225,17 +283,23 @@ export function ScriptConfigModal({
                 type="button"
                 variant="outline"
                 onClick={handleCancel}
-                disabled={isGenerating}
+                disabled={isLoading}
                 className="border-[#7dcfff] text-[#7dcfff] hover:bg-[#7dcfff]/10"
               >
                 Cancel
               </Button>
               <Button
                 type="submit"
-                disabled={isGenerating || !form.formState.isValid}
+                disabled={isLoading || !isValid}
                 className="bg-[#7dcfff] text-slate-900 hover:bg-[#7dcfff]/90"
               >
-                {isGenerating ? 'Generating...' : 'Generate'}
+                {isLoading && (
+                  <Loader2
+                    className="mr-2 h-4 w-4 animate-spin"
+                    aria-hidden="true"
+                  />
+                )}
+                {getSubmitButtonLabel()}
               </Button>
             </DialogFooter>
           </form>

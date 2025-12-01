@@ -1,6 +1,7 @@
 import type { LessonStatus } from '@/components/GenerateScriptButton';
+import type { Lesson } from '@/types/models';
 
-import type { ScriptConfigFormData } from './constants';
+import type { LessonEditFormData, ScriptConfigFormData } from './constants';
 
 export interface UseScriptGenerationProps {
   courseSlug: string;
@@ -16,14 +17,15 @@ export interface UseScriptGenerationReturn {
 
 /**
  * Props for ScriptConfigModal component
+ * Now receives the full lesson object for review/editing
  */
 export interface ScriptConfigModalProps {
   open: boolean;
   onOpenChange: (open: boolean) => void;
-  lessonTitle: string;
-  lessonDuration: number;
-  keyThemes?: string[];
-  defaultTone?: ScriptConfigFormData['tone'];
-  onGenerate: (config: ScriptConfigFormData) => void;
+  lesson: Lesson;
+  courseSlug: string;
+  onGenerate: () => void;
+  onUpdateAndGenerate: (data: LessonEditFormData) => Promise<void>;
   isGenerating: boolean;
+  isUpdating: boolean;
 }

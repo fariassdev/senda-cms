@@ -1,47 +1,55 @@
 # Story 4.2: Script Generation Configuration
 
-Status: review
+Status: done
 
 ## Story
 
 As a **Content Manager**,
-I want to configure script generation parameters before generating,
-so that I can control the tone and style of the meditation script.
+I want to review and optionally edit lesson details before generating a script,
+so that I can ensure all data is correct and control the script generation.
 
 ## Acceptance Criteria
 
 1. **Given** I click "Generate Script" on a lesson, **When** the button is clicked, **Then**:
-   - A configuration modal appears
-   - The modal contains tone selection, duration adjustment, and additional instructions fields
-   - The modal title indicates this is for script configuration
+   - A review/edit modal appears showing all lesson fields
+   - The modal title indicates this is for reviewing lesson & generating script
+   - All lesson data is displayed and editable
 
 2. **Given** the configuration modal is open, **When** I view the form, **Then** I see:
-   - **Tone selector**: Dropdown with options: Calming (default), Energizing, Neutral, Guided Visualization
-   - **Target duration**: Number input pre-filled from lesson duration, adjustable ±5 min (min 1, max 120)
+   - **Title**: Text input with current lesson title (editable)
+   - **Core Practice**: Textarea with current core practice (editable)
+   - **Key Point**: Textarea with current key point (editable)
+   - **Tone selector**: Dropdown with options: Calming, Energizing, Neutral, Guided Visualization
+   - **Duration**: Number input pre-filled from lesson duration (min 1, max 120)
    - **Additional instructions**: Optional textarea for specific guidance (max 500 characters)
-   - **Key themes preview**: Read-only display of lesson's existing key_themes
 
-3. **When** I select a tone and click "Generate" in the modal, **Then**:
-   - The generation starts with my selected configuration
+3. **Given** I have NOT made any changes (form is clean), **When** I click "Generate", **Then**:
+   - Generation starts immediately without updating the lesson
    - The modal closes automatically
    - The lesson status updates to `SCRIPT_GENERATING`
-   - A toast notification appears: "Script generation started..."
+   - Toast: "Script generation started..."
 
-4. **When** I click "Cancel" or press Escape in the modal, **Then**:
+4. **Given** I HAVE made changes (form is dirty), **When** I view the form, **Then**:
+   - A warning indicator shows: "⚠️ You have unsaved changes. They will be saved before generating."
+   - The submit button changes from "Generate" to "Save & Generate"
+
+5. **Given** I have made changes and click "Save & Generate", **Then**:
+   - The lesson is updated first (PUT /api/courses/{slug}/lessons/{id})
+   - Toast: "Saving lesson changes..." then "Lesson updated successfully"
+   - Script generation starts after successful update
+   - Toast: "Script generation started..."
+
+6. **When** I click "Cancel" or press Escape in the modal, **Then**:
    - The modal closes without starting generation
    - No API call is made
    - The lesson status remains unchanged
 
-5. **Given** I want to skip configuration, **When** I hold Shift+Click on "Generate Script", **Then**:
-   - Generation starts immediately with default settings (tone: calming, duration: lesson default)
+7. **Given** I want to skip configuration, **When** I hold Shift+Click on "Generate Script", **Then**:
+   - Generation starts immediately with current lesson data
    - No modal appears
-   - Toast notification: "Script generation started with default settings..."
+   - Toast notification: "Script generation started..."
 
-6. **Given** I have previously configured generation for this course, **When** I open the configuration modal, **Then**:
-   - The last-used tone preference is pre-selected (stored in localStorage)
-   - Target duration defaults to the lesson's configured duration
-
-7. **Given** the form has invalid data (duration < 1 or > 120), **When** I attempt to submit, **Then**:
+8. **Given** the form has invalid data, **When** I attempt to submit, **Then**:
    - Inline validation errors appear below the invalid field
    - The form does not submit
    - The modal remains open
@@ -344,6 +352,7 @@ Claude Opus 4.5 (Preview)
 
 1. Plan: Implementar modal de configuración con Zod + React Hook Form, integrar con GenerateScriptButton, localStorage para tone preference
 2. Backend API no soporta body en endpoint `/generate-script` - UI preparada para futura integración
+3. **Correct Course (2025-12-01):** Refactoring para mostrar todos los datos de la lección, añadir detección dirty form, implementar flujo Update + Generate
 
 ### Completion Notes List
 
@@ -354,30 +363,34 @@ Claude Opus 4.5 (Preview)
 5. Refactored `GenerateScriptButton.tsx` with modal integration, Shift+Click bypass, localStorage persistence
 6. Updated `SortableLessonItem.tsx` to pass lessonDuration, keyThemes, and courseSlug to GenerateScriptButton
 7. Updated exports in `index.ts`
+8. **Correct Course:** Modal now shows ALL lesson fields (title, corePractice, keyPoint, tone, duration)
+9. **Correct Course:** Added `lessonEditSchema` for complete lesson validation
+10. **Correct Course:** Implemented dirty form detection with `isDirty` from React Hook Form
+11. **Correct Course:** Dynamic button label: "Generate" vs "Save & Generate" based on form state
+12. **Correct Course:** Added `updateAndGenerateScript` function that PUTs lesson data before generation
+13. **Correct Course:** Removed localStorage tone preference (now uses lesson's actual tone)
 
-**Backend Note:** The backend API does not currently support configuration body parameters. The UI is fully functional and prepared for when backend adds requestBody support.
+**Backend Note:** The backend API does not currently support configuration body parameters in generate-script. The lesson already contains all needed data (tone, corePractice, keyPoint, durationMinutes). If the user edits data in the modal, it's saved via PUT /api/courses/{slug}/lessons/{id} before triggering generation.
 
 ### File List
 
-**New files:**
-
-- `src/components/ScriptConfigModal.tsx`
-
 **Modified files:**
 
-- `src/components/GenerateScriptButton.tsx`
-- `src/components/SortableLessonItem.tsx`
-- `src/containers/Main/LessonScriptGeneration/constants.ts`
-- `src/containers/Main/LessonScriptGeneration/types.ts`
-- `src/containers/Main/LessonScriptGeneration/connect.ts`
-- `src/containers/Main/LessonScriptGeneration/index.ts`
-- `docs/sprint-artifacts/sprint-status.yaml`
+- `src/components/ScriptConfigModal.tsx` - Complete rewrite to show all lesson fields, dirty form detection
+- `src/components/GenerateScriptButton.tsx` - Simplified props (receives full Lesson object)
+- `src/components/SortableLessonItem.tsx` - Updated to pass lesson object and new callbacks
+- `src/containers/Main/LessonScriptGeneration/constants.ts` - Added lessonEditSchema, LessonEditFormData
+- `src/containers/Main/LessonScriptGeneration/types.ts` - Updated ScriptConfigModalProps interface
+- `src/containers/Main/LessonScriptGeneration/connect.ts` - Added updateAndGenerateScript, isUpdating
+- `src/containers/Main/LessonScriptGeneration/index.ts` - Updated exports
+- `docs/sprint-artifacts/4-2-script-generation-configuration.md` - Updated acceptance criteria
 
 ---
 
 ## Change Log
 
-| Date       | Author             | Change                                                     |
-| ---------- | ------------------ | ---------------------------------------------------------- |
-| 2025-12-01 | SM Agent (Bob)     | Initial story creation from Epic 4, Story 4.2              |
-| 2025-12-01 | Dev Agent (Amelia) | Implementation complete - all tasks done, ready for review |
+| Date       | Author             | Change                                                           |
+| ---------- | ------------------ | ---------------------------------------------------------------- |
+| 2025-12-01 | SM Agent (Bob)     | Initial story creation from Epic 4, Story 4.2                    |
+| 2025-12-01 | Dev Agent (Amelia) | Implementation complete - all tasks done, ready for review       |
+| 2025-12-01 | SM Agent (Bob)     | Correct Course: Modal shows all lesson data, dirty form + update |
