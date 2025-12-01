@@ -1,4 +1,5 @@
 import type { LessonStatus } from '@/components/StatusBadge';
+import type { ScriptPart } from '@/types/models';
 
 import type { EmptyStateStatus, ScriptMetrics } from './types';
 
@@ -90,4 +91,194 @@ export function calculateScriptMetrics(
     pausePercentage,
     targetDurationMinutes,
   };
+}
+
+/**
+ * Serialize structured script to plain text for editing
+ */
+export function serializeScript(script: ScriptPart[]): string {
+  return script
+    .map((part) => {
+      if (part.type === 'speak') {
+        return part.content || '';
+      } else if (part.type === 'pause') {
+        return `[PAUSE ${part.duration}s]`;
+      }
+      return '';
+    })
+    .join('\n\n');
+}
+
+/**
+ * Parse plain text back to structured script format
+ */
+export function parseScriptText(text: string): ScriptPart[] {
+  const parts: ScriptPart[] = [];
+  const lines = text.split('\n');
+
+  let currentSpeakContent = '';
+
+  for (const line of lines) {
+    const pauseMatch = line.match(/\[PAUSE (\d+)s\]/);
+    const breatheInMatch = line.match(/\[BREATHE IN\]/);
+    const breatheOutMatch = line.match(/\[BREATHE OUT\]/);
+    const silenceMatch = line.match(/\[SILENCE (\d+)s\]/);
+
+    if (pauseMatch) {
+      // Save accumulated speak content before pause
+      if (currentSpeakContent.trim()) {
+        parts.push({
+          type: 'speak',
+          content: currentSpeakContent.trim(),
+          duration: null,
+        });
+        currentSpeakContent = '';
+      }
+
+      parts.push({
+        type: 'pause',
+        content: null,
+        duration: parseInt(pauseMatch[1] || '0', 10),
+      });
+    } else if (breatheInMatch) {
+      // Save accumulated speak content before breath cue
+      if (currentSpeakContent.trim()) {
+        parts.push({
+          type: 'speak',
+          content: currentSpeakContent.trim(),
+          duration: null,
+        });
+        currentSpeakContent = '';
+      }
+
+      // BREATHE IN is a speak cue, not a pause
+      parts.push({
+        type: 'speak',
+        content: '[BREATHE IN]',
+        duration: null,
+      });
+    } else if (breatheOutMatch) {
+      // Save accumulated speak content before breath cue
+      if (currentSpeakContent.trim()) {
+        parts.push({
+          type: 'speak',
+          content: currentSpeakContent.trim(),
+          duration: null,
+        });
+        currentSpeakContent = '';
+      }
+
+      // BREATHE OUT is a speak cue, not a pause
+      parts.push({
+        type: 'speak',
+        content: '[BREATHE OUT]',
+        duration: null,
+      });
+    } else if (silenceMatch) {
+      // Save accumulated speak content before silence
+      if (currentSpeakContent.trim()) {
+        parts.push({
+          type: 'speak',
+          content: currentSpeakContent.trim(),
+          duration: null,
+        });
+        currentSpeakContent = '';
+      }
+
+      // SILENCE is a pause
+      parts.push({
+        type: 'pause',
+        content: null,
+        duration: parseInt(silenceMatch[1] || '0', 10),
+      });
+    } else if (line.trim()) {
+      // Accumulate speak content
+      currentSpeakContent += (currentSpeakContent ? '\n' : '') + line;
+    }
+  }
+
+  // Add any remaining speak content
+  if (currentSpeakContent.trim()) {
+    parts.push({
+      type: 'speak',
+      content: currentSpeakContent.trim(),
+      duration: null,
+    });
+  }
+
+  return parts;
+}
+
+/**
+ * Calculate metrics from plain text (for edit mode)
+ */
+export function calculateMetricsFromText(
+  text: string,
+  targetDurationMinutes?: number,
+): {
+  wordCount: number;
+  charCount: number;
+  estimatedDurationMinutes: number;
+  totalPauseSeconds: number;
+  pausePercentage: number;
+  targetDurationDiff?: number;
+  isDurationOffTarget?: boolean;
+} {
+  // Remove all cue markers for word/char count
+  const speakContent = text
+    .replace(/\[PAUSE \d+s\]/g, '')
+    .replace(/\[SILENCE \d+s\]/g, '')
+    .replace(/\[BREATHE IN\]/g, '')
+    .replace(/\[BREATHE OUT\]/g, '')
+    .trim();
+
+  const wordCount = speakContent
+    .split(/\s+/)
+    .filter((w) => w.length > 0).length;
+  const charCount = speakContent.length;
+  const readingTimeMinutes = wordCount / MEDITATION_WORDS_PER_MINUTE;
+
+  // Extract pause durations
+  const pauseMatches = [
+    ...text.matchAll(/\[PAUSE (\d+)s\]/g),
+    ...text.matchAll(/\[SILENCE (\d+)s\]/g),
+  ];
+  const totalPauseSeconds = pauseMatches.reduce(
+    (sum, match) => sum + parseInt(match[1] || '0', 10),
+    0,
+  );
+
+  // Combined estimated duration
+  const estimatedDurationMinutes = readingTimeMinutes + totalPauseSeconds / 60;
+  const pausePercentage =
+    estimatedDurationMinutes > 0
+      ? Math.round((totalPauseSeconds / 60 / estimatedDurationMinutes) * 100)
+      : 0;
+
+  const result: {
+    wordCount: number;
+    charCount: number;
+    estimatedDurationMinutes: number;
+    totalPauseSeconds: number;
+    pausePercentage: number;
+    targetDurationDiff?: number;
+    isDurationOffTarget?: boolean;
+  } = {
+    wordCount,
+    charCount,
+    estimatedDurationMinutes,
+    totalPauseSeconds,
+    pausePercentage,
+  };
+
+  // Target duration comparison
+  if (targetDurationMinutes !== undefined) {
+    const targetDurationDiff = estimatedDurationMinutes - targetDurationMinutes;
+    const isDurationOffTarget = Math.abs(targetDurationDiff) > 1;
+
+    result.targetDurationDiff = targetDurationDiff;
+    result.isDurationOffTarget = isDurationOffTarget;
+  }
+
+  return result;
 }

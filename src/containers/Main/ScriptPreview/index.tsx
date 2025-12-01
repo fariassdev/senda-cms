@@ -18,9 +18,18 @@ import {
 } from 'lucide-react';
 
 import { ScriptContent } from '@/components/ScriptContent';
+import { ScriptEditor } from '@/components/ScriptEditor';
 import { StatusBadge } from '@/components/StatusBadge';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardHeader } from '@/components/ui/card';
+import {
+  Dialog,
+  DialogContent,
+  DialogDescription,
+  DialogFooter,
+  DialogHeader,
+  DialogTitle,
+} from '@/components/ui/dialog';
 import { Skeleton } from '@/components/ui/skeleton';
 import {
   Tooltip,
@@ -49,6 +58,19 @@ export default function ScriptPreview(props: ScriptPreviewProps) {
     handleRegenerateScript,
     handleGenerateAudio,
     handleRetry,
+    // Edit mode
+    isEditing,
+    editedContent,
+    isDirty,
+    saveState,
+    showUnsavedModal,
+    editMetrics,
+    handleExitEditMode,
+    handleSaveScript,
+    handleSaveAndExit,
+    handleDiscardChanges,
+    handleContentChange,
+    setShowUnsavedModal,
   } = useConnect(props);
 
   // Loading state
@@ -117,112 +139,166 @@ export default function ScriptPreview(props: ScriptPreviewProps) {
         </div>
       </header>
 
-      {/* Metrics Section */}
-      {metrics && (
-        <Card className="mb-6">
-          <CardContent className="py-4">
-            <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 gap-4">
-              <MetricItem
-                icon={Type}
-                label="Words"
-                value={metrics.wordCount.toLocaleString()}
-              />
-              <MetricItem
-                icon={FileText}
-                label="Characters"
-                value={metrics.charCount.toLocaleString()}
-              />
-              <MetricItem
-                icon={Target}
-                label="Target Duration"
-                value={`${metrics.targetDurationMinutes} min`}
-              />
-              <MetricItem
-                icon={Clock}
-                label="Est. Duration"
-                value={`${metrics.totalDurationMinutes} min`}
-                highlight={
-                  Math.abs(
-                    metrics.totalDurationMinutes -
-                      metrics.targetDurationMinutes,
-                  ) > 1
-                }
-              />
-              <MetricItem
-                icon={Pause}
-                label="Total Pauses"
-                value={`${metrics.totalPauseSeconds}s`}
-              />
-              <MetricItem
-                icon={Percent}
-                label="Pause %"
-                value={`${metrics.pausePercentage}%`}
-              />
-            </div>
-          </CardContent>
-        </Card>
-      )}
+      {/* Conditional rendering: Edit mode vs Preview mode */}
+      {isEditing ? (
+        <>
+          {/* Edit Mode */}
+          <ScriptEditor
+            content={editedContent}
+            onChange={handleContentChange}
+            metrics={editMetrics}
+            targetDurationMinutes={lesson.durationMinutes}
+            isDirty={isDirty}
+            saveState={saveState}
+            onSave={handleSaveScript}
+          />
 
-      {/* Script Content Area */}
-      <Card className="mb-6">
-        <CardHeader>
-          <h2 className="text-lg font-semibold">Script Content</h2>
-        </CardHeader>
-        <CardContent>
-          <ScriptContent script={lesson.script || []} />
-        </CardContent>
-      </Card>
+          {/* Edit Mode Actions */}
+          <div className="flex flex-col sm:flex-row gap-3 justify-end mt-6">
+            <Button
+              variant="outline"
+              onClick={handleExitEditMode}
+              className="order-1"
+            >
+              Done Editing
+            </Button>
+          </div>
 
-      {/* Action Buttons */}
-      <div className="flex flex-col sm:flex-row gap-3 justify-end">
-        <Button
-          variant="ghost"
-          onClick={handleBackToCourse}
-          className="order-4 sm:order-1"
-        >
-          <ArrowLeft className="h-4 w-4" />
-          Back to Course
-        </Button>
-
-        <Button
-          variant="outline"
-          onClick={handleRegenerateScript}
-          className="order-3 sm:order-2"
-        >
-          <RefreshCw className="h-4 w-4" />
-          Regenerate Script
-        </Button>
-
-        <Tooltip>
-          <TooltipTrigger asChild>
-            <span className="order-2 sm:order-3">
-              <Button
-                variant="secondary"
-                onClick={handleGenerateAudio}
-                disabled={!canGenerateAudio}
-                className="w-full sm:w-auto"
-              >
-                <Volume2 className="h-4 w-4" />
-                Generate Audio
-              </Button>
-            </span>
-          </TooltipTrigger>
-          {!canGenerateAudio && (
-            <TooltipContent>
-              <p>Audio can only be generated when script is completed</p>
-            </TooltipContent>
+          {/* Unsaved Changes Modal */}
+          <Dialog open={showUnsavedModal} onOpenChange={setShowUnsavedModal}>
+            <DialogContent>
+              <DialogHeader>
+                <DialogTitle>Unsaved Changes</DialogTitle>
+                <DialogDescription>
+                  You have unsaved changes. What would you like to do?
+                </DialogDescription>
+              </DialogHeader>
+              <DialogFooter className="flex flex-col sm:flex-row gap-2">
+                <Button
+                  variant="outline"
+                  onClick={() => setShowUnsavedModal(false)}
+                >
+                  Cancel
+                </Button>
+                <Button variant="destructive" onClick={handleDiscardChanges}>
+                  Discard Changes
+                </Button>
+                <Button onClick={handleSaveAndExit}>Save & Exit</Button>
+              </DialogFooter>
+            </DialogContent>
+          </Dialog>
+        </>
+      ) : (
+        <>
+          {/* Preview Mode */}
+          {/* Metrics Section */}
+          {metrics && (
+            <Card className="mb-6">
+              <CardContent className="py-4">
+                <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 gap-4">
+                  <MetricItem
+                    icon={Type}
+                    label="Words"
+                    value={metrics.wordCount.toLocaleString()}
+                  />
+                  <MetricItem
+                    icon={FileText}
+                    label="Characters"
+                    value={metrics.charCount.toLocaleString()}
+                  />
+                  <MetricItem
+                    icon={Target}
+                    label="Target Duration"
+                    value={`${metrics.targetDurationMinutes} min`}
+                  />
+                  <MetricItem
+                    icon={Clock}
+                    label="Est. Duration"
+                    value={`${metrics.totalDurationMinutes} min`}
+                    highlight={
+                      Math.abs(
+                        metrics.totalDurationMinutes -
+                          metrics.targetDurationMinutes,
+                      ) > 1
+                    }
+                  />
+                  <MetricItem
+                    icon={Pause}
+                    label="Total Pauses"
+                    value={`${metrics.totalPauseSeconds}s`}
+                  />
+                  <MetricItem
+                    icon={Percent}
+                    label="Pause %"
+                    value={`${metrics.pausePercentage}%`}
+                  />
+                </div>
+              </CardContent>
+            </Card>
           )}
-        </Tooltip>
 
-        <Button
-          variant="default"
-          onClick={handleEditScript}
-          className="order-1 sm:order-4"
-        >
-          <Edit className="h-4 w-4" />
-          Edit Script
-        </Button>
-      </div>
+          {/* Script Content Area */}
+          <Card className="mb-6">
+            <CardHeader>
+              <h2 className="text-lg font-semibold">Script Content</h2>
+            </CardHeader>
+            <CardContent>
+              <ScriptContent script={lesson.script || []} />
+            </CardContent>
+          </Card>
+
+          {/* Action Buttons */}
+          <div className="flex flex-col sm:flex-row gap-3 justify-end">
+            <Button
+              variant="ghost"
+              onClick={handleBackToCourse}
+              className="order-4 sm:order-1"
+            >
+              <ArrowLeft className="h-4 w-4" />
+              Back to Course
+            </Button>
+
+            <Button
+              variant="outline"
+              onClick={handleRegenerateScript}
+              className="order-3 sm:order-2"
+            >
+              <RefreshCw className="h-4 w-4" />
+              Regenerate Script
+            </Button>
+
+            <Tooltip>
+              <TooltipTrigger asChild>
+                <span className="order-2 sm:order-3">
+                  <Button
+                    variant="secondary"
+                    onClick={handleGenerateAudio}
+                    disabled={!canGenerateAudio}
+                    className="w-full sm:w-auto"
+                  >
+                    <Volume2 className="h-4 w-4" />
+                    Generate Audio
+                  </Button>
+                </span>
+              </TooltipTrigger>
+              {!canGenerateAudio && (
+                <TooltipContent>
+                  <p>Audio can only be generated when script is completed</p>
+                </TooltipContent>
+              )}
+            </Tooltip>
+
+            <Button
+              variant="default"
+              onClick={handleEditScript}
+              className="order-1 sm:order-4"
+            >
+              <Edit className="h-4 w-4" />
+              Edit Script
+            </Button>
+          </div>
+        </>
+      )}
     </div>
   );
 }
