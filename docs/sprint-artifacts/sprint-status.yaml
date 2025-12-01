@@ -23,7 +23,7 @@ development_status:
   # Epic 2: Course Discovery & Management ✅ COMPLETED
   # (All stories in Epic 2 were completed as part of Phase 3-4)
   
-  # Epic 3: Lesson Management 🎯 CURRENT
+  # Epic 3: Lesson Management ✅ COMPLETED
   3-1-display-lesson-list: done
   3-2-create-new-lesson: done
   3-3-edit-existing-lesson: done
@@ -31,7 +31,7 @@ development_status:
   3-5-reorder-lessons-drag-drop: done
   3-6-realtime-status-indicators: done
   
-  # Epic 4: AI Script Generation ⏳ PENDING
+  # Epic 4: AI Script Generation 🎯 CURRENT
   4-1-generate-script-button-status: backlog
   4-2-script-generation-configuration: backlog
   4-3-view-preview-generated-script: backlog
@@ -63,8 +63,8 @@ current_sprint: 1
 sprint_start_date: 2025-11-28
 sprint_end_date: 2025-12-12
 
-current_epic: 3
-current_epic_title: "Lesson Management"
+current_epic: 4
+current_epic_title: "AI Script Generation"
 
 # Stories completed in current sprint
 sprint_completed: 6
@@ -74,4 +74,4 @@ sprint_total: 6
 total_stories: 25
 stories_done: 6
 stories_in_progress: 0
-stories_backlog: 20
+stories_backlog: 19
