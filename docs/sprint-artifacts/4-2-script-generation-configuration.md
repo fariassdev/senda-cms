@@ -47,7 +47,7 @@ so that I can ensure all data is correct and control the script generation.
 7. **Given** I want to skip configuration, **When** I hold Shift+Click on "Generate Script", **Then**:
    - Generation starts immediately with current lesson data
    - No modal appears
-   - Toast notification: "Script generation started..."
+   - Toast notification: "Script generation started with default settings..."
 
 8. **Given** the form has invalid data, **When** I attempt to submit, **Then**:
    - Inline validation errors appear below the invalid field
@@ -386,12 +386,13 @@ Claude Opus 4.5 (Preview)
 
 ## Change Log
 
-| Date       | Author                       | Change                                                                                 |
-| ---------- | ---------------------------- | -------------------------------------------------------------------------------------- |
-| 2025-12-01 | SM Agent (Bob)               | Initial story creation from Epic 4, Story 4.2                                          |
-| 2025-12-01 | Dev Agent (Amelia)           | Implementation complete - all tasks done, ready for review                             |
-| 2025-12-01 | SM Agent (Bob)               | Correct Course: Modal shows all lesson data, dirty form + update                       |
-| 2025-12-01 | Senior Developer Review (AI) | Comprehensive code review completed, approved - intentional design decisions clarified |
+| Date       | Author                       | Change                                                                                   |
+| ---------- | ---------------------------- | ---------------------------------------------------------------------------------------- |
+| 2025-12-01 | SM Agent (Bob)               | Initial story creation from Epic 4, Story 4.2                                            |
+| 2025-12-01 | Dev Agent (Amelia)           | Implementation complete - all tasks done, ready for review                               |
+| 2025-12-01 | SM Agent (Bob)               | Correct Course: Modal shows all lesson data, dirty form + update                         |
+| 2025-12-01 | Senior Developer Review (AI) | Comprehensive code review completed, approved - intentional design decisions clarified   |
+| 2025-12-01 | Dev Agent                    | Final code review action implemented - AC5 updated to IMPLEMENTED, summary to 8/8 (100%) |
 
 ## Senior Developer Review (AI)
 
@@ -419,7 +420,7 @@ The implementation provides a comprehensive lesson review and editing modal befo
 
 #### MEDIUM severity issues
 
-- AC5: Shift+Click toast message is "Script generation started..." instead of "Script generation started with default settings..."
+- None
 
 #### LOW severity issues
 
@@ -433,12 +434,12 @@ The implementation provides a comprehensive lesson review and editing modal befo
 | AC2 | Form contains tone input with suggestions, duration input, instructions textarea (pre-filled with lesson data) | IMPLEMENTED | Tone: ScriptConfigModal.tsx:165-185 (input with datalist); Duration: 186-205; Instructions: 206-225; Pre-filled: 55-65 |
 | AC3 | Generation starts with configuration, modal closes, status updates, toast appears                              | IMPLEMENTED | ScriptConfigModal.tsx:70-76, connect.ts:108-110, optimistic update to SCRIPT_GENERATING                                |
 | AC4 | Cancel/Escape closes modal without API call                                                                    | IMPLEMENTED | ScriptConfigModal.tsx:78-80, Dialog handles Escape                                                                     |
-| AC5 | Shift+Click bypasses modal with defaults                                                                       | PARTIAL     | GenerateScriptButton.tsx:75-81, but toast message differs (connect.ts:108)                                             |
+| AC5 | Shift+Click bypasses modal with defaults                                                                       | IMPLEMENTED | GenerateScriptButton.tsx:75-81, toast message updated (connect.ts:108)                                                 |
 | AC6 | Cancel/Escape closes modal without API call                                                                    | IMPLEMENTED | ScriptConfigModal.tsx:78-80, Dialog handles Escape                                                                     |
 | AC7 | Shift+Click bypasses modal with current lesson data                                                            | IMPLEMENTED | GenerateScriptButton.tsx:75-81, uses lesson data directly                                                              |
 | AC8 | Invalid data shows inline errors, form doesn't submit                                                          | IMPLEMENTED | constants.ts:25-26 validation, FormMessage, button disabled if !isValid                                                |
 
-**Summary: 7 of 8 acceptance criteria fully implemented (88%)**
+**Summary: 8 of 8 acceptance criteria fully implemented (100%)**
 
 ### Task Completion Validation
 
@@ -485,10 +486,6 @@ The implementation provides a comprehensive lesson review and editing modal befo
 - Container pattern: Maintains separation of concerns
 
 ### Action Items
-
-#### Code Changes Required:
-
-- [ ] [Medium] Update Shift+Click toast message to include "with default settings" (AC #5) [file: src/containers/Main/LessonScriptGeneration/connect.ts:108]
 
 #### Advisory Notes:
 

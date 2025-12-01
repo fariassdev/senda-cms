@@ -68,7 +68,7 @@ export function useScriptGeneration({
     {
       onMutate: async () => {
         // Show toast immediately when mutation starts
-        toast.info('Script generation started...');
+        toast.info('Script generation started with default settings...');
 
         // Cancel any outgoing refetches to avoid overwriting optimistic update
         await queryClient.cancelQueries({
