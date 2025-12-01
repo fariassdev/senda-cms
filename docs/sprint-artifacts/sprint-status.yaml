@@ -27,7 +27,7 @@ development_status:
   3-1-display-lesson-list: done
   3-2-create-new-lesson: done
   3-3-edit-existing-lesson: done
-  3-4-delete-lesson: backlog
+  3-4-delete-lesson: done
   3-5-reorder-lessons-drag-drop: backlog
   3-6-realtime-status-indicators: backlog
   
@@ -67,11 +67,11 @@ current_epic: 3
 current_epic_title: "Lesson Management"
 
 # Stories completed in current sprint
-sprint_completed: 3
+sprint_completed: 4
 sprint_total: 6
 
 # Overall progress
 total_stories: 25
-stories_done: 3
+stories_done: 4
 stories_in_progress: 0
-stories_backlog: 22
+stories_backlog: 21

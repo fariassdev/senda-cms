@@ -13,7 +13,9 @@ export default function useConnect(courseSlug: string) {
   const queryClient = useQueryClient();
   const [isLessonCreateOpen, setIsLessonCreateOpen] = useState(false);
   const [isLessonEditOpen, setIsLessonEditOpen] = useState(false);
+  const [isLessonDeleteOpen, setIsLessonDeleteOpen] = useState(false);
   const [selectedLesson, setSelectedLesson] = useState<Lesson | null>(null);
+  const [lessonToDelete, setLessonToDelete] = useState<Lesson | null>(null);
 
   const form = useForm<CourseUpdateFormData>({
     resolver: zodResolver(courseUpdateSchema),
@@ -150,6 +152,23 @@ export default function useConnect(courseSlug: string) {
     refetchLessons();
   };
 
+  // Lesson Delete Modal handlers
+  const handleDeleteLesson = (lesson: Lesson) => {
+    setLessonToDelete(lesson);
+    setIsLessonDeleteOpen(true);
+  };
+
+  const handleCloseLessonDelete = (open: boolean) => {
+    setIsLessonDeleteOpen(open);
+    if (!open) {
+      setLessonToDelete(null);
+    }
+  };
+
+  const handleLessonDeleteSuccess = () => {
+    refetchLessons();
+  };
+
   return {
     course,
     lessons,
@@ -173,5 +192,10 @@ export default function useConnect(courseSlug: string) {
     handleEditLesson,
     handleCloseLessonEdit,
     handleLessonEditSuccess,
+    isLessonDeleteOpen,
+    lessonToDelete,
+    handleDeleteLesson,
+    handleCloseLessonDelete,
+    handleLessonDeleteSuccess,
   };
 }

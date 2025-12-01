@@ -36,6 +36,7 @@ import { Skeleton } from '@/components/ui/skeleton';
 import { Switch } from '@/components/ui/switch';
 import { Textarea } from '@/components/ui/textarea';
 import LessonCreate from '@/containers/Main/LessonCreate';
+import LessonDelete from '@/containers/Main/LessonDelete';
 import LessonEdit from '@/containers/Main/LessonEdit';
 
 import useConnect from './connect';
@@ -65,6 +66,11 @@ export default function CourseDetail({ courseSlug }: CourseDetailProps) {
     handleEditLesson,
     handleCloseLessonEdit,
     handleLessonEditSuccess,
+    isLessonDeleteOpen,
+    lessonToDelete,
+    handleDeleteLesson,
+    handleCloseLessonDelete,
+    handleLessonDeleteSuccess,
   } = useConnect(courseSlug);
   if (isLoading) {
     return <CourseDetailSkeleton />;
@@ -249,6 +255,7 @@ export default function CourseDetail({ courseSlug }: CourseDetailProps) {
                     onRetry={refetchLessons}
                     onAddLesson={handleOpenLessonCreate}
                     onEditLesson={handleEditLesson}
+                    onDeleteLesson={handleDeleteLesson}
                   />
                 </CardContent>
               </Card>
@@ -347,6 +354,16 @@ export default function CourseDetail({ courseSlug }: CourseDetailProps) {
           open={isLessonEditOpen}
           onOpenChange={handleCloseLessonEdit}
           onSuccess={handleLessonEditSuccess}
+        />
+      )}
+
+      {lessonToDelete && (
+        <LessonDelete
+          courseSlug={courseSlug}
+          lesson={lessonToDelete}
+          open={isLessonDeleteOpen}
+          onOpenChange={handleCloseLessonDelete}
+          onSuccess={handleLessonDeleteSuccess}
         />
       )}
     </div>
