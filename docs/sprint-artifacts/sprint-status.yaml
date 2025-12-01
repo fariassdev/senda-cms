@@ -1,5 +1,5 @@
 # Sprint Status - Senda CMS
-# Generated: 2025-11-28
+# Generated: 2025-12-01
 # Source: docs/epics.md
 
 # STATUS DEFINITIONS:
@@ -59,19 +59,19 @@ development_status:
 # =============================================================================
 # SPRINT METRICS
 # =============================================================================
-current_sprint: 1
-sprint_start_date: 2025-11-28
-sprint_end_date: 2025-12-12
+current_sprint: 2
+sprint_start_date: 2025-12-01
+sprint_end_date: 2025-12-15
 
 current_epic: 4
 current_epic_title: "AI Script Generation"
 
 # Stories completed in current sprint
-sprint_completed: 6
+sprint_completed: 2
 sprint_total: 6
 
 # Overall progress
 total_stories: 25
-stories_done: 6
+stories_done: 8
 stories_in_progress: 0
-stories_backlog: 19
+stories_backlog: 17
