@@ -654,10 +654,11 @@ graph TD
    - Variants: Small, medium (default)
 
 4. **ScriptEditor**
-   - Purpose: Edit meditation scripts with special formatting
-   - Content: Rich text area with meditation cue buttons ([PAUSE], [BREATHE], etc.)
-   - States: Editing, saving (debounced), saved
-   - Features: Word count, character count, autosave indicator
+
+- Purpose: Edit meditation scripts with special formatting
+- Content: Rich text area with meditation cue buttons ([PAUSE], [BREATHE], etc.)
+- States: Editing, saving (manual - explicit Save), saved
+- Features: Word count, character count, explicit Save control and save indicator
 
 5. **AudioPlayer**
    - Purpose: Preview generated audio
@@ -1446,7 +1447,7 @@ Before marking UX implementation complete, validate:
 
 - [ ] Can create course from prompt successfully
 - [ ] AI generation shows progress with live updates
-- [ ] Script editor allows editing and autosaves
+- [ ] Script editor allows editing and uses explicit Save control (no autosave)
 - [ ] Audio player previews generated audio
 - [ ] Lesson reordering works via drag-and-drop
 - [ ] All error states display helpful messages

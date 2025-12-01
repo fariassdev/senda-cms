@@ -539,28 +539,35 @@ This document provides the complete epic and story breakdown for Senda CMS, deco
   - [BREATHE OUT] - inserts breath out cue
   - [SILENCE 5s] - inserts silence marker
 - Real-time word/character count
-- Auto-save indicator ("Saving..." / "Saved")
+- Save state indicator and explicit save control ("Save changes" button)
 
 **When** I make changes
-**Then** changes auto-save after 2 seconds of inactivity (debounced)
-**And** I see "Saving..." then "Saved ✓" indicator
+**Then** the editor is marked as "dirty" and the `Save changes` button becomes enabled — there is NO auto-save or debounce; saving is explicit
+
+**When** I click `Save changes`
+**Then** the editor shows "Saving..." while the save is in progress, and on success shows "Saved ✓"; the updated content is persisted and version history updated
 
 **When** I click "Done Editing"
-**Then** I return to view mode with updated content
+**Then** if there are no unsaved changes I return to view mode with updated content
+**If** there are unsaved changes I am prompted: `Save`, `Discard`, or `Cancel` (must choose before leaving)
 
-**Given** auto-save fails
+**Given** save fails
 **Then** I see error indicator "Failed to save - Retry"
-**And** clicking retry attempts save again
+**And** clicking `Retry` attempts save again
 
 **Prerequisites:** Story 4.3
 
 **Technical Notes:**
 
-- Use controlled textarea with `useState`
-- Debounce save with `useDebouncedCallback` (300ms)
-- Mutation: `$api.useMutation('patch', '/api/lessons/{id}')` with `{ script_text: string }`
-- Toolbar buttons insert text at cursor position
-- Preserve cursor position after insertion
+- Use controlled textarea with `useState` to track current content and a `dirty` flag
+- No debounced auto-save: saving is performed only when user presses `Save changes`
+- Mutation: `$api.useMutation('patch', '/api/lessons/{id}')` with payload `{ script_text: string }`
+  - `Save changes` calls `mutateAsync` and shows saving state
+  - On success: show toast and update React Query cache / version history
+  - On error: show inline error state + toast and allow retry
+- Show persistent `Save changes` button (disabled when not dirty)
+- Prompt user with "Unsaved changes" modal when navigating away or clicking "Done Editing" with dirty state
+- Toolbar buttons insert text at cursor position and preserve cursor location after insertion
 
 ---
 
