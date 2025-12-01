@@ -58,6 +58,10 @@ export function SortableLessonItem({
     zIndex: isDragging ? 1 : 0,
   };
 
+  // Extract keyThemes from lesson if available
+  const keyThemes =
+    (lesson as Lesson & { keyThemes?: string[] }).keyThemes ?? [];
+
   return (
     <TableRow
       ref={setNodeRef}
@@ -114,7 +118,10 @@ export function SortableLessonItem({
           <GenerateScriptButton
             lessonId={lesson.id}
             lessonTitle={lesson.title}
+            lessonDuration={lesson.durationMinutes}
+            keyThemes={keyThemes}
             status={lesson.status as LessonStatus}
+            courseSlug={courseSlug}
             onGenerate={generateScript}
             isGenerating={isGenerating}
           />

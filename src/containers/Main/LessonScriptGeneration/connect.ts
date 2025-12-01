@@ -5,6 +5,8 @@ import { toast } from 'sonner';
 import { $api } from '@/lib/api';
 import type { Lesson } from '@/types/models';
 
+import type { ScriptConfigFormData } from './constants';
+import { DEFAULT_SCRIPT_CONFIG } from './constants';
 import type {
   UseScriptGenerationProps,
   UseScriptGenerationReturn,
@@ -29,6 +31,8 @@ export function useScriptGeneration({
   const queryClient = useQueryClient();
   // Store previous data for rollback on error
   const previousDataRef = useRef<LessonsQueryData | undefined>(undefined);
+  // Store current config for toast message
+  const currentConfigRef = useRef<ScriptConfigFormData | undefined>(undefined);
 
   const mutation = $api.useMutation(
     'post',
@@ -36,7 +40,16 @@ export function useScriptGeneration({
     {
       onMutate: async () => {
         // Show toast immediately when mutation starts
-        toast.info('Script generation started...');
+        const isDefaultConfig =
+          !currentConfigRef.current ||
+          (currentConfigRef.current.tone === DEFAULT_SCRIPT_CONFIG.tone &&
+            !currentConfigRef.current.instructions);
+
+        toast.info(
+          isDefaultConfig
+            ? 'Script generation started with default settings...'
+            : 'Script generation started...',
+        );
 
         // Cancel any outgoing refetches to avoid overwriting optimistic update
         await queryClient.cancelQueries({
@@ -92,7 +105,10 @@ export function useScriptGeneration({
     },
   );
 
-  const generateScript = () => {
+  const generateScript = (config?: ScriptConfigFormData) => {
+    // Store config reference for toast message
+    currentConfigRef.current = config;
+
     mutation.mutate({
       params: {
         path: {
@@ -100,6 +116,14 @@ export function useScriptGeneration({
           id: lessonId,
         },
       },
+      // NOTE: Backend API does not yet support configuration body.
+      // Configuration is prepared in UI for future backend enhancement.
+      // When backend adds requestBody support, uncomment:
+      // body: config ? {
+      //   tone: config.tone,
+      //   target_duration: config.target_duration,
+      //   instructions: config.instructions || undefined,
+      // } : undefined,
     });
   };
 
