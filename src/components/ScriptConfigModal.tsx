@@ -102,16 +102,10 @@ export function ScriptConfigModal({
 
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
-      <DialogContent
-        className="max-h-[90vh] overflow-y-auto sm:max-w-[600px] backdrop-blur-lg"
-        aria-labelledby="script-config-title"
-        aria-describedby="script-config-description"
-      >
+      <DialogContent className="max-h-[90vh] overflow-y-auto sm:max-w-[600px] backdrop-blur-lg">
         <DialogHeader>
-          <DialogTitle id="script-config-title">
-            Review Lesson & Generate Script
-          </DialogTitle>
-          <DialogDescription id="script-config-description">
+          <DialogTitle>Review Lesson & Generate Script</DialogTitle>
+          <DialogDescription>
             Review the lesson details before generating. Any changes will be
             saved automatically.
           </DialogDescription>
