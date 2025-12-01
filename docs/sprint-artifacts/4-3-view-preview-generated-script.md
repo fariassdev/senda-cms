@@ -434,6 +434,12 @@ Claude Opus 4.5 (Preview)
 - Empty states, loading states, and error states implemented per AC
 - Responsive design with Tailwind breakpoints (sm:, md:, lg:)
 - Accessibility: ARIA labels on pause parts, focus indicators on all buttons
+- **Enhancement (Post-Review)**: Improved metrics with pause analysis
+  - Added total pause time calculation (seconds)
+  - Updated estimated duration to include pauses
+  - Added pause percentage metric
+  - Added target duration comparison with highlight when off by >1 min
+  - Changed metrics layout to responsive grid (2-4 columns)
 
 ### File List
 
@@ -455,7 +461,8 @@ Claude Opus 4.5 (Preview)
 
 ## Change Log
 
-| Date       | Author             | Change                                                       |
-| ---------- | ------------------ | ------------------------------------------------------------ |
-| 2025-12-01 | SM Agent (Bob)     | Initial story creation from Epic 4, Story 4.3                |
-| 2025-12-01 | Dev Agent (Amelia) | Implementation complete, all ACs satisfied, ready for review |
+| Date       | Author             | Change                                                                      |
+| ---------- | ------------------ | --------------------------------------------------------------------------- |
+| 2025-12-01 | SM Agent (Bob)     | Initial story creation from Epic 4, Story 4.3                               |
+| 2025-12-01 | Dev Agent (Amelia) | Implementation complete, all ACs satisfied, ready for review                |
+| 2025-12-01 | Dev Agent (Amelia) | Enhanced metrics: added pause time, pause %, target vs estimated comparison |

@@ -53,8 +53,8 @@ export default function useConnect({
   // Calculate script metrics
   const metrics = useMemo(() => {
     if (!lesson?.script || lesson.script.length === 0) return null;
-    return calculateScriptMetrics(lesson.script);
-  }, [lesson?.script]);
+    return calculateScriptMetrics(lesson.script, lesson.durationMinutes);
+  }, [lesson?.script, lesson?.durationMinutes]);
 
   // Check if audio generation is eligible
   const canGenerateAudio = useMemo(() => {

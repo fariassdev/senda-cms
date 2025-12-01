@@ -37,9 +37,15 @@ export const EMPTY_STATE_MESSAGES: Record<EmptyStateStatus, string> = {
  * Calculate metrics from script parts
  */
 export function calculateScriptMetrics(
-  script: Array<{ type: string; content?: string | null }>,
+  script: Array<{
+    type: string;
+    content?: string | null;
+    duration?: number | null;
+  }>,
+  targetDurationMinutes: number,
 ): ScriptMetrics {
   const speakParts = script.filter((p) => p.type === 'speak' && p.content);
+  const pauseParts = script.filter((p) => p.type === 'pause' && p.duration);
 
   const wordCount = speakParts.reduce((acc, p) => {
     const words = p.content?.trim().split(/\s+/).filter(Boolean) || [];
@@ -51,14 +57,37 @@ export function calculateScriptMetrics(
     0,
   );
 
+  // Calculate total pause time in seconds
+  const totalPauseSeconds = pauseParts.reduce(
+    (acc, p) => acc + (p.duration || 0),
+    0,
+  );
+
+  // Calculate reading time in minutes (without pauses)
   const readingTimeMinutes = Math.max(
     1,
     Math.ceil(wordCount / MEDITATION_WORDS_PER_MINUTE),
   );
 
+  // Calculate total duration including pauses
+  const totalDurationMinutes = Math.max(
+    1,
+    Math.ceil(readingTimeMinutes + totalPauseSeconds / 60),
+  );
+
+  // Calculate pause percentage
+  const pausePercentage =
+    totalDurationMinutes > 0
+      ? Math.round((totalPauseSeconds / 60 / totalDurationMinutes) * 100)
+      : 0;
+
   return {
     wordCount,
     charCount,
     readingTimeMinutes,
+    totalPauseSeconds,
+    totalDurationMinutes,
+    pausePercentage,
+    targetDurationMinutes,
   };
 }

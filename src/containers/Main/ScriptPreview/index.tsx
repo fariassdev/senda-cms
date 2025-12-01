@@ -9,7 +9,10 @@ import {
   FileQuestion,
   FileText,
   Loader2,
+  Pause,
+  Percent,
   RefreshCw,
+  Target,
   Type,
   Volume2,
 } from 'lucide-react';
@@ -118,7 +121,7 @@ export default function ScriptPreview(props: ScriptPreviewProps) {
       {metrics && (
         <Card className="mb-6">
           <CardContent className="py-4">
-            <div className="flex flex-wrap gap-6 justify-center sm:justify-start">
+            <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 gap-4">
               <MetricItem
                 icon={Type}
                 label="Words"
@@ -130,9 +133,30 @@ export default function ScriptPreview(props: ScriptPreviewProps) {
                 value={metrics.charCount.toLocaleString()}
               />
               <MetricItem
+                icon={Target}
+                label="Target Duration"
+                value={`${metrics.targetDurationMinutes} min`}
+              />
+              <MetricItem
                 icon={Clock}
                 label="Est. Duration"
-                value={`${metrics.readingTimeMinutes} min`}
+                value={`${metrics.totalDurationMinutes} min`}
+                highlight={
+                  Math.abs(
+                    metrics.totalDurationMinutes -
+                      metrics.targetDurationMinutes,
+                  ) > 1
+                }
+              />
+              <MetricItem
+                icon={Pause}
+                label="Total Pauses"
+                value={`${metrics.totalPauseSeconds}s`}
+              />
+              <MetricItem
+                icon={Percent}
+                label="Pause %"
+                value={`${metrics.pausePercentage}%`}
               />
             </div>
           </CardContent>
@@ -210,16 +234,26 @@ function MetricItem({
   icon: Icon,
   label,
   value,
+  highlight = false,
 }: {
   icon: React.ComponentType<{ className?: string }>;
   label: string;
   value: string;
+  highlight?: boolean;
 }) {
   return (
-    <div className="flex items-center gap-2">
-      <Icon className="h-4 w-4 text-muted-foreground" />
-      <span className="text-sm text-muted-foreground">{label}:</span>
-      <span className="text-sm font-medium">{value}</span>
+    <div className="flex flex-col gap-1">
+      <div className="flex items-center gap-2">
+        <Icon className="h-4 w-4 text-muted-foreground" />
+        <span className="text-xs text-muted-foreground">{label}</span>
+      </div>
+      <span
+        className={`text-base font-semibold ${
+          highlight ? 'text-orange-400' : 'text-foreground'
+        }`}
+      >
+        {value}
+      </span>
     </div>
   );
 }
@@ -252,10 +286,13 @@ function ScriptPreviewSkeleton({ onBack }: { onBack: () => void }) {
 
       <Card className="mb-6">
         <CardContent className="py-4">
-          <div className="flex gap-6">
-            <Skeleton className="h-5 w-24" />
-            <Skeleton className="h-5 w-32" />
-            <Skeleton className="h-5 w-28" />
+          <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 gap-4">
+            <Skeleton className="h-14 w-full" />
+            <Skeleton className="h-14 w-full" />
+            <Skeleton className="h-14 w-full" />
+            <Skeleton className="h-14 w-full" />
+            <Skeleton className="h-14 w-full" />
+            <Skeleton className="h-14 w-full" />
           </div>
         </CardContent>
       </Card>
