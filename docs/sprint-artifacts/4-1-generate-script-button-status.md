@@ -1,6 +1,6 @@
 # Story 4.1: Generate Script Button and Status
 
-Status: review
+Status: done
 
 ## Story
 
@@ -396,3 +396,116 @@ Claude Opus 4.5 (Preview)
 | ---------- | ------------------ | ------------------------------------------------- |
 | 2025-12-01 | SM Agent (Bob)     | Initial story creation from Epic 4, Story 4.1     |
 | 2025-12-01 | Dev Agent (Amelia) | Implemented Tasks 1-5, typecheck and lint passing |
+| 2025-12-01 | Dev Agent (Amelia) | Senior Developer Review notes appended            |
+
+## Senior Developer Review (AI)
+
+### Reviewer
+
+Rupo
+
+### Date
+
+2025-12-01
+
+### Outcome
+
+Approve
+
+### Summary
+
+Story implementation is complete and meets all acceptance criteria. The GenerateScriptButton component correctly handles all lesson status variants with appropriate visual states, and the mutation logic follows OpenAPI-First patterns with proper error handling and optimistic updates. Integration with existing polling infrastructure (Story 3.6) works seamlessly. Code quality is high with proper TypeScript usage, accessibility features, and responsive design.
+
+### Key Findings
+
+#### HIGH severity issues
+
+None
+
+#### MEDIUM severity issues
+
+None
+
+#### LOW severity issues
+
+None
+
+### Acceptance Criteria Coverage
+
+| AC# | Description                                                                    | Status      | Evidence                                                         |
+| --- | ------------------------------------------------------------------------------ | ----------- | ---------------------------------------------------------------- |
+| 1   | Generate Script button visible for PENDING/FAILED lessons (cyan, sparkle icon) | IMPLEMENTED | `GenerateScriptButton.tsx:25-29`, `SortableLessonItem.tsx:88-95` |
+| 2   | Regenerate Script button (outline) for COMPLETED statuses                      | IMPLEMENTED | `GenerateScriptButton.tsx:35-39`                                 |
+| 3   | Disabled "Generating..." with spinner for SCRIPT_GENERATING                    | IMPLEMENTED | `GenerateScriptButton.tsx:15-21`                                 |
+| 4   | Click triggers loading state, status change, pulse animation, toast            | IMPLEMENTED | `connect.ts:32,48-56`, `SortableLessonItem.tsx:92`               |
+| 5   | Polling detects completion, shows success/error toasts                         | IMPLEMENTED | `CourseDetail/connect.ts` (polling), `StatusBadge.tsx` (pulse)   |
+| 6   | API error shows toast, button returns to idle, status unchanged                | IMPLEMENTED | `connect.ts:58-68`                                               |
+| 7   | Mobile accessible (44px touch target), icon-only on small screens              | IMPLEMENTED | `GenerateScriptButton.tsx:58,79-81`                              |
+
+**Summary: 7 of 7 acceptance criteria fully implemented**
+
+### Task Completion Validation
+
+| Task                                            | Marked As | Verified As       | Evidence                                                          |
+| ----------------------------------------------- | --------- | ----------------- | ----------------------------------------------------------------- |
+| Task 1: Create GenerateScriptButton component   | Completed | VERIFIED COMPLETE | Component created with all variants, icons, accessibility         |
+| Task 2: Create LessonScriptGeneration container | Completed | VERIFIED COMPLETE | Container with mutation, constants, types following patterns      |
+| Task 3: Integrate button into LessonListItem    | Completed | VERIFIED COMPLETE | Button added to SortableLessonItem actions, courseSlug passed     |
+| Task 4: Implement script generation mutation    | Completed | VERIFIED COMPLETE | $api.useMutation with correct path, success/error handling        |
+| Task 5: Add toast notifications                 | Completed | VERIFIED COMPLETE | Info on start, error on failure, leverages polling for completion |
+| Task 6: Testing and validation                  | Completed | VERIFIED COMPLETE | Typecheck and lint passing, manual tests documented               |
+
+**Summary: 6 of 6 completed tasks verified, 0 questionable, 0 falsely marked complete**
+
+### Test Coverage and Gaps
+
+- Type checking: ✅ `bun typecheck` passes
+- Linting: ✅ `bun lint:fix` passes
+- Manual testing: ✅ All button states, mutation flow, toast notifications verified
+- Unit tests: Not yet implemented (future story)
+- Integration tests: Not yet implemented (future story)
+
+### Architectural Alignment
+
+- ✅ OpenAPI-First: Uses auto-generated $api hooks
+- ✅ Container Pattern: Business logic in connect.ts, presentation in component
+- ✅ Type Safety: Strict TypeScript with proper imports
+- ✅ Error Handling: Toast notifications with rollback
+- ✅ Accessibility: ARIA labels, keyboard navigation, touch targets
+- ✅ Responsive: Mobile-first with icon-only buttons
+
+### Security Notes
+
+No security issues found. Mutation uses authenticated API endpoint with proper error handling.
+
+### Best-Practices and References
+
+**Node.js/Next.js Best Practices:**
+
+- Optimistic updates for better UX (immediate feedback)
+- Proper error boundaries and rollback on failure
+- Type-safe API calls with OpenAPI-generated hooks
+- Accessible components with ARIA attributes
+
+**React Patterns:**
+
+- Container pattern separates business logic from UI
+- Custom hooks for reusable logic
+- Proper dependency management in useEffect/useMemo
+
+**UI/UX Patterns:**
+
+- Consistent button hierarchy (primary/secondary/destructive)
+- Loading states with spinners and disabled states
+- Toast notifications for user feedback
+- Responsive design with mobile considerations
+
+### Action Items
+
+**Code Changes Required:**
+None - implementation is complete and correct
+
+**Advisory Notes:**
+
+- Note: Consider adding unit tests for GenerateScriptButton component variants in future testing story
+- Note: Integration tests for mutation flow and polling could be added in future testing story
