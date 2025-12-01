@@ -28,7 +28,7 @@ development_status:
   3-2-create-new-lesson: done
   3-3-edit-existing-lesson: done
   3-4-delete-lesson: done
-  3-5-reorder-lessons-drag-drop: review
+  3-5-reorder-lessons-drag-drop: done
   3-6-realtime-status-indicators: backlog
   
   # Epic 4: AI Script Generation ⏳ PENDING
@@ -67,11 +67,11 @@ current_epic: 3
 current_epic_title: "Lesson Management"
 
 # Stories completed in current sprint
-sprint_completed: 4
+sprint_completed: 5
 sprint_total: 6
 
 # Overall progress
 total_stories: 25
-stories_done: 4
+stories_done: 5
 stories_in_progress: 0
-stories_backlog: 21
+stories_backlog: 20
