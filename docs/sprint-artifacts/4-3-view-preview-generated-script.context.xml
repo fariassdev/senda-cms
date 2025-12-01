@@ -1,0 +1,421 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<story-context id="4-3-view-preview-generated-script" v="1.0">
+  <metadata>
+    <epicId>4</epicId>
+    <storyId>3</storyId>
+    <title>View and Preview Generated Script</title>
+    <status>ready-for-dev</status>
+    <generatedAt>2025-12-01</generatedAt>
+    <generator>BMAD Story Context Workflow</generator>
+    <sourceStoryPath>docs/sprint-artifacts/4-3-view-preview-generated-script.md</sourceStoryPath>
+  </metadata>
+
+  <story>
+    <asA>Content Manager</asA>
+    <iWant>to view the generated script for a lesson</iWant>
+    <soThat>I can review the content before generating audio</soThat>
+    <tasks>
+      <task id="1" ac="1">
+        <title>Create Script Preview Page Route</title>
+        <subtasks>
+          <subtask id="1.1">Create src/app/courses/[slug]/lessons/[id]/script/page.tsx</subtask>
+          <subtask id="1.2">Page delegates to ScriptPreview container</subtask>
+          <subtask id="1.3">Extract slug and id from route params</subtask>
+        </subtasks>
+      </task>
+      <task id="2" ac="1,2,7">
+        <title>Create ScriptPreview Container</title>
+        <subtasks>
+          <subtask id="2.1">Create src/containers/Main/ScriptPreview/index.tsx</subtask>
+          <subtask id="2.2">Create src/containers/Main/ScriptPreview/connect.ts with useConnect hook</subtask>
+          <subtask id="2.3">Create src/containers/Main/ScriptPreview/types.ts for local types</subtask>
+          <subtask id="2.4">Create src/containers/Main/ScriptPreview/constants.ts for constants</subtask>
+          <subtask id="2.5">Use $api.useQuery to fetch lesson data: GET /api/courses/{slug}/lessons</subtask>
+          <subtask id="2.6">Handle loading state with skeleton</subtask>
+          <subtask id="2.7">Handle error state with retry functionality</subtask>
+        </subtasks>
+      </task>
+      <task id="3" ac="2,3">
+        <title>Implement Script Content Rendering</title>
+        <subtasks>
+          <subtask id="3.1">Create ScriptContent component in src/components/ScriptContent.tsx</subtask>
+          <subtask id="3.2">Parse script array (ScriptPartResponse[])</subtask>
+          <subtask id="3.3">Render speak parts as styled paragraphs</subtask>
+          <subtask id="3.4">Render pause parts as visual badges with duration</subtask>
+          <subtask id="3.5">Apply proper spacing between parts</subtask>
+        </subtasks>
+      </task>
+      <task id="4" ac="2">
+        <title>Implement Script Metrics Calculation</title>
+        <subtasks>
+          <subtask id="4.1">Create utility function calculateScriptMetrics(script: ScriptPart[])</subtask>
+          <subtask id="4.2">Calculate word count from speak parts</subtask>
+          <subtask id="4.3">Calculate character count from speak parts</subtask>
+          <subtask id="4.4">Calculate estimated reading time (words / 150 for meditation pace)</subtask>
+          <subtask id="4.5">Display metrics in a subtle info bar</subtask>
+        </subtasks>
+      </task>
+      <task id="5" ac="4">
+        <title>Implement Action Buttons</title>
+        <subtasks>
+          <subtask id="5.1">Add "Edit Script" button (navigates to edit route or shows placeholder)</subtask>
+          <subtask id="5.2">Add "Generate Audio" button with conditional disabled state</subtask>
+          <subtask id="5.3">Add tooltip on disabled "Generate Audio" explaining prerequisite</subtask>
+          <subtask id="5.4">Add "Regenerate Script" button (placeholder for Story 4.5)</subtask>
+          <subtask id="5.5">Add "Back to Course" button with proper navigation</subtask>
+        </subtasks>
+      </task>
+      <task id="6" ac="5">
+        <title>Implement Empty State for No Script</title>
+        <subtasks>
+          <subtask id="6.1">Create empty state component with status-specific messaging</subtask>
+          <subtask id="6.2">Show appropriate icon and description based on lesson status</subtask>
+          <subtask id="6.3">Add CTA button to navigate back to course</subtask>
+        </subtasks>
+      </task>
+      <task id="7" ac="6">
+        <title>Implement Responsive Design</title>
+        <subtasks>
+          <subtask id="7.1">Use Tailwind responsive classes for layout adaptation</subtask>
+          <subtask id="7.2">Stack action buttons on mobile</subtask>
+          <subtask id="7.3">Ensure readable typography at all breakpoints</subtask>
+          <subtask id="7.4">Test at mobile, tablet, and desktop breakpoints</subtask>
+        </subtasks>
+      </task>
+      <task id="8" ac="1-8">
+        <title>Testing and Validation</title>
+        <subtasks>
+          <subtask id="8.1">Run bun typecheck - verify no type errors</subtask>
+          <subtask id="8.2">Run bun lint:fix - verify no lint errors</subtask>
+          <subtask id="8.3">Manual test: Navigate to script page for lesson with completed script</subtask>
+          <subtask id="8.4">Manual test: Verify script content renders correctly (speak + pause parts)</subtask>
+          <subtask id="8.5">Manual test: Verify metrics display correctly</subtask>
+          <subtask id="8.6">Manual test: Verify action buttons work (navigation, disabled states)</subtask>
+          <subtask id="8.7">Manual test: Verify empty state for lessons without script</subtask>
+          <subtask id="8.8">Manual test: Verify error state on API failure</subtask>
+          <subtask id="8.9">Manual test: Verify responsive behavior on mobile</subtask>
+        </subtasks>
+      </task>
+    </tasks>
+  </story>
+
+  <acceptanceCriteria>
+    <criterion id="1">
+      <given>a lesson has status SCRIPT_COMPLETED or higher (e.g., AUDIO_GENERATING, COMPLETED)</given>
+      <when>I click on the lesson row or a "View Script" action</when>
+      <then>I navigate to the Script Preview page at /courses/[slug]/lessons/[id]/script and the page loads the lesson data including the script array</then>
+    </criterion>
+    <criterion id="2">
+      <given>I am on the Script Preview page</given>
+      <when>the page loads</when>
+      <then>I see: Header Section (Back to Course link, Lesson title h1, Status badge, Last updated timestamp), Script Content Area (speak parts as paragraphs, pause parts as visual cues), Metrics Section (word count, estimated reading time, character count)</then>
+    </criterion>
+    <criterion id="3">
+      <given>the script contains both speak and pause parts</given>
+      <when>I view the script</when>
+      <then>speak parts are displayed as readable text blocks with line height 1.6, pause parts are visually distinct with styled badge showing [PAUSE Xs] where X is the duration</then>
+    </criterion>
+    <criterion id="4">
+      <given>I am viewing the script</given>
+      <when>I look at the action buttons</when>
+      <then>I see: "Edit Script" button (primary cyan), "Generate Audio" button (enabled only if status is SCRIPT_COMPLETED, disabled otherwise with tooltip), "Regenerate Script" button (outline), "Back to Course" button (ghost)</then>
+    </criterion>
+    <criterion id="5">
+      <given>the lesson does NOT have a completed script (status is PENDING, SCRIPT_GENERATING, or SCRIPT_FAILED)</given>
+      <when>I try to access the Script Preview page directly via URL</when>
+      <then>I see an empty state with icon, title "No script available", status-specific description, and CTA button "Back to Course"</then>
+    </criterion>
+    <criterion id="6">
+      <given>I am on the Script Preview page</given>
+      <when>I view the page on mobile</when>
+      <then>layout adapts responsively (single column), action buttons stack vertically, script content remains readable</then>
+    </criterion>
+    <criterion id="7">
+      <given>the API call to fetch lesson data fails</given>
+      <when>the page loads</when>
+      <then>I see an error state with error icon, title "Failed to load script", error message, and "Try Again" button that refetches data</then>
+    </criterion>
+    <criterion id="8">
+      <given>I click the "Back to Course" button</given>
+      <when>the navigation occurs</when>
+      <then>I am navigated back to /courses/[slug] (course detail page) and the lesson list is visible</then>
+    </criterion>
+  </acceptanceCriteria>
+
+  <artifacts>
+    <docs>
+      <doc>
+        <path>docs/architecture.md</path>
+        <title>Senda CMS Architecture Document</title>
+        <section>Container Pattern, API Architecture, Navigation Behavior</section>
+        <snippet>All containers follow the pattern: index.tsx (presentation), connect.ts (business logic with $api queries/mutations), types.ts, constants.ts. Use openapi-react-query for all API calls.</snippet>
+      </doc>
+      <doc>
+        <path>docs/ux-design-specification.md</path>
+        <title>UX Design Specification</title>
+        <section>Empty State Patterns, Button Hierarchy, Color System</section>
+        <snippet>Empty states include large icon (64px), clear title, helpful description, primary CTA. Primary buttons use cyan (#7dcfff), disabled states use grey background. Semantic colors: success (#9ece6a), warning (#e0af68), error (#f7768e).</snippet>
+      </doc>
+      <doc>
+        <path>docs/epics.md</path>
+        <title>Epic Breakdown - Story 4.3</title>
+        <section>Story 4.3: View and Preview Generated Script</section>
+        <snippet>Script Editor page shows lesson title, script content with meditation cues highlighted ([PAUSE], [BREATHE]), word count and estimated reading time, action buttons for Edit, Generate Audio, Regenerate, Back to Course.</snippet>
+      </doc>
+      <doc>
+        <path>docs/PRD.md</path>
+        <title>Product Requirements Document</title>
+        <section>Script Generation Requirements</section>
+        <snippet>Preview generated scripts with edit capabilities post-generation. Progress tracking for script generation. Support for script versioning and regeneration.</snippet>
+      </doc>
+    </docs>
+
+    <code>
+      <file>
+        <path>src/types/models.ts</path>
+        <kind>types</kind>
+        <symbol>ScriptPart, Lesson, LessonStatus</symbol>
+        <reason>Core types for script parts (speak/pause) and lesson data including status</reason>
+      </file>
+      <file>
+        <path>src/types/api.d.ts</path>
+        <kind>types</kind>
+        <symbol>ScriptPartResponse, ScriptPartType, LessonData</symbol>
+        <lines>relevant schema definitions</lines>
+        <reason>Auto-generated OpenAPI types - ScriptPartResponse has type (speak|pause), content (for speak), duration (for pause)</reason>
+      </file>
+      <file>
+        <path>src/components/StatusBadge.tsx</path>
+        <kind>component</kind>
+        <symbol>StatusBadge, LessonStatus</symbol>
+        <reason>Reusable status badge component with semantic colors and icons for each lesson status</reason>
+      </file>
+      <file>
+        <path>src/containers/Main/CourseDetail/connect.ts</path>
+        <kind>container-hook</kind>
+        <symbol>useConnect</symbol>
+        <reason>Reference for query pattern fetching lessons via $api.useQuery('get', '/api/courses/{slug}/lessons')</reason>
+      </file>
+      <file>
+        <path>src/containers/Main/CourseDetail/constants.ts</path>
+        <kind>constants</kind>
+        <symbol>GENERATING_STATUSES, POLLING_INTERVAL</symbol>
+        <reason>Existing status constants for detecting generating states</reason>
+      </file>
+      <file>
+        <path>src/containers/Main/LessonScriptGeneration/constants.ts</path>
+        <kind>constants</kind>
+        <symbol>ELIGIBLE_FOR_GENERATION, ELIGIBLE_FOR_REGENERATION, GENERATING_STATUSES</symbol>
+        <reason>Status classification helpers for button states - determine when Generate Audio should be enabled</reason>
+      </file>
+      <file>
+        <path>src/containers/Main/LessonScriptGeneration/connect.ts</path>
+        <kind>container-hook</kind>
+        <symbol>useScriptGeneration</symbol>
+        <reason>Reference for script generation mutation pattern and optimistic updates</reason>
+      </file>
+      <file>
+        <path>src/lib/api.ts</path>
+        <kind>api-client</kind>
+        <symbol>$api, $publicApi</symbol>
+        <reason>OpenAPI client for all API calls - use $api.useQuery and $api.useMutation</reason>
+      </file>
+      <file>
+        <path>src/components/ui/badge.tsx</path>
+        <kind>ui-component</kind>
+        <symbol>Badge</symbol>
+        <reason>Use for pause duration display ([PAUSE Xs] styling)</reason>
+      </file>
+      <file>
+        <path>src/components/ui/button.tsx</path>
+        <kind>ui-component</kind>
+        <symbol>Button</symbol>
+        <reason>Action buttons with variant props (default, secondary, outline, ghost, destructive)</reason>
+      </file>
+      <file>
+        <path>src/components/ui/skeleton.tsx</path>
+        <kind>ui-component</kind>
+        <symbol>Skeleton</symbol>
+        <reason>Loading state skeleton components</reason>
+      </file>
+      <file>
+        <path>src/components/ui/tooltip.tsx</path>
+        <kind>ui-component</kind>
+        <symbol>Tooltip, TooltipContent, TooltipProvider, TooltipTrigger</symbol>
+        <reason>Tooltip for disabled Generate Audio button explanation</reason>
+      </file>
+      <file>
+        <path>src/app/courses/[slug]/page.tsx</path>
+        <kind>page</kind>
+        <symbol>CourseDetailPage</symbol>
+        <reason>Reference for route structure and param extraction pattern</reason>
+      </file>
+    </code>
+
+    <dependencies>
+      <node>
+        <package>@tanstack/react-query</package>
+        <version>^5.90.2</version>
+        <usage>useQuery, useQueryClient for data fetching and cache management</usage>
+      </node>
+      <node>
+        <package>openapi-react-query</package>
+        <version>^0.5.0</version>
+        <usage>$api.useQuery for type-safe API calls</usage>
+      </node>
+      <node>
+        <package>next</package>
+        <version>^15.5.4</version>
+        <usage>useRouter, useParams for navigation</usage>
+      </node>
+      <node>
+        <package>lucide-react</package>
+        <version>latest</version>
+        <usage>Icons: ArrowLeft, FileText, RefreshCw, Volume2, Edit, AlertCircle, FileQuestion</usage>
+      </node>
+      <node>
+        <package>date-fns</package>
+        <version>latest</version>
+        <usage>formatDistance for relative timestamps</usage>
+      </node>
+      <node>
+        <package>sonner</package>
+        <version>^2.0.7</version>
+        <usage>toast for notifications</usage>
+      </node>
+    </dependencies>
+  </artifacts>
+
+  <constraints>
+    <constraint type="architecture">
+      Follow Container Pattern: page.tsx is minimal (delegates to container), connect.ts has ALL business logic (queries, mutations, navigation handlers), index.tsx is pure presentation
+    </constraint>
+    <constraint type="architecture">
+      OpenAPI-First: Use $api.useQuery from '@/lib/api' for all data fetching - never write manual fetch calls
+    </constraint>
+    <constraint type="architecture">
+      Types from @/types/models: Import Lesson, ScriptPart types from models.ts, not directly from api.d.ts
+    </constraint>
+    <constraint type="ui">
+      Use shadcn/ui components: Button, Badge, Skeleton, Tooltip, Card from src/components/ui/
+    </constraint>
+    <constraint type="styling">
+      Tailwind CSS only: No CSS modules, use utility classes with responsive prefixes (sm:, md:, lg:)
+    </constraint>
+    <constraint type="accessibility">
+      WCAG AA compliance: All buttons have aria-labels, pause parts have accessible text, focus indicators visible (cyan ring)
+    </constraint>
+    <constraint type="state">
+      Status-based rendering: Check lesson.status to determine what to show - only display script if status in [SCRIPT_COMPLETED, AUDIO_GENERATING, AUDIO_COMPLETED]
+    </constraint>
+    <constraint type="navigation">
+      Use Next.js router: import { useRouter } from 'next/navigation' for programmatic navigation
+    </constraint>
+  </constraints>
+
+  <interfaces>
+    <interface>
+      <name>GET /api/courses/{slug}/lessons</name>
+      <kind>REST endpoint</kind>
+      <signature>GET /api/courses/{slug}/lessons → { lessons: LessonData[], lessonsCount: number }</signature>
+      <path>src/types/api.d.ts#operations.get_lessons_api_courses__slug__lessons_get</path>
+    </interface>
+    <interface>
+      <name>LessonData</name>
+      <kind>TypeScript interface</kind>
+      <signature>{ id: number, lessonNumber: number, title: string, corePractice: string, keyPoint: string, tone: string, durationMinutes: number, status: string, script?: ScriptPartResponse[] | null, audioUrl: string | null, scriptGeneratedAt: string | null, audioGeneratedAt: string | null, createdAt: string, updatedAt: string }</signature>
+      <path>src/types/api.d.ts#components.schemas.LessonData</path>
+    </interface>
+    <interface>
+      <name>ScriptPartResponse</name>
+      <kind>TypeScript interface</kind>
+      <signature>{ type: 'speak' | 'pause', content?: string | null, duration?: number | null }</signature>
+      <path>src/types/api.d.ts#components.schemas.ScriptPartResponse</path>
+    </interface>
+    <interface>
+      <name>ScriptMetrics</name>
+      <kind>Local interface (to create)</kind>
+      <signature>{ wordCount: number, charCount: number, readingTimeMinutes: number }</signature>
+      <path>src/containers/Main/ScriptPreview/types.ts (to create)</path>
+    </interface>
+  </interfaces>
+
+  <tests>
+    <standards>
+      Type checking with `bun typecheck` (strict mode, noUncheckedIndexedAccess enabled).
+      Linting with `bun lint:fix` (ESLint flat config with import ordering).
+      Manual testing for all acceptance criteria.
+      Pre-commit hooks run typecheck on all TS/TSX files.
+    </standards>
+    <locations>
+      <location>src/**/*.test.ts</location>
+      <location>src/**/*.test.tsx</location>
+      <location>src/test/setup.ts</location>
+    </locations>
+    <ideas>
+      <idea ac="2,3">Unit test: calculateScriptMetrics returns correct word count, char count, reading time for mixed speak/pause script</idea>
+      <idea ac="3">Unit test: ScriptContent component renders speak parts as paragraphs and pause parts as badges</idea>
+      <idea ac="5">Unit test: Empty state component shows correct message for PENDING vs SCRIPT_GENERATING vs SCRIPT_FAILED status</idea>
+      <idea ac="4">Unit test: Generate Audio button is disabled when status !== SCRIPT_COMPLETED</idea>
+    </ideas>
+  </tests>
+
+  <implementationNotes>
+    <note title="Route Structure">
+      Create nested dynamic route: src/app/courses/[slug]/lessons/[id]/script/page.tsx
+      Extract params with: const params = await props.params (Next.js 15 async params)
+    </note>
+    <note title="Data Fetching Strategy">
+      Fetch all lessons for the course, then find the specific lesson by ID.
+      Query: $api.useQuery('get', '/api/courses/{slug}/lessons', { params: { path: { slug } } })
+      Find lesson: lessons?.find(l => l.id === Number(id))
+    </note>
+    <note title="Script Content Rendering Pattern">
+      ```tsx
+      {script?.map((part, index) => (
+        part.type === 'speak' ? (
+      <p key={index} className="text-text-primary leading-relaxed mb-4">
+            {part.content}
+      </p>
+        ) : (
+      <div key={index} className="flex justify-center my-6">
+        <span className="px-4 py-2 bg-surface/50 rounded-full text-text-muted text-sm">
+              [PAUSE {part.duration}s]
+        </span>
+      </div>
+        )
+      ))}
+      ```
+    </note>
+    <note title="Metrics Calculation">
+      Word count: script.filter(p => p.type === 'speak').reduce((acc, p) => acc + (p.content?.split(/\s+/).length || 0), 0)
+      Char count: script.filter(p => p.type === 'speak').reduce((acc, p) => acc + (p.content?.length || 0), 0)
+      Reading time: Math.ceil(wordCount / 150) (meditation pace ~150 wpm)
+    </note>
+    <note title="Status-Based Logic">
+      SCRIPT_AVAILABLE_STATUSES = ['SCRIPT_COMPLETED', 'AUDIO_GENERATING', 'AUDIO_COMPLETED']
+      Show empty state if: !lesson?.script?.length || !SCRIPT_AVAILABLE_STATUSES.includes(lesson?.status)
+      Enable Generate Audio only if: lesson?.status === 'SCRIPT_COMPLETED'
+    </note>
+    <note title="Accessibility for Pause Parts">
+      ```tsx
+      <div role="separator" aria-label={`Pause for ${duration} seconds`} className="...">
+        <span aria-hidden="true">[PAUSE {duration}s]</span>
+      </div>
+      ```
+    </note>
+    <note title="Files to Create">
+      - src/app/courses/[slug]/lessons/[id]/script/page.tsx (minimal, delegates to container)
+      - src/containers/Main/ScriptPreview/index.tsx (presentation)
+      - src/containers/Main/ScriptPreview/connect.ts (business logic)
+      - src/containers/Main/ScriptPreview/types.ts (local types)
+      - src/containers/Main/ScriptPreview/constants.ts (status arrays, metrics config)
+      - src/components/ScriptContent.tsx (optional, can be inline in container)
+    </note>
+    <note title="Previous Story Reference">
+      Story 4-2 implemented ScriptConfigModal and GenerateScriptButton.
+      Reuse patterns from src/containers/Main/LessonScriptGeneration/ for status handling.
+      StatusBadge component already exists at src/components/StatusBadge.tsx.
+    </note>
+  </implementationNotes>
+</story-context>
