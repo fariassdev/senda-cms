@@ -231,7 +231,7 @@ export default function useConnect(courseSlug: string) {
     refetchLessons();
   };
 
-  // Lesson Reorder handlers (AC3, AC4) - Now with local state
+  // Lesson Reorder handlers
   const {
     handleLocalReorder,
     saveReorder,
@@ -342,7 +342,7 @@ export default function useConnect(courseSlug: string) {
     handleDeleteLesson,
     handleCloseLessonDelete,
     handleLessonDeleteSuccess,
-    // Reorder handlers (updated)
+    // Reorder handlers
     handleLocalReorder,
     saveReorder,
     discardReorder,

@@ -8,12 +8,16 @@ export function cn(...inputs: ClassValue[]) {
 
 /**
  * Format a timestamp string for display.
+ * API dates are in UTC (ISO 8601 with Z suffix), displayed in user's local timezone.
  * Uses relative format (e.g., "2 hours ago") for dates < 7 days old.
  * Uses absolute format (e.g., "Nov 28, 2025") for dates >= 7 days old.
+ *
+ * Example: If API returns "2025-11-30T23:23:42Z" and user is in UTC+1 viewing at
+ * "2025-11-30T23:23:42" local time, shows "about 1 hour ago".
  */
 export function formatTimestamp(dateString: string): string {
-  const date = new Date(dateString);
-  const now = new Date();
+  const date = new Date(dateString); // UTC date from API
+  const now = new Date(); // Local date
   const daysDiff = differenceInDays(now, date);
 
   if (daysDiff < 7) {
