@@ -82,7 +82,7 @@ export function GenerateScriptButton({
       size="sm"
       className={cn(
         // Base styles - ensure minimum touch target
-        'min-h-[44px] min-w-[44px]',
+        'min-h-[36px] min-w-[36px]',
         // Primary variant (Generate Script): solid cyan background
         isPrimary && 'bg-[#7dcfff] text-slate-900 hover:bg-[#7dcfff]/90',
         // Secondary variant (Regenerate): cyan border and text

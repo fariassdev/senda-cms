@@ -109,8 +109,8 @@ export function SortableLessonItem({
       </TableCell>
 
       {/* Actions */}
-      <TableCell>
-        <div className="flex items-center gap-1">
+      <TableCell className="text-right">
+        <div className="flex items-center justify-end gap-1">
           <GenerateScriptButton
             lessonId={lesson.id}
             lessonTitle={lesson.title}
