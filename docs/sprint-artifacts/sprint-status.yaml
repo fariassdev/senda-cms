@@ -32,7 +32,7 @@ development_status:
   3-6-realtime-status-indicators: done
   
   # Epic 4: AI Script Generation 🎯 CURRENT
-  4-1-generate-script-button-status: drafted
+  4-1-generate-script-button-status: ready-for-dev
   4-2-script-generation-configuration: backlog
   4-3-view-preview-generated-script: backlog
   4-4-edit-script-content: backlog

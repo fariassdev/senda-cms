@@ -1,6 +1,6 @@
 # Story 4.1: Generate Script Button and Status
 
-Status: drafted
+Status: ready-for-dev
 
 ## Story
 
@@ -350,7 +350,7 @@ Future unit tests (post-story):
 
 ### Context Reference
 
-<!-- Path(s) to story context XML will be added here by context workflow -->
+- `docs/sprint-artifacts/4-1-generate-script-button-status.context.xml`
 
 ### Agent Model Used
 
