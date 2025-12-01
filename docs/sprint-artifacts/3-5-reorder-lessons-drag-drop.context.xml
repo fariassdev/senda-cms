@@ -1,0 +1,351 @@
+<story-context id="3-5-reorder-lessons-drag-drop" v="1.1">
+  <metadata>
+    <epicId>3</epicId>
+    <storyId>3.5</storyId>
+    <title>Reorder Lessons with Drag-and-Drop</title>
+    <status>review</status>
+    <generatedAt>2025-11-30</generatedAt>
+    <updatedAt>2025-11-30</updatedAt>
+    <generator>BMAD Story Context Workflow</generator>
+    <sourceStoryPath>docs/sprint-artifacts/3-5-reorder-lessons-drag-drop.md</sourceStoryPath>
+  </metadata>
+
+  <story>
+    <asA>Content Manager</asA>
+    <iWant>to reorder lessons by dragging them</iWant>
+    <soThat>I can adjust the pedagogical flow easily</soThat>
+    <tasks>
+      <task id="1">Install @dnd-kit dependencies
+        <subtask>1.1 Run bun add --exact @dnd-kit/core @dnd-kit/sortable @dnd-kit/utilities</subtask>
+        <subtask>1.2 Run bun typecheck to verify no type conflicts</subtask>
+        <subtask>1.3 Document any peer dependency warnings</subtask>
+      </task>
+      <task id="2">Create LessonReorder container structure
+        <subtask>2.1 Create src/containers/Main/LessonReorder/ directory</subtask>
+        <subtask>2.2 Create connect.ts with reorder mutation and local state management</subtask>
+        <subtask>2.3 Create types.ts with ReorderParams and LessonReorderState interfaces</subtask>
+        <subtask>2.4 Create constants.ts with toast messages and unsaved changes modal text</subtask>
+      </task>
+      <task id="3">Implement reorder mutation in connect.ts with manual save
+        <subtask>3.1 Implement $api.useMutation('patch', '/api/courses/{slug}/lessons/reorder') with proper body structure</subtask>
+        <subtask>3.2 Build request body as { lessons: [{ lesson_id, lesson_number }] } from reordered items</subtask>
+        <subtask>3.3 Implement local state (pendingOrder) to track unsaved reorder changes</subtask>
+        <subtask>3.4 Implement handleLocalReorder to update local state without API call</subtask>
+        <subtask>3.5 Implement saveReorder to persist pending changes to API</subtask>
+        <subtask>3.6 Implement discardReorder to discard pending changes</subtask>
+        <subtask>3.7 Implement getReorderState to compute hasUnsavedChanges and displayLessons</subtask>
+        <subtask>3.8 Implement onMutate for optimistic updates (cache snapshot + update)</subtask>
+        <subtask>3.9 Implement onError with rollback to previous lesson order</subtask>
+        <subtask>3.10 Implement onSuccess with toast notification and clear pending order</subtask>
+      </task>
+      <task id="4">Create SortableLessonItem component
+        <subtask>4.1 Create src/components/SortableLessonItem.tsx</subtask>
+        <subtask>4.2 Integrate useSortable hook from @dnd-kit/sortable</subtask>
+        <subtask>4.3 Apply drag handle using attributes and listeners on GripVertical button</subtask>
+        <subtask>4.4 Style dragging state (transform, opacity, elevated shadow)</subtask>
+        <subtask>4.5 Ensure existing edit/delete callbacks still work</subtask>
+      </task>
+      <task id="5">Create SortableLessonList component
+        <subtask>5.1 Create src/components/SortableLessonList.tsx</subtask>
+        <subtask>5.2 Wrap table body with DndContext and SortableContext</subtask>
+        <subtask>5.3 Configure closestCenter collision detection strategy</subtask>
+        <subtask>5.4 Implement handleDragEnd callback to notify parent of local reorder</subtask>
+        <subtask>5.5 Create custom DragOverlay for smooth dragging visualization</subtask>
+        <subtask>5.6 Receive already-sorted lessons from parent (displayLessons)</subtask>
+      </task>
+      <task id="6">Implement keyboard accessibility
+        <subtask>6.1 Configure KeyboardSensor from @dnd-kit with proper activation</subtask>
+        <subtask>6.2 Add useSensors hook with PointerSensor and KeyboardSensor</subtask>
+        <subtask>6.3 Implement keyboard coordinate getter for vertical sorting</subtask>
+        <subtask>6.4 Add aria-describedby announcements for screen readers</subtask>
+        <subtask>6.5 Create announcements prop for DndContext with proper messages</subtask>
+      </task>
+      <task id="7">Integrate with CourseDetail container
+        <subtask>7.1 Replace LessonList with SortableLessonList in CourseDetail</subtask>
+        <subtask>7.2 Pass displayLessons from reorderState to SortableLessonList</subtask>
+        <subtask>7.3 Add handleLocalReorder, saveReorder, discardReorder to connect.ts</subtask>
+        <subtask>7.4 Add "Save Changes" button that appears when hasUnsavedChanges is true</subtask>
+        <subtask>7.5 Ensure edit/delete modals still function correctly with new structure</subtask>
+      </task>
+      <task id="8">Implement unsaved changes confirmation modal
+        <subtask>8.1 Intercept navigation (Back to Courses) when hasUnsavedChanges is true</subtask>
+        <subtask>8.2 Show AlertDialog with Save/Discard/Cancel options</subtask>
+        <subtask>8.3 Handle Save and navigate after mutation completes</subtask>
+        <subtask>8.4 Handle Discard to clear pending changes and navigate</subtask>
+        <subtask>8.5 Handle Cancel to close modal and stay on page</subtask>
+      </task>
+      <task id="9">Handle edge cases
+        <subtask>9.1 Disable drag when only 1 lesson exists</subtask>
+        <subtask>9.2 Reset pending order when lessons data changes externally (add/edit/delete)</subtask>
+        <subtask>9.3 Add loading state during reorder API call</subtask>
+      </task>
+      <task id="10">Testing and validation
+        <subtask>10.1 Run bun typecheck - verify no type errors</subtask>
+        <subtask>10.2 Run bun lint:fix - verify no lint errors</subtask>
+        <subtask>10.3 Manual test: drag lesson to new position, verify Save Changes button appears</subtask>
+        <subtask>10.4 Manual test: click Save Changes, verify order persists and button disappears</subtask>
+        <subtask>10.5 Manual test: reorder then click Back, verify unsaved changes modal appears</subtask>
+        <subtask>10.6 Manual test: keyboard reorder with Tab → Enter → Arrow → Enter</subtask>
+        <subtask>10.7 Manual test: simulate API error, verify rollback</subtask>
+        <subtask>10.8 Manual test: verify edit/delete still work after reorder</subtask>
+        <subtask>10.9 Manual test: verify toast notifications appear correctly</subtask>
+      </task>
+    </tasks>
+  </story>
+
+  <acceptanceCriteria>
+    <criterion id="AC1">Given I see the lesson list with 2+ lessons, When I grab a lesson by its drag handle (⋮⋮), Then:
+      - The cursor changes to grabbing
+      - I see visual feedback (ghost element follows cursor)
+      - The lesson row has elevated visual treatment
+    </criterion>
+    <criterion id="AC2">Given I am dragging a lesson, When I drag over another position, Then:
+      - I see a drop zone indicator (line or highlight between rows)
+      - Other lessons visually shift to make room for the drop target
+    </criterion>
+    <criterion id="AC3">Given I am dragging a lesson, When I drop the lesson in a new position, Then:
+      - The order updates immediately in the UI (local state)
+      - A "Save Changes" button appears next to "Add Lesson" button
+      - The order is NOT saved to backend until user clicks Save Changes
+    </criterion>
+    <criterion id="AC3b">Given I have pending reorder changes, When I click "Save Changes", Then:
+      - The new order is saved to backend
+      - A brief toast appears: "Order saved"
+      - The "Save Changes" button disappears
+      - The lesson numbers update to reflect new positions
+    </criterion>
+    <criterion id="AC4">Given a reorder API request fails, Then:
+      - The order reverts to original positions (rollback)
+      - An error toast shows: "Failed to update order. Please try again."
+    </criterion>
+    <criterion id="AC5">Given I am using keyboard navigation, Then drag-and-drop is accessible:
+      - Tab to focus the drag handle
+      - Enter/Space to start drag mode
+      - Arrow Up/Down to move position
+      - Enter to confirm, Escape to cancel
+      - Screen reader announces: "Lesson [title] moved to position [n]"
+    </criterion>
+    <criterion id="AC6">Given there is only 1 lesson, Then:
+      - The drag handle is visible but non-functional (disabled state)
+      - No reorder actions are possible
+    </criterion>
+    <criterion id="AC7">Given I have pending reorder changes, When I click "Back to Courses", Then:
+      - A confirmation modal appears with title "Unsaved Changes"
+      - Modal shows: "You have unsaved changes to the lesson order. Do you want to save them before leaving?"
+      - Three buttons: "Cancel", "Discard", "Save Changes"
+      - Cancel closes modal and stays on page
+      - Discard clears changes and navigates away
+      - Save Changes persists order then navigates away
+    </criterion>
+  </acceptanceCriteria>
+
+  <artifacts>
+    <docs>
+      <doc>
+        <path>docs/architecture.md</path>
+        <title>Senda CMS Architecture</title>
+        <section>Drag-and-Drop: @dnd-kit</section>
+        <snippet>@dnd-kit: Accessible drag-and-drop for lesson reordering. Built for React, fully accessible (keyboard support), flexible and composable, used by shadcn/ui.</snippet>
+      </doc>
+      <doc>
+        <path>docs/architecture.md</path>
+        <title>Senda CMS Architecture</title>
+        <section>Container Pattern</section>
+        <snippet>Container pattern separates business logic (connect.ts) from presentation (index.tsx). All API calls, form handling, and side effects go in connect.ts. NO business logic in index.tsx.</snippet>
+      </doc>
+      <doc>
+        <path>docs/architecture.md</path>
+        <title>Senda CMS Architecture</title>
+        <section>State Management - React Query</section>
+        <snippet>React Query for server state. Optimistic updates for mutations with onMutate/onError/onSuccess pattern. staleTime: 5min, gcTime: 10min.</snippet>
+      </doc>
+      <doc>
+        <path>docs/ux-design-specification.md</path>
+        <title>UX Design Specification</title>
+        <section>Journey 5: Manage Lesson Collection</section>
+        <snippet>Reorder Lessons: Drag-and-drop using drag handle. Visual feedback: Ghost placeholder, smooth animation. Auto-save: Order persists immediately. Undo option: Toast with "Undo reorder" for 5 seconds.</snippet>
+      </doc>
+      <doc>
+        <path>docs/ux-design-specification.md</path>
+        <title>UX Design Specification</title>
+        <section>Accessibility Patterns</section>
+        <snippet>Keyboard Navigation: All interactive elements accessible via Tab. Focus indicators visible (cyan ring 2px, offset 2px). Drag-and-drop has alternative keyboard reorder (Arrow keys + modifier).</snippet>
+      </doc>
+      <doc>
+        <path>docs/ux-design-specification.md</path>
+        <title>UX Design Specification</title>
+        <section>Feedback Patterns</section>
+        <snippet>Success Messages: Toast notification (top-right), green background (#9ece6a), 4 seconds auto-dismiss. Error Messages: Red/pink background (#f7768e), 6 seconds.</snippet>
+      </doc>
+      <doc>
+        <path>docs/epics.md</path>
+        <title>Epic 3: Lesson Management</title>
+        <section>Story 3.5: Reorder Lessons with Drag-and-Drop</section>
+        <snippet>Mutation: $api.useMutation('patch', '/api/courses/{id}/lessons/reorder'). Request body: { lesson_ids: ['id1', 'id2', 'id3'] } (ordered array). Implement keyboard accessibility per @dnd-kit documentation. Optimistic update with React Query onMutate / onError rollback.</snippet>
+      </doc>
+      <doc>
+        <path>.github/copilot-instructions.md</path>
+        <title>Project AI Instructions</title>
+        <section>React Query Patterns</section>
+        <snippet>Optimistic updates + cache invalidation pattern with onMutate (cancel queries, snapshot, optimistic update), onError (rollback), onSuccess (toast, invalidate).</snippet>
+      </doc>
+      <doc>
+        <path>docs/PRD.md</path>
+        <title>Product Requirements Document</title>
+        <section>Lesson Organization</section>
+        <snippet>Support reordering of lessons. Display lessons within a course. Show lesson status and progress.</snippet>
+      </doc>
+    </docs>
+
+    <code>
+      <file>
+        <path>src/components/LessonList.tsx</path>
+        <kind>component</kind>
+        <symbol>LessonList</symbol>
+        <reason>Current lesson list component to be replaced/extended with sortable version. Contains Table structure, sort logic, and LessonListItem rendering.</reason>
+      </file>
+      <file>
+        <path>src/components/LessonListItem.tsx</path>
+        <kind>component</kind>
+        <symbol>LessonListItem</symbol>
+        <reason>Individual lesson row with GripVertical drag handle (currently disabled). Needs to be wrapped by SortableLessonItem for DnD functionality.</reason>
+      </file>
+      <file>
+        <path>src/containers/Main/CourseDetail/connect.ts</path>
+        <kind>container-logic</kind>
+        <symbol>useConnect</symbol>
+        <reason>Main orchestration for CourseDetail. Add handleReorderLessons callback and integrate with SortableLessonList. Contains lessons query and refetchLessons.</reason>
+      </file>
+      <file>
+        <path>src/containers/Main/CourseDetail/index.tsx</path>
+        <kind>container-view</kind>
+        <symbol>CourseDetail</symbol>
+        <reason>Main course detail view that renders LessonList. Replace LessonList with SortableLessonList component.</reason>
+      </file>
+      <file>
+        <path>src/lib/api.ts</path>
+        <kind>utility</kind>
+        <symbol>$api</symbol>
+        <reason>OpenAPI client for mutations. Use $api.useMutation('patch', '/api/courses/{slug}/lessons/reorder') for reorder API call.</reason>
+      </file>
+      <file>
+        <path>src/types/models.ts</path>
+        <kind>types</kind>
+        <symbol>Lesson</symbol>
+        <reason>Lesson type with id, lessonNumber, title, status, etc. Used for sorting and identifying lessons in reorder.</reason>
+      </file>
+      <file>
+        <path>src/components/StatusBadge.tsx</path>
+        <kind>component</kind>
+        <symbol>StatusBadge</symbol>
+        <reason>Status badge component used in lesson rows. Must remain functional after DnD integration.</reason>
+      </file>
+    </code>
+
+    <dependencies>
+      <ecosystem name="node">
+        <package name="@dnd-kit/core" version="TO_INSTALL">Core drag and drop library for React</package>
+        <package name="@dnd-kit/sortable" version="TO_INSTALL">Sortable preset for vertical lists</package>
+        <package name="@dnd-kit/utilities" version="TO_INSTALL">Utilities including CSS.Transform</package>
+        <package name="@tanstack/react-query" version="5.90.2">React Query for mutations and cache</package>
+        <package name="react-hook-form" version="7.63.0">Form handling (not directly used but context)</package>
+        <package name="sonner" version="2.0.7">Toast notifications for success/error feedback</package>
+        <package name="lucide-react" version="0.544.0">Icons including GripVertical for drag handle</package>
+      </ecosystem>
+    </dependencies>
+  </artifacts>
+
+  <interfaces>
+    <interface>
+      <name>PATCH /api/courses/{slug}/lessons/reorder</name>
+      <kind>REST endpoint</kind>
+      <signature>
+        Path: /api/courses/{slug}/lessons/reorder
+        Method: PATCH
+        Path Parameters: { slug: string }
+        Request Body: {
+          lessons: Array&lt;{
+            lesson_id: number;
+            lesson_number: number;
+          }&gt;
+        }
+        Response: LessonsListResponse (updated lessons list)
+      </signature>
+      <path>src/types/api.d.ts#reorder_lessons_api_courses__slug__lessons_reorder_patch</path>
+    </interface>
+    <interface>
+      <name>ReorderLessonsRequest</name>
+      <kind>TypeScript type</kind>
+      <signature>
+        interface ReorderLessonsRequest {
+          lessons: Array&lt;{
+            lesson_id: number;
+            lesson_number: number;
+          }&gt;;
+        }
+      </signature>
+      <path>src/types/api.d.ts#components.schemas.ReorderLessonsRequest</path>
+    </interface>
+    <interface>
+      <name>useSortable hook</name>
+      <kind>React hook (from @dnd-kit/sortable)</kind>
+      <signature>
+        const { attributes, listeners, setNodeRef, transform, transition, isDragging } = useSortable({
+          id: lesson.id,
+        });
+      </signature>
+      <path>@dnd-kit/sortable</path>
+    </interface>
+    <interface>
+      <name>DndContext + SortableContext</name>
+      <kind>React components (from @dnd-kit)</kind>
+      <signature>
+        &lt;DndContext sensors={sensors} collisionDetection={closestCenter} onDragEnd={handleDragEnd} accessibility={{ announcements }}
+        &gt;
+          &lt;SortableContext items={lessonIds} strategy={verticalListSortingStrategy}&gt;
+            {children}
+          &lt;/SortableContext&gt;
+          &lt;DragOverlay&gt;{activeLesson}&lt;/DragOverlay&gt;
+        &lt;/DndContext&gt;
+      </signature>
+      <path>@dnd-kit/core, @dnd-kit/sortable</path>
+    </interface>
+  </interfaces>
+
+  <constraints>
+    <constraint type="pattern">Container Pattern: All reorder mutation logic goes in connect.ts. SortableLessonList and SortableLessonItem are presentational components receiving handlers as props.</constraint>
+    <constraint type="pattern">OpenAPI-First: Use $api.useMutation from openapi-react-query. Never write manual fetch calls. Request body must match ReorderLessonsRequest schema exactly.</constraint>
+    <constraint type="pattern">Optimistic Updates: Implement onMutate to capture previous state and update cache optimistically. Implement onError to rollback. Implement onSuccess for toast and optional cache invalidation.</constraint>
+    <constraint type="accessibility">WCAG 2.1 AA: Full keyboard navigation for drag-and-drop. Tab to focus, Enter/Space to activate, Arrow keys to move, Enter to confirm, Escape to cancel. Screen reader announcements required.</constraint>
+    <constraint type="style">Use Tailwind CSS classes only. Drag states: cursor-grab/cursor-grabbing, opacity-50 while dragging, shadow-lg for elevation, border-primary for active.</constraint>
+    <constraint type="dependency">Install exact versions: bun add --exact @dnd-kit/core @dnd-kit/sortable @dnd-kit/utilities</constraint>
+    <constraint type="testing">Run bun typecheck before PR. Manual testing required for drag, keyboard, error states, and integration with edit/delete modals.</constraint>
+    <constraint type="import-order">ESLint enforces import order: builtin → external → @/* internal → relative. Use consistent type imports: import type { Foo } from 'bar'</constraint>
+  </constraints>
+
+  <tests>
+    <standards>
+      Project uses manual testing for UI interactions. Run bun typecheck for type validation and bun lint:fix for linting. Playwright tests exist but focus on E2E flows. For this story, manual testing covers drag-and-drop, keyboard accessibility, manual save flow, unsaved changes modal, and error rollback scenarios.
+    </standards>
+    <locations>
+      <location>tests/</location>
+      <location>playwright-report/</location>
+    </locations>
+    <ideas>
+      <idea acRef="AC1">Manual: Click and drag lesson row by handle, verify cursor change and ghost element appears</idea>
+      <idea acRef="AC2">Manual: While dragging, hover over other positions, verify drop indicator line appears</idea>
+      <idea acRef="AC3">Manual: Drop lesson in new position, verify list reorders and Save Changes button appears</idea>
+      <idea acRef="AC3b">Manual: Click Save Changes, verify toast appears and button disappears</idea>
+      <idea acRef="AC4">Manual: Simulate network error (disable network in DevTools), attempt save, verify rollback and error toast</idea>
+      <idea acRef="AC5">Manual: Tab to drag handle, press Enter, use Arrow keys to move, press Enter to confirm, verify screen reader announcements</idea>
+      <idea acRef="AC6">Manual: With only 1 lesson, verify drag handle is visible but disabled (cursor-not-allowed)</idea>
+      <idea acRef="AC7">Manual: Reorder lessons, click Back to Courses, verify unsaved changes modal appears with 3 options</idea>
+      <idea acRef="AC7">Manual: In modal, click Cancel, verify stays on page with changes intact</idea>
+      <idea acRef="AC7">Manual: In modal, click Discard, verify navigates without saving</idea>
+      <idea acRef="AC7">Manual: In modal, click Save Changes, verify saves then navigates</idea>
+      <idea>Regression: After reorder, verify edit and delete buttons still work correctly</idea>
+      <idea>Regression: Verify status badges display correctly after reorder</idea>
+      <idea>Regression: Add/edit/delete a lesson, verify pending order is reset</idea>
+    </ideas>
+  </tests>
+</story-context>
