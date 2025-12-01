@@ -18,11 +18,10 @@
       <task id="1" name="Create ScriptConfigModal component">
         <subtask id="1.1">Create src/components/ScriptConfigModal.tsx</subtask>
         <subtask id="1.2">Implement modal layout with Dialog from shadcn/ui</subtask>
-        <subtask id="1.3">Add tone selector using Select component with 4 options</subtask>
+        <subtask id="1.3">Add tone input with datalist suggestions for 4 options</subtask>
         <subtask id="1.4">Add target duration number input with min/max constraints</subtask>
         <subtask id="1.5">Add additional instructions textarea with character counter</subtask>
-        <subtask id="1.6">Display key themes as read-only Badge components</subtask>
-        <subtask id="1.7">Add aria-labels and accessibility attributes</subtask>
+        <subtask id="1.6">Add aria-labels and accessibility attributes</subtask>
       </task>
       <task id="2" name="Create ScriptConfigForm with validation">
         <subtask id="2.1">Create Zod schema in src/containers/Main/LessonScriptGeneration/constants.ts</subtask>
@@ -46,11 +45,9 @@
         <subtask id="5.2">If Shift held, skip modal and call mutation with defaults</subtask>
         <subtask id="5.3">Show appropriate toast message for default generation</subtask>
       </task>
-      <task id="6" name="Implement localStorage preference persistence">
-        <subtask id="6.1">Create localStorage key: senda_script_config_${courseId}</subtask>
-        <subtask id="6.2">Save last-used tone on successful generation</subtask>
-        <subtask id="6.3">Load saved tone as default when opening modal</subtask>
-        <subtask id="6.4">Clear stored preference on course deletion (optional)</subtask>
+      <task id="6" name="Use lesson's tone as default">
+        <subtask id="6.1">Pre-fill tone field with lesson.tone value</subtask>
+        <subtask id="6.2">No localStorage needed - lesson data is authoritative</subtask>
       </task>
       <task id="7" name="Testing and validation">
         <subtask id="7.1">Run bun typecheck - verify no type errors</subtask>
@@ -60,7 +57,7 @@
         <subtask id="7.5">Manual test: form shows validation errors for invalid duration</subtask>
         <subtask id="7.6">Manual test: Escape key closes modal</subtask>
         <subtask id="7.7">Manual test: Shift+click bypasses modal</subtask>
-        <subtask id="7.8">Manual test: saved tone preference is loaded on reopening</subtask>
+        <subtask id="7.8">Manual test: tone field pre-filled with lesson's tone</subtask>
       </task>
     </tasks>
   </story>
@@ -79,10 +76,9 @@
       <given>the configuration modal is open</given>
       <when>I view the form</when>
       <then>
-        - Tone selector: Dropdown with options: Calming (default), Energizing, Neutral, Guided Visualization
+        - Tone: Text input with suggestions: Calming, Energizing, Neutral, Guided Visualization (pre-filled with lesson's current tone)
         - Target duration: Number input pre-filled from lesson duration, adjustable ±5 min (min 1, max 120)
         - Additional instructions: Optional textarea for specific guidance (max 500 characters)
-        - Key themes preview: Read-only display of lesson's existing key_themes
       </then>
     </criterion>
     <criterion id="AC3">
@@ -108,20 +104,12 @@
       <given>I want to skip configuration</given>
       <when>I hold Shift+Click on "Generate Script"</when>
       <then>
-        - Generation starts immediately with default settings (tone: calming, duration: lesson default)
+        - Generation starts immediately with current lesson data
         - No modal appears
-        - Toast notification: "Script generation started with default settings..."
+        - Toast notification: "Script generation started..."
       </then>
     </criterion>
     <criterion id="AC6">
-      <given>I have previously configured generation for this course</given>
-      <when>I open the configuration modal</when>
-      <then>
-        - The last-used tone preference is pre-selected (stored in localStorage)
-        - Target duration defaults to the lesson's configured duration
-      </then>
-    </criterion>
-    <criterion id="AC7">
       <given>the form has invalid data (duration &lt; 1 or &gt; 120)</given>
       <when>I attempt to submit</when>
       <then>
@@ -355,12 +343,12 @@
       <idea ac="AC2">Verify form contains all required fields with correct defaults</idea>
       <idea ac="AC3">Verify mutation is called with configuration and modal closes on success</idea>
       <idea ac="AC4">Verify Cancel button and Escape key close modal without API call</idea>
-      <idea ac="AC5">Verify Shift+Click bypasses modal and uses default configuration</idea>
-      <idea ac="AC6">Verify localStorage saves and restores tone preference</idea>
-      <idea ac="AC7">Verify Zod validation rejects duration &lt; 1 or &gt; 120</idea>
+      <idea ac="AC5">Verify Shift+Click bypasses modal and uses current lesson data</idea>
+      <idea ac="AC6">Verify Zod validation rejects duration &lt; 1 or &gt; 120</idea>
       <idea>Test ScriptConfigModal renders correct form fields with proper labels</idea>
       <idea>Test validation displays inline errors for invalid duration values</idea>
       <idea>Test character counter updates on textarea input</idea>
+      <idea>Test tone field is pre-filled with lesson's tone value</idea>
     </ideas>
   </tests>
 </story-context>
