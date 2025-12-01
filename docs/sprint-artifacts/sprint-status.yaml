@@ -34,7 +34,7 @@ development_status:
   # Epic 4: AI Script Generation 🎯 CURRENT
   4-1-generate-script-button-status: done
   4-2-script-generation-configuration: done
-  4-3-view-preview-generated-script: backlog
+  4-3-view-preview-generated-script: ready
   4-4-edit-script-content: backlog
   4-5-regenerate-script: backlog
   4-6-batch-script-generation: backlog
