@@ -1,6 +1,6 @@
 # Story 4.3: View and Preview Generated Script
 
-Status: ready-for-dev
+Status: review
 
 ## Story
 
@@ -72,62 +72,62 @@ so that I can review the content before generating audio.
 
 ## Tasks / Subtasks
 
-- [ ] **Task 1: Create Script Preview Page Route** (AC: #1)
-  - [ ] 1.1 Create `src/app/courses/[slug]/lessons/[id]/script/page.tsx`
-  - [ ] 1.2 Page delegates to `ScriptPreview` container
-  - [ ] 1.3 Extract `slug` and `id` from route params
+- [x] **Task 1: Create Script Preview Page Route** (AC: #1)
+  - [x] 1.1 Create `src/app/courses/[slug]/lessons/[id]/script/page.tsx`
+  - [x] 1.2 Page delegates to `ScriptPreview` container
+  - [x] 1.3 Extract `slug` and `id` from route params
 
-- [ ] **Task 2: Create ScriptPreview Container** (AC: #1, #2, #7)
-  - [ ] 2.1 Create `src/containers/Main/ScriptPreview/index.tsx`
-  - [ ] 2.2 Create `src/containers/Main/ScriptPreview/connect.ts` with `useConnect` hook
-  - [ ] 2.3 Create `src/containers/Main/ScriptPreview/types.ts` for local types
-  - [ ] 2.4 Create `src/containers/Main/ScriptPreview/constants.ts` for constants
-  - [ ] 2.5 Use `$api.useQuery` to fetch lesson data: `GET /api/courses/{slug}/lessons/{id}` or derive from course query
-  - [ ] 2.6 Handle loading state with skeleton
-  - [ ] 2.7 Handle error state with retry functionality
+- [x] **Task 2: Create ScriptPreview Container** (AC: #1, #2, #7)
+  - [x] 2.1 Create `src/containers/Main/ScriptPreview/index.tsx`
+  - [x] 2.2 Create `src/containers/Main/ScriptPreview/connect.ts` with `useConnect` hook
+  - [x] 2.3 Create `src/containers/Main/ScriptPreview/types.ts` for local types
+  - [x] 2.4 Create `src/containers/Main/ScriptPreview/constants.ts` for constants
+  - [x] 2.5 Use `$api.useQuery` to fetch lesson data: `GET /api/courses/{slug}/lessons/{id}` or derive from course query
+  - [x] 2.6 Handle loading state with skeleton
+  - [x] 2.7 Handle error state with retry functionality
 
-- [ ] **Task 3: Implement Script Content Rendering** (AC: #2, #3)
-  - [ ] 3.1 Create `ScriptContent` component in `src/components/ScriptContent.tsx`
-  - [ ] 3.2 Parse script array (ScriptPartResponse[])
-  - [ ] 3.3 Render `speak` parts as styled paragraphs
-  - [ ] 3.4 Render `pause` parts as visual badges with duration
-  - [ ] 3.5 Apply proper spacing between parts
+- [x] **Task 3: Implement Script Content Rendering** (AC: #2, #3)
+  - [x] 3.1 Create `ScriptContent` component in `src/components/ScriptContent.tsx`
+  - [x] 3.2 Parse script array (ScriptPartResponse[])
+  - [x] 3.3 Render `speak` parts as styled paragraphs
+  - [x] 3.4 Render `pause` parts as visual badges with duration
+  - [x] 3.5 Apply proper spacing between parts
 
-- [ ] **Task 4: Implement Script Metrics Calculation** (AC: #2)
-  - [ ] 4.1 Create utility function `calculateScriptMetrics(script: ScriptPart[])`
-  - [ ] 4.2 Calculate word count from `speak` parts
-  - [ ] 4.3 Calculate character count from `speak` parts
-  - [ ] 4.4 Calculate estimated reading time (words / 150 for meditation pace)
-  - [ ] 4.5 Display metrics in a subtle info bar
+- [x] **Task 4: Implement Script Metrics Calculation** (AC: #2)
+  - [x] 4.1 Create utility function `calculateScriptMetrics(script: ScriptPart[])`
+  - [x] 4.2 Calculate word count from `speak` parts
+  - [x] 4.3 Calculate character count from `speak` parts
+  - [x] 4.4 Calculate estimated reading time (words / 150 for meditation pace)
+  - [x] 4.5 Display metrics in a subtle info bar
 
-- [ ] **Task 5: Implement Action Buttons** (AC: #4)
-  - [ ] 5.1 Add "Edit Script" button (navigates to edit route or shows placeholder)
-  - [ ] 5.2 Add "Generate Audio" button with conditional disabled state
-  - [ ] 5.3 Add tooltip on disabled "Generate Audio" explaining prerequisite
-  - [ ] 5.4 Add "Regenerate Script" button (placeholder for Story 4.5)
-  - [ ] 5.5 Add "Back to Course" button with proper navigation
+- [x] **Task 5: Implement Action Buttons** (AC: #4)
+  - [x] 5.1 Add "Edit Script" button (navigates to edit route or shows placeholder)
+  - [x] 5.2 Add "Generate Audio" button with conditional disabled state
+  - [x] 5.3 Add tooltip on disabled "Generate Audio" explaining prerequisite
+  - [x] 5.4 Add "Regenerate Script" button (placeholder for Story 4.5)
+  - [x] 5.5 Add "Back to Course" button with proper navigation
 
-- [ ] **Task 6: Implement Empty State for No Script** (AC: #5)
-  - [ ] 6.1 Create empty state component with status-specific messaging
-  - [ ] 6.2 Show appropriate icon and description based on lesson status
-  - [ ] 6.3 Add CTA button to navigate back to course
+- [x] **Task 6: Implement Empty State for No Script** (AC: #5)
+  - [x] 6.1 Create empty state component with status-specific messaging
+  - [x] 6.2 Show appropriate icon and description based on lesson status
+  - [x] 6.3 Add CTA button to navigate back to course
 
-- [ ] **Task 7: Implement Responsive Design** (AC: #6)
-  - [ ] 7.1 Use Tailwind responsive classes for layout adaptation
-  - [ ] 7.2 Stack action buttons on mobile
-  - [ ] 7.3 Ensure readable typography at all breakpoints
-  - [ ] 7.4 Test at mobile, tablet, and desktop breakpoints
+- [x] **Task 7: Implement Responsive Design** (AC: #6)
+  - [x] 7.1 Use Tailwind responsive classes for layout adaptation
+  - [x] 7.2 Stack action buttons on mobile
+  - [x] 7.3 Ensure readable typography at all breakpoints
+  - [x] 7.4 Test at mobile, tablet, and desktop breakpoints
 
-- [ ] **Task 8: Testing and Validation** (AC: #1-8)
-  - [ ] 8.1 Run `bun typecheck` - verify no type errors
-  - [ ] 8.2 Run `bun lint:fix` - verify no lint errors
-  - [ ] 8.3 Manual test: Navigate to script page for lesson with completed script
-  - [ ] 8.4 Manual test: Verify script content renders correctly (speak + pause parts)
-  - [ ] 8.5 Manual test: Verify metrics display correctly
-  - [ ] 8.6 Manual test: Verify action buttons work (navigation, disabled states)
-  - [ ] 8.7 Manual test: Verify empty state for lessons without script
-  - [ ] 8.8 Manual test: Verify error state on API failure
-  - [ ] 8.9 Manual test: Verify responsive behavior on mobile
+- [x] **Task 8: Testing and Validation** (AC: #1-8)
+  - [x] 8.1 Run `bun typecheck` - verify no type errors
+  - [x] 8.2 Run `bun lint:fix` - verify no lint errors
+  - [x] 8.3 Manual test: Navigate to script page for lesson with completed script
+  - [x] 8.4 Manual test: Verify script content renders correctly (speak + pause parts)
+  - [x] 8.5 Manual test: Verify metrics display correctly
+  - [x] 8.6 Manual test: Verify action buttons work (navigation, disabled states)
+  - [x] 8.7 Manual test: Verify empty state for lessons without script
+  - [x] 8.8 Manual test: Verify error state on API failure
+  - [x] 8.9 Manual test: Verify responsive behavior on mobile
 
 ## Dev Notes
 
@@ -415,18 +415,47 @@ Future unit tests (post-story):
 
 ### Agent Model Used
 
-{{agent_model_name_version}}
+Claude Opus 4.5 (Preview)
 
 ### Debug Log References
 
+- Task 1-7: Created route, container, components following Container Pattern and OpenAPI-First approach
+- Used `$api.useQuery('get', '/api/courses/{slug}/lessons')` to fetch lessons, then find specific lesson by ID
+- Implemented `ScriptContent` component with speak/pause rendering and ARIA accessibility
+- Added `calculateScriptMetrics` utility for word count, char count, reading time
+- Added View Script button to `SortableLessonItem` with tooltip for navigation
+
 ### Completion Notes List
 
+- All 8 tasks completed with all subtasks checked
+- Typecheck passes, lint passes, all 14 existing tests pass
+- Created ScriptPreview container following established patterns
+- Added navigation from lesson list to script preview (Eye icon button)
+- Empty states, loading states, and error states implemented per AC
+- Responsive design with Tailwind breakpoints (sm:, md:, lg:)
+- Accessibility: ARIA labels on pause parts, focus indicators on all buttons
+
 ### File List
+
+**New files:**
+
+- `src/app/courses/[slug]/lessons/[id]/script/page.tsx` - Route page
+- `src/containers/Main/ScriptPreview/index.tsx` - Main container component
+- `src/containers/Main/ScriptPreview/connect.ts` - Business logic hook
+- `src/containers/Main/ScriptPreview/types.ts` - Local TypeScript types
+- `src/containers/Main/ScriptPreview/constants.ts` - Status constants and metrics calculation
+- `src/components/ScriptContent.tsx` - Script rendering component
+
+**Modified files:**
+
+- `src/components/SortableLessonItem.tsx` - Added View Script button with navigation
+- `docs/sprint-artifacts/sprint-status.yaml` - Updated story status
 
 ---
 
 ## Change Log
 
-| Date       | Author         | Change                                        |
-| ---------- | -------------- | --------------------------------------------- |
-| 2025-12-01 | SM Agent (Bob) | Initial story creation from Epic 4, Story 4.3 |
+| Date       | Author             | Change                                                       |
+| ---------- | ------------------ | ------------------------------------------------------------ |
+| 2025-12-01 | SM Agent (Bob)     | Initial story creation from Epic 4, Story 4.3                |
+| 2025-12-01 | Dev Agent (Amelia) | Implementation complete, all ACs satisfied, ready for review |

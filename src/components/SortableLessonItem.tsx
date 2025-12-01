@@ -1,7 +1,8 @@
 import type { UniqueIdentifier } from '@dnd-kit/core';
 import { useSortable } from '@dnd-kit/sortable';
 import { CSS } from '@dnd-kit/utilities';
-import { Clock, GripVertical, Pencil, Trash2 } from 'lucide-react';
+import { Clock, Eye, GripVertical, Pencil, Trash2 } from 'lucide-react';
+import Link from 'next/link';
 import type { CSSProperties } from 'react';
 
 import {
@@ -11,6 +12,11 @@ import {
 import { StatusBadge } from '@/components/StatusBadge';
 import { Button } from '@/components/ui/button';
 import { TableCell, TableRow } from '@/components/ui/table';
+import {
+  Tooltip,
+  TooltipContent,
+  TooltipTrigger,
+} from '@/components/ui/tooltip';
 import { useScriptGeneration } from '@/containers/Main/LessonScriptGeneration';
 import { formatTimestamp } from '@/lib/utils';
 import type { Lesson } from '@/types/models';
@@ -50,6 +56,16 @@ export function SortableLessonItem({
       lessonTitle: lesson.title,
       status: lesson.status as LessonStatus,
     });
+
+  // Check if script is available for viewing
+  const SCRIPT_VIEWABLE_STATUSES: LessonStatus[] = [
+    'SCRIPT_COMPLETED',
+    'AUDIO_GENERATING',
+    'AUDIO_COMPLETED',
+  ];
+  const hasViewableScript = SCRIPT_VIEWABLE_STATUSES.includes(
+    lesson.status as LessonStatus,
+  );
 
   const style: CSSProperties = {
     transform: CSS.Transform.toString(transform),
@@ -112,6 +128,38 @@ export function SortableLessonItem({
       {/* Actions */}
       <TableCell className="text-right">
         <div className="flex items-center justify-end gap-1">
+          <Tooltip>
+            <TooltipTrigger asChild>
+              <span>
+                <Button
+                  type="button"
+                  variant="ghost"
+                  size="icon"
+                  className="h-8 w-8"
+                  aria-label={
+                    hasViewableScript
+                      ? `View script for ${lesson.title}`
+                      : 'No script available yet'
+                  }
+                  disabled={!hasViewableScript}
+                  asChild={hasViewableScript}
+                >
+                  {hasViewableScript ? (
+                    <Link
+                      href={`/courses/${courseSlug}/lessons/${lesson.id}/script`}
+                    >
+                      <Eye className="h-4 w-4" />
+                    </Link>
+                  ) : (
+                    <Eye className="h-4 w-4" />
+                  )}
+                </Button>
+              </span>
+            </TooltipTrigger>
+            <TooltipContent>
+              {hasViewableScript ? 'View Script' : 'Generate script first'}
+            </TooltipContent>
+          </Tooltip>
           <GenerateScriptButton
             lesson={lesson}
             courseSlug={courseSlug}
