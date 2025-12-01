@@ -1,0 +1,489 @@
+<story-context id=".bmad/bmm/workflows/4-implementation/story-context/template" v="1.0">
+  <metadata>
+    <epicId>4</epicId>
+    <storyId>4.4</storyId>
+    <title>Edit Script Content</title>
+    <status>ready-for-dev</status>
+    <generatedAt>2025-12-01</generatedAt>
+    <generator>BMAD Story Context Workflow</generator>
+    <sourceStoryPath>docs/sprint-artifacts/4-4-edit-script-content.md</sourceStoryPath>
+  </metadata>
+
+  <story>
+    <asA>Content Manager</asA>
+    <iWant>to edit the generated script content</iWant>
+    <soThat>I can customize the meditation text and timing to better fit the course needs</soThat>
+    <tasks>
+      <task id="1" status="pending">
+        <title>Add Edit Mode State to ScriptPreview Container</title>
+        <subtasks>
+          <subtask id="1.1">Add isEditing state to connect.ts</subtask>
+          <subtask id="1.2">Add isDirty state to track unsaved changes</subtask>
+          <subtask id="1.3">Add handleEnterEditMode and handleExitEditMode functions</subtask>
+          <subtask id="1.4">Add conditional rendering logic in index.tsx to switch between preview and edit views</subtask>
+          <subtask id="1.5">Toggle button text between "Edit Script" and "Done Editing"</subtask>
+        </subtasks>
+      </task>
+      <task id="2" status="pending">
+        <title>Create Script Editor Component</title>
+        <subtasks>
+          <subtask id="2.1">Create src/components/ScriptEditor.tsx component</subtask>
+          <subtask id="2.2">Implement controlled textarea with value and onChange</subtask>
+          <subtask id="2.3">Set up monospace font, proper sizing (min-h-[400px]), padding</subtask>
+          <subtask id="2.4">Track cursor position for toolbar insertions</subtask>
+          <subtask id="2.5">Implement insertTextAtCursor utility function</subtask>
+          <subtask id="2.6">Add real-time metrics calculation and display</subtask>
+        </subtasks>
+      </task>
+      <task id="3" status="pending">
+        <title>Implement Toolbar with Meditation Cue Buttons</title>
+        <subtasks>
+          <subtask id="3.1">Create toolbar component within ScriptEditor</subtask>
+          <subtask id="3.2">Add buttons: [PAUSE 3s], [PAUSE 5s], [BREATHE IN], [BREATHE OUT], [SILENCE 10s]</subtask>
+          <subtask id="3.3">Style buttons with secondary/outline variant</subtask>
+          <subtask id="3.4">Implement click handlers that insert text at cursor position</subtask>
+          <subtask id="3.5">Preserve cursor position and focus after insertion</subtask>
+          <subtask id="3.6">Ensure buttons are keyboard accessible (Tab + Enter/Space)</subtask>
+        </subtasks>
+      </task>
+      <task id="4" status="pending">
+        <title>Implement Save Functionality</title>
+        <subtasks>
+          <subtask id="4.1">Add mutation in connect.ts: $api.useMutation('put', '/api/courses/{slug}/lessons/{id}')</subtask>
+          <subtask id="4.2">Create handleSaveScript function that calls mutation</subtask>
+          <subtask id="4.3">Track save state: idle, saving, success, error</subtask>
+          <subtask id="4.4">Update button text and icon based on save state</subtask>
+          <subtask id="4.5">Show success checkmark for 2 seconds after successful save</subtask>
+          <subtask id="4.6">Clear dirty flag on successful save</subtask>
+          <subtask id="4.7">Handle error state with retry option</subtask>
+          <subtask id="4.8">Preserve content on error</subtask>
+        </subtasks>
+      </task>
+      <task id="5" status="pending">
+        <title>Implement Unsaved Changes Modal</title>
+        <subtasks>
+          <subtask id="5.1">Create UnsavedChangesModal component using Dialog from shadcn/ui</subtask>
+          <subtask id="5.2">Add modal state to connect.ts</subtask>
+          <subtask id="5.3">Show modal when "Done Editing" clicked with dirty state</subtask>
+          <subtask id="5.4">Implement "Save &amp; Exit" button (save → exit)</subtask>
+          <subtask id="5.5">Implement "Discard Changes" button (revert → exit)</subtask>
+          <subtask id="5.6">Implement "Cancel" button (close modal, stay editing)</subtask>
+        </subtasks>
+      </task>
+      <task id="6" status="pending">
+        <title>Implement Browser Navigation Guard</title>
+        <subtasks>
+          <subtask id="6.1">Add useEffect hook to set up beforeunload event listener</subtask>
+          <subtask id="6.2">Show browser confirmation if isDirty is true</subtask>
+          <subtask id="6.3">Clean up event listener on unmount or when dirty flag clears</subtask>
+        </subtasks>
+      </task>
+      <task id="7" status="pending">
+        <title>Implement Save State Indicator</title>
+        <subtasks>
+          <subtask id="7.1">Create save state indicator component/section</subtask>
+          <subtask id="7.2">Display "Unsaved changes" text when dirty</subtask>
+          <subtask id="7.3">Display "Save Changes" button (enabled when dirty, disabled when clean)</subtask>
+          <subtask id="7.4">Display "Saving..." during save operation</subtask>
+          <subtask id="7.5">Display "Saved ✓" on success (2 seconds)</subtask>
+          <subtask id="7.6">Display "Failed to save - Retry" on error</subtask>
+        </subtasks>
+      </task>
+      <task id="8" status="pending">
+        <title>Responsive Design for Edit Mode</title>
+        <subtasks>
+          <subtask id="8.1">Use Tailwind responsive classes for toolbar (flex-wrap on mobile)</subtask>
+          <subtask id="8.2">Ensure toolbar buttons have min 44px tap target</subtask>
+          <subtask id="8.3">Make Save button sticky or always visible on mobile</subtask>
+          <subtask id="8.4">Test touch input on mobile devices/emulation</subtask>
+        </subtasks>
+      </task>
+      <task id="9" status="pending">
+        <title>Testing and Validation</title>
+        <subtasks>
+          <subtask id="9.1">Run bun typecheck - verify no type errors</subtask>
+          <subtask id="9.2">Run bun lint:fix - verify no lint errors</subtask>
+          <subtask id="9.3">Manual test: Enter edit mode, verify UI changes</subtask>
+          <subtask id="9.4">Manual test: Insert toolbar cues at various cursor positions</subtask>
+          <subtask id="9.5">Manual test: Verify real-time metrics update</subtask>
+          <subtask id="9.6">Manual test: Save changes, verify toast and state updates</subtask>
+          <subtask id="9.7">Manual test: Exit edit mode with unsaved changes, verify modal</subtask>
+          <subtask id="9.8">Manual test: Exit edit mode with no changes, verify no modal</subtask>
+          <subtask id="9.9">Manual test: Navigate away with unsaved changes, verify browser confirmation</subtask>
+          <subtask id="9.10">Manual test: Handle save error, verify retry functionality</subtask>
+          <subtask id="9.11">Manual test: Responsive behavior on mobile</subtask>
+        </subtasks>
+      </task>
+    </tasks>
+  </story>
+
+  <acceptanceCriteria>
+    <criterion id="AC1">
+      <given>I am on the Script Preview page with a completed script</given>
+      <when>I click the "Edit Script" button</when>
+      <then>
+        - The view switches to edit mode without navigation
+        - The script content becomes editable in a large textarea
+        - A toolbar with meditation cue buttons appears above the textarea
+        - Real-time metrics (word count, character count, reading time) update as I type
+        - The "Edit Script" button changes to "Done Editing" (outline style)
+        - Other action buttons (Generate Audio, Regenerate) are hidden during edit mode
+      </then>
+    </criterion>
+    <criterion id="AC2">
+      <given>I am in edit mode</given>
+      <when>the editor loads</when>
+      <then>I see:
+        - Toolbar with meditation cue buttons: [PAUSE 3s], [PAUSE 5s], [BREATHE IN], [BREATHE OUT], [SILENCE 10s]
+        - Large textarea with monospace font (minimum height: 400px, auto-expanding)
+        - Save state indicator: "Unsaved changes" when modified (dirty state)
+        - "Save Changes" button (primary cyan) - enabled only when dirty
+        - Button shows "Saving..." spinner during save operation
+        - Success state: "Saved ✓" (green checkmark, 2 seconds, then back to idle)
+      </then>
+    </criterion>
+    <criterion id="AC3">
+      <given>I am editing the script</given>
+      <when>I click a toolbar button (e.g., [PAUSE 3s])</when>
+      <then>
+        - The corresponding text is inserted at the current cursor position
+        - The cursor remains positioned right after the inserted text
+        - The textarea maintains focus
+        - The dirty flag is set (Save button becomes enabled)
+        - Metrics update immediately
+      </then>
+    </criterion>
+    <criterion id="AC4">
+      <given>I have made changes to the script</given>
+      <when>the content changes</when>
+      <then>
+        - Real-time metrics update instantly (word count, character count, estimated reading time, total pause time)
+        - The "Save Changes" button becomes enabled
+        - A "dirty" indicator appears (e.g., "Unsaved changes" text)
+      </then>
+    </criterion>
+    <criterion id="AC5">
+      <given>I have unsaved changes</given>
+      <when>I click "Save Changes"</when>
+      <then>
+        - The button shows "Saving..." with spinner
+        - A PUT request is sent to update the lesson script
+        - On success: Toast "Script saved successfully", button shows "Saved ✓" for 2 seconds, dirty flag is cleared
+        - On error: Toast error message, button shows "Failed to save - Retry" state, unsaved changes are preserved
+      </then>
+    </criterion>
+    <criterion id="AC6">
+      <given>I have unsaved changes</given>
+      <when>I click "Done Editing"</when>
+      <then>
+        - A confirmation modal appears with: "Unsaved Changes" title, message, and three buttons: "Save &amp; Exit" (primary), "Discard Changes" (destructive), "Cancel" (outline)
+      </then>
+    </criterion>
+    <criterion id="AC7">
+      <given>I have NO unsaved changes</given>
+      <when>I click "Done Editing"</when>
+      <then>
+        - Edit mode exits immediately (no modal)
+        - The view returns to preview mode with updated script
+        - The "Done Editing" button changes back to "Edit Script"
+        - All other action buttons reappear
+      </then>
+    </criterion>
+    <criterion id="AC8">
+      <given>I try to navigate away from the page with unsaved changes</given>
+      <when>I click browser back or try to navigate</when>
+      <then>
+        - Browser shows native "Leave site?" confirmation
+        - If I confirm, changes are lost
+        - If I cancel, I stay on the page
+      </then>
+    </criterion>
+    <criterion id="AC9">
+      <given>the script save fails due to network/server error</given>
+      <when>the error occurs</when>
+      <then>
+        - Error toast displays the error message
+        - "Save Changes" button shows "Failed to save - Retry" state
+        - Clicking the button attempts to save again
+        - My changes remain in the textarea (not lost)
+        - I can continue editing
+      </then>
+    </criterion>
+    <criterion id="AC10">
+      <given>I am in edit mode</given>
+      <when>I view the page on mobile</when>
+      <then>
+        - The toolbar wraps to multiple rows if needed
+        - Toolbar buttons are touch-friendly (min 44px tap target)
+        - Textarea adapts to mobile viewport width
+        - Save button is sticky at bottom or always visible
+        - All functionality works with touch input
+      </then>
+    </criterion>
+  </acceptanceCriteria>
+
+  <artifacts>
+    <docs>
+      <doc id="doc-1">
+        <path>docs/PRD.md</path>
+        <title>Product Requirements Document</title>
+        <section>2.2.2 Script Generation</section>
+        <snippet>Edit capabilities post-generation - Users can edit generated scripts after creation, with version history support. Forms validate required fields and support autosave functionality.</snippet>
+      </doc>
+      <doc id="doc-2">
+        <path>docs/architecture.md</path>
+        <title>Architecture Document</title>
+        <section>Container Pattern (CRITICAL)</section>
+        <snippet>Strict separation between business logic (connect.ts) and presentation (index.tsx). connect.ts handles ALL business logic, data fetching, form handling. index.tsx is pure presentation, receives props from connect.ts. NO business logic in index.tsx, NO JSX in connect.ts.</snippet>
+      </doc>
+      <doc id="doc-3">
+        <path>docs/architecture.md</path>
+        <title>Architecture Document</title>
+        <section>Form Management: React Hook Form + Zod</section>
+        <snippet>Declarative forms with schema validation. React Hook Form for minimal re-renders (uncontrolled inputs), built-in validation. Zod for type-safe schema validation, runtime validation + TypeScript types.</snippet>
+      </doc>
+      <doc id="doc-4">
+        <path>docs/ux-design-specification.md</path>
+        <title>UX Design Specification</title>
+        <section>Modal Dialog Patterns</section>
+        <snippet>Size variants: Small (400px), Medium (600px), Large (900px), Full (90vw). Dismiss behavior: Click outside dismisses (with unsaved changes warning), Escape key dismisses, Close button always present. Focus management: Auto-focus first input, Tab navigation trapped within modal.</snippet>
+      </doc>
+      <doc id="doc-5">
+        <path>docs/ux-design-specification.md</path>
+        <title>UX Design Specification</title>
+        <section>Button States</section>
+        <snippet>Primary actions: Solid cyan (#7dcfff) background, hover lighter cyan (#9ee4ff) + lift effect. Disabled: Grey background, grey text. Secondary actions: Transparent background, cyan border. Destructive actions: Red/pink (#f7768e) background, always require confirmation.</snippet>
+      </doc>
+      <doc id="doc-6">
+        <path>docs/epics.md</path>
+        <title>Epic Breakdown</title>
+        <section>Story 4.4: Edit Script Content</section>
+        <snippet>Container Pattern with explicit save (NO auto-save). Dirty state tracking. Optimistic updates with error rollback. Browser navigation guard with beforeunload event. Controlled textarea with React state.</snippet>
+      </doc>
+      <doc id="doc-7">
+        <path>docs/sprint-artifacts/4-3-view-preview-generated-script.md</path>
+        <title>Story 4.3: View and Preview Generated Script</title>
+        <section>Learnings</section>
+        <snippet>ScriptPreview container at src/containers/Main/ScriptPreview/. ScriptContent component renders speak/pause parts. calculateScriptMetrics utility with unit tests. Edit button already present. Container Pattern: logic in connect.ts, presentation in index.tsx.</snippet>
+      </doc>
+    </docs>
+    <code>
+      <artifact id="code-1">
+        <path>src/containers/Main/ScriptPreview/index.tsx</path>
+        <kind>container</kind>
+        <symbol>ScriptPreview</symbol>
+        <lines>1-230</lines>
+        <reason>Main container for script preview. Contains "Edit Script" button that will trigger edit mode. Current implementation to be extended with edit mode state.</reason>
+      </artifact>
+      <artifact id="code-2">
+        <path>src/containers/Main/ScriptPreview/connect.ts</path>
+        <kind>hook</kind>
+        <symbol>useConnect</symbol>
+        <lines>1-90</lines>
+        <reason>Business logic hook for ScriptPreview. Handles lesson data fetching, metrics calculation, and navigation. Will be extended with edit state, save mutation, and edit mode handlers.</reason>
+      </artifact>
+      <artifact id="code-3">
+        <path>src/containers/Main/ScriptPreview/constants.ts</path>
+        <kind>utilities</kind>
+        <symbol>calculateScriptMetrics</symbol>
+        <lines>40-80</lines>
+        <reason>Metrics calculation function that accepts script array and target duration. Will be adapted for plain text script editing to calculate metrics from edited content.</reason>
+      </artifact>
+      <artifact id="code-4">
+        <path>src/components/ScriptContent.tsx</path>
+        <kind>component</kind>
+        <symbol>ScriptContent</symbol>
+        <lines>1-50</lines>
+        <reason>Renders script parts (speak/pause) in preview mode. Provides reference for understanding script structure and formatting patterns to apply in editor.</reason>
+      </artifact>
+      <artifact id="code-5">
+        <path>src/containers/Main/LessonEdit/connect.ts</path>
+        <kind>hook</kind>
+        <symbol>useConnect</symbol>
+        <lines>18-70</lines>
+        <reason>Reference implementation for PUT mutation pattern with dirty state checking, form handling, and error handling. Shows pattern for updating lesson data with React Hook Form.</reason>
+      </artifact>
+      <artifact id="code-6">
+        <path>src/containers/Main/LessonScriptGeneration/connect.ts</path>
+        <kind>hook</kind>
+        <symbol>useScriptGeneration</symbol>
+        <lines>39-100</lines>
+        <reason>Reference implementation for lesson update mutation (PUT /api/courses/{slug}/lessons/{id}). Shows onSuccess cache invalidation pattern and error handling.</reason>
+      </artifact>
+      <artifact id="code-7">
+        <path>src/components/ui/dialog.tsx</path>
+        <kind>component</kind>
+        <symbol>Dialog</symbol>
+        <lines>1-100</lines>
+        <reason>shadcn/ui Dialog component for unsaved changes modal. Provides accessible modal with proper focus management and dismiss behavior.</reason>
+      </artifact>
+      <artifact id="code-8">
+        <path>src/components/ui/textarea.tsx</path>
+        <kind>component</kind>
+        <symbol>Textarea</symbol>
+        <lines>1-30</lines>
+        <reason>shadcn/ui Textarea component for script editor. Base component to be extended with monospace font, auto-expanding height, and cursor position tracking.</reason>
+      </artifact>
+      <artifact id="code-9">
+        <path>src/components/ui/button.tsx</path>
+        <kind>component</kind>
+        <symbol>Button</symbol>
+        <lines>1-50</lines>
+        <reason>shadcn/ui Button component with variant system. Used for toolbar buttons (outline variant), Save button (default variant), and modal actions.</reason>
+      </artifact>
+    </code>
+    <dependencies>
+      <node>
+        <package name="react">^19.0.0</package>
+        <package name="react-dom">^19.0.0</package>
+        <package name="next">15.1.4</package>
+        <package name="typescript">5.9.2</package>
+        <package name="@tanstack/react-query">5.90.2</package>
+        <package name="react-hook-form">7.63.0</package>
+        <package name="zod">4.1.11</package>
+        <package name="sonner">2.0.7</package>
+        <package name="lucide-react">^0.469.0</package>
+        <package name="date-fns">^4.1.0</package>
+      </node>
+    </dependencies>
+  </artifacts>
+
+  <constraints>
+    <constraint id="const-1">
+      <type>pattern</type>
+      <description>Container Pattern: ALL business logic (state, mutations, handlers) in connect.ts. Component (index.tsx) is purely presentational.</description>
+    </constraint>
+    <constraint id="const-2">
+      <type>pattern</type>
+      <description>OpenAPI-First: Use $api.useMutation('put', '/api/courses/{slug}/lessons/{id}') for saving. Never write manual fetch calls.</description>
+    </constraint>
+    <constraint id="const-3">
+      <type>pattern</type>
+      <description>Explicit Save (NO Auto-Save): Saving triggered only when user clicks "Save Changes" button. No debounced auto-save or onChange persistence.</description>
+    </constraint>
+    <constraint id="const-4">
+      <type>pattern</type>
+      <description>Dirty State Tracking: Track isDirty flag when content changes. Enable Save button only when dirty. Clear on successful save.</description>
+    </constraint>
+    <constraint id="const-5">
+      <type>pattern</type>
+      <description>Optimistic UI: Show success immediately, rollback on error. Use React Query onMutate, onSuccess, onError pattern.</description>
+    </constraint>
+    <constraint id="const-6">
+      <type>validation</type>
+      <description>Type Safety: Import types from @/types/models. Use Lesson type from OpenAPI schemas. All state properly typed with TypeScript.</description>
+    </constraint>
+    <constraint id="const-7">
+      <type>ui</type>
+      <description>Responsive Design: Toolbar wraps on mobile (flex-wrap), 44px min tap targets, sticky/visible Save button, touch-friendly interactions.</description>
+    </constraint>
+    <constraint id="const-8">
+      <type>accessibility</type>
+      <description>WCAG AA Compliance: Keyboard accessible (Tab, Enter/Space), visible focus indicators, aria-label on toolbar buttons, screen reader announcements for save state.</description>
+    </constraint>
+    <constraint id="const-9">
+      <type>testing</type>
+      <description>Pre-commit validation: bun typecheck (no type errors), bun lint:fix (no lint errors), manual testing per AC checklist.</description>
+    </constraint>
+    <constraint id="const-10">
+      <type>performance</type>
+      <description>Real-time Metrics: Calculate on every content change (onChange). Use useMemo to avoid unnecessary recalculations. Minimal re-renders.</description>
+    </constraint>
+  </constraints>
+
+  <interfaces>
+    <interface id="api-1">
+      <name>PUT /api/courses/{slug}/lessons/{id}</name>
+      <kind>REST endpoint</kind>
+      <signature>
+        PUT /api/courses/{slug}/lessons/{id}
+        Request Body: { lesson: UpdateLessonData }
+        UpdateLessonData: {
+          title?: string | null;
+          core_practice?: string | null;
+          key_point?: string | null;
+          tone?: string | null;
+          duration_minutes?: number | null;
+          status?: string | null;
+          script?: Record&lt;string, never&gt; | null;
+          audio_url?: string | null;
+        }
+        Response: LessonResponse (200 OK) or HTTPValidationError (422)
+      </signature>
+      <path>src/types/api.d.ts:1937-1980</path>
+    </interface>
+    <interface id="api-2">
+      <name>GET /api/courses/{slug}/lessons</name>
+      <kind>REST endpoint</kind>
+      <signature>
+        GET /api/courses/{slug}/lessons
+        Response: LessonsListResponse { lessons: LessonResponse[] }
+      </signature>
+      <path>src/types/api.d.ts:322-345</path>
+    </interface>
+    <interface id="type-1">
+      <name>ScriptPart</name>
+      <kind>TypeScript interface</kind>
+      <signature>
+        interface ScriptPart {
+          type: 'speak' | 'pause';
+          content?: string | null; // For speak parts
+          duration?: number | null; // For pause parts (seconds)
+        }
+      </signature>
+      <path>src/types/models.ts</path>
+    </interface>
+    <interface id="type-2">
+      <name>Lesson</name>
+      <kind>TypeScript interface</kind>
+      <signature>
+        interface Lesson {
+          id: number;
+          title: string;
+          status: LessonStatus;
+          script?: ScriptPart[] | null;
+          durationMinutes: number;
+          updatedAt: string;
+          scriptGeneratedAt?: string | null;
+          // ... other fields
+        }
+      </signature>
+      <path>src/types/models.ts</path>
+    </interface>
+    <interface id="hook-1">
+      <name>calculateScriptMetrics</name>
+      <kind>function</kind>
+      <signature>
+        function calculateScriptMetrics(
+          script: Array&lt;{ type: string; content?: string | null; duration?: number | null }&gt;,
+          targetDurationMinutes: number
+        ): ScriptMetrics
+        // Returns: { wordCount, charCount, readingTimeMinutes, totalPauseSeconds, totalDurationMinutes, pausePercentage, targetDurationMinutes }
+      </signature>
+      <path>src/containers/Main/ScriptPreview/constants.ts:40-80</path>
+    </interface>
+  </interfaces>
+
+  <tests>
+    <standards>
+      Per project testing standards: Type checking with bun typecheck (strict TypeScript mode), linting with bun lint:fix (ESLint flat config with import ordering), manual testing for all acceptance criteria. No unit tests required for this story (manual validation focus). Future unit tests for serializeScript, parseScriptText, insertTextAtCursor, calculateMetricsFromText functions post-story completion.
+    </standards>
+    <locations>
+      <location>src/containers/Main/ScriptPreview/constants.test.ts</location>
+      <location>src/lib/utils.test.ts</location>
+      <location>src/components/StatusBadge.test.tsx</location>
+    </locations>
+    <ideas>
+      <idea criterionId="AC1">Test: Enter edit mode from preview. Verify textarea appears, toolbar renders, metrics display, button text changes to "Done Editing", other buttons hidden.</idea>
+      <idea criterionId="AC2">Test: Editor loads with toolbar buttons, monospace textarea (min 400px height), save state indicator, Save Changes button disabled initially.</idea>
+      <idea criterionId="AC3">Test: Click [PAUSE 3s] toolbar button. Verify text inserted at cursor, cursor moves after inserted text, textarea keeps focus, dirty flag set, Save button enabled.</idea>
+      <idea criterionId="AC4">Test: Type in textarea. Verify metrics update in real-time: word count (from speak content only, excluding pause markers), character count (total including pauses), estimated duration (reading time at 150 wpm + total pause time), total pause time (sum of all pause markers in seconds), pause percentage (pause time / total estimated duration * 100), target duration comparison (if lesson has target_duration, show difference with visual indicator when off by >1 min - red for over, green for under, neutral for within 1 min). Verify dirty flag set, Save button enabled.</idea>
+      <idea criterionId="AC5">Test: Click Save Changes with unsaved content. Verify mutation called, button shows "Saving...", toast on success "Script saved successfully", button shows "Saved ✓" for 2s, dirty flag cleared, button disabled.</idea>
+      <idea criterionId="AC6">Test: Click Done Editing with unsaved changes. Verify modal appears with title "Unsaved Changes", three buttons: Save &amp; Exit, Discard Changes, Cancel.</idea>
+      <idea criterionId="AC7">Test: Click Done Editing with no unsaved changes. Verify immediate exit to preview mode, no modal, button text reverts to "Edit Script", other buttons reappear.</idea>
+      <idea criterionId="AC8">Test: Attempt browser back navigation with unsaved changes. Verify browser shows native "Leave site?" confirmation. Test both confirm (changes lost) and cancel (stay on page).</idea>
+      <idea criterionId="AC9">Test: Trigger save error (mock network failure). Verify error toast, button shows "Failed to save - Retry", clicking button retries save, textarea content preserved.</idea>
+      <idea criterionId="AC10">Test: View edit mode on mobile/narrow viewport. Verify toolbar wraps, buttons min 44px, Save button sticky/visible, touch input works, textarea adapts to viewport.</idea>
+    </ideas>
+  </tests>
+</story-context>

@@ -1,6 +1,6 @@
 # Story 4.4: Edit Script Content
 
-Status: drafted
+Status: ready-for-dev
 
 ## Story
 
@@ -43,14 +43,16 @@ so that I can customize the meditation text and timing to better fit the course 
    - The dirty flag is set (Save button becomes enabled)
    - Metrics update immediately
 
-4. **Given** I have made changes to the script, **When** the content changes, **Then**:
+4. **Given** I am editing the script, **When** I view the metrics, **Then** I see:
    - Real-time metrics update instantly:
      - Word count (from speak content)
      - Character count (total)
-     - Estimated reading time (words / 150 wpm)
-     - Total pause time (sum of all pause markers)
-   - The "Save Changes" button becomes enabled
-   - A "dirty" indicator appears (e.g., asterisk or "Unsaved changes" text)
+     - Estimated duration (reading time at 150 wpm + total pause time)
+     - Total pause time (sum of all pause markers in seconds)
+     - Pause percentage (pause time / total estimated duration \* 100)
+     - Target duration comparison (if lesson has target_duration, show difference with visual indicator when off by >1 min)
+   - Metrics displayed in a responsive grid (2-4 columns based on screen size)
+   - Metrics update immediately on any text change
 
 5. **Given** I have unsaved changes, **When** I click "Save Changes", **Then**:
    - The button shows "Saving..." with spinner
@@ -336,15 +338,21 @@ function insertTextAtCursor(
 
 ### Real-time Metrics Update
 
-Reuse the `calculateScriptMetrics` utility from Story 4.3, but update it to work with plain text:
+Reuse and adapt the `calculateScriptMetrics` utility from Story 4.3 for plain text editing. The final implementation in 4.3 includes comprehensive metrics with pause analysis and target duration comparison.
 
 ```typescript
 // In connect.ts or constants.ts
-function calculateMetricsFromText(text: string): {
+function calculateMetricsFromText(
+  text: string,
+  targetDurationMinutes?: number,
+): {
   wordCount: number;
   charCount: number;
-  readingTimeMinutes: number;
+  estimatedDurationMinutes: number; // Combined reading time + pauses
   totalPauseSeconds: number;
+  pausePercentage: number;
+  targetDurationDiff?: number; // Difference in minutes, if target provided
+  isDurationOffTarget?: boolean; // True if diff > 1 minute
 } {
   // Remove pause markers for word/char count
   const speakContent = text.replace(/\[PAUSE \d+s\]/g, '').trim();
@@ -353,7 +361,7 @@ function calculateMetricsFromText(text: string): {
     .split(/\s+/)
     .filter((w) => w.length > 0).length;
   const charCount = speakContent.length;
-  const readingTimeMinutes = Math.ceil(wordCount / 150);
+  const readingTimeMinutes = wordCount / 150; // Exact calculation, not ceil
 
   // Extract pause durations
   const pauseMatches = text.matchAll(/\[PAUSE (\d+)s\]/g);
@@ -362,22 +370,52 @@ function calculateMetricsFromText(text: string): {
     0,
   );
 
-  return {
+  // Combined estimated duration (reading + pauses)
+  const estimatedDurationMinutes = readingTimeMinutes + totalPauseSeconds / 60;
+  const pausePercentage =
+    estimatedDurationMinutes > 0
+      ? Math.round((totalPauseSeconds / 60 / estimatedDurationMinutes) * 100)
+      : 0;
+
+  const result = {
     wordCount,
     charCount,
-    readingTimeMinutes,
+    estimatedDurationMinutes,
     totalPauseSeconds,
+    pausePercentage,
   };
+
+  // Target duration comparison (if provided)
+  if (targetDurationMinutes !== undefined) {
+    const targetDurationDiff = estimatedDurationMinutes - targetDurationMinutes;
+    const isDurationOffTarget = Math.abs(targetDurationDiff) > 1;
+
+    result.targetDurationDiff = targetDurationDiff;
+    result.isDurationOffTarget = isDurationOffTarget;
+  }
+
+  return result;
 }
 
 // Update metrics on every content change
 useEffect(() => {
   if (isEditing) {
-    const metrics = calculateMetricsFromText(editedContent);
+    const metrics = calculateMetricsFromText(
+      editedContent,
+      lesson?.target_duration,
+    );
     setMetrics(metrics);
   }
-}, [editedContent, isEditing]);
+}, [editedContent, isEditing, lesson?.target_duration]);
 ```
+
+**Metrics Display:**
+
+- Layout in responsive grid (2-4 columns)
+- Target duration comparison with visual highlight (red/green) when off by >1 min
+- Pause percentage shown as "X% pause"
+- Estimated duration shown as combined reading time + pauses
+- All metrics update in real-time as user types
 
 [Source: docs/sprint-artifacts/4-3-view-preview-generated-script.md#Metrics-Calculation]
 
@@ -627,7 +665,9 @@ Future unit tests (post-story):
 
 ### Context Reference
 
-<!-- Path to story context XML will be added here by context workflow -->
+- **Story Context File**: `docs/sprint-artifacts/4-4-edit-script-content.context.xml`
+- **Generated**: 2025-12-01
+- **Generator**: BMAD Story Context Workflow
 
 ### Agent Model Used
 
