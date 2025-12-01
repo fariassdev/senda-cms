@@ -1,18 +1,17 @@
-import { vi } from 'vitest';
+import { vi, describe, it, expect, beforeEach, afterEach } from 'vitest';
 import { formatTimestamp } from './utils';
 
 describe('formatTimestamp', () => {
-  // Mock Date.now to ensure consistent test results
-  // Tests assume user's local timezone is UTC for simplicity
+  // Use Vitest's fake timers for consistent test results
   const mockNow = new Date('2025-11-30T12:00:00Z');
-  const originalDateNow = Date.now;
 
-  beforeAll(() => {
-    Date.now = vi.fn(() => mockNow.getTime());
+  beforeEach(() => {
+    vi.useFakeTimers();
+    vi.setSystemTime(mockNow);
   });
 
-  afterAll(() => {
-    Date.now = originalDateNow;
+  afterEach(() => {
+    vi.useRealTimers();
   });
 
   describe('relative timestamps (< 7 days)', () => {
@@ -24,7 +23,7 @@ describe('formatTimestamp', () => {
 
     it('formats timestamps within 7 days as relative', () => {
       const testCases = [
-        { date: '2025-11-30T11:00:00Z', expectedContains: '12 hours' },
+        { date: '2025-11-30T11:00:00Z', expectedContains: '1 hour' },
         { date: '2025-11-29T12:00:00Z', expectedContains: '1 day' },
         { date: '2025-11-25T12:00:00Z', expectedContains: '5 days' },
         { date: '2025-11-24T12:00:00Z', expectedContains: '6 days' },
