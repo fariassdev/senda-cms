@@ -1,0 +1,366 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<story-context id="4-2-script-generation-configuration" v="1.0">
+  <metadata>
+    <epicId>4</epicId>
+    <storyId>4.2</storyId>
+    <title>Script Generation Configuration</title>
+    <status>ready-for-dev</status>
+    <generatedAt>2025-12-01</generatedAt>
+    <generator>BMAD Story Context Workflow</generator>
+    <sourceStoryPath>docs/sprint-artifacts/4-2-script-generation-configuration.md</sourceStoryPath>
+  </metadata>
+
+  <story>
+    <asA>Content Manager</asA>
+    <iWant>to configure script generation parameters before generating</iWant>
+    <soThat>I can control the tone and style of the meditation script</soThat>
+    <tasks>
+      <task id="1" name="Create ScriptConfigModal component">
+        <subtask id="1.1">Create src/components/ScriptConfigModal.tsx</subtask>
+        <subtask id="1.2">Implement modal layout with Dialog from shadcn/ui</subtask>
+        <subtask id="1.3">Add tone selector using Select component with 4 options</subtask>
+        <subtask id="1.4">Add target duration number input with min/max constraints</subtask>
+        <subtask id="1.5">Add additional instructions textarea with character counter</subtask>
+        <subtask id="1.6">Display key themes as read-only Badge components</subtask>
+        <subtask id="1.7">Add aria-labels and accessibility attributes</subtask>
+      </task>
+      <task id="2" name="Create ScriptConfigForm with validation">
+        <subtask id="2.1">Create Zod schema in src/containers/Main/LessonScriptGeneration/constants.ts</subtask>
+        <subtask id="2.2">Integrate React Hook Form with zodResolver</subtask>
+        <subtask id="2.3">Implement inline validation error display</subtask>
+        <subtask id="2.4">Add character counter for instructions field (max 500)</subtask>
+      </task>
+      <task id="3" name="Integrate modal with GenerateScriptButton">
+        <subtask id="3.1">Modify src/components/GenerateScriptButton.tsx to open modal on click</subtask>
+        <subtask id="3.2">Add modal open/close state management</subtask>
+        <subtask id="3.3">Pass lesson data (duration, key_themes) to modal</subtask>
+        <subtask id="3.4">Handle modal close via Cancel button and Escape key</subtask>
+      </task>
+      <task id="4" name="Update mutation to include configuration">
+        <subtask id="4.1">Update src/containers/Main/LessonScriptGeneration/connect.ts mutation</subtask>
+        <subtask id="4.2">Add configuration body to POST request: { tone, target_duration, instructions }</subtask>
+        <subtask id="4.3">Update types to include ScriptGenerationConfig interface</subtask>
+      </task>
+      <task id="5" name="Implement Shift+Click bypass">
+        <subtask id="5.1">Add event handler to detect Shift key on button click</subtask>
+        <subtask id="5.2">If Shift held, skip modal and call mutation with defaults</subtask>
+        <subtask id="5.3">Show appropriate toast message for default generation</subtask>
+      </task>
+      <task id="6" name="Implement localStorage preference persistence">
+        <subtask id="6.1">Create localStorage key: senda_script_config_${courseId}</subtask>
+        <subtask id="6.2">Save last-used tone on successful generation</subtask>
+        <subtask id="6.3">Load saved tone as default when opening modal</subtask>
+        <subtask id="6.4">Clear stored preference on course deletion (optional)</subtask>
+      </task>
+      <task id="7" name="Testing and validation">
+        <subtask id="7.1">Run bun typecheck - verify no type errors</subtask>
+        <subtask id="7.2">Run bun lint:fix - verify no lint errors</subtask>
+        <subtask id="7.3">Manual test: modal opens on button click</subtask>
+        <subtask id="7.4">Manual test: form submits with valid data</subtask>
+        <subtask id="7.5">Manual test: form shows validation errors for invalid duration</subtask>
+        <subtask id="7.6">Manual test: Escape key closes modal</subtask>
+        <subtask id="7.7">Manual test: Shift+click bypasses modal</subtask>
+        <subtask id="7.8">Manual test: saved tone preference is loaded on reopening</subtask>
+      </task>
+    </tasks>
+  </story>
+
+  <acceptanceCriteria>
+    <criterion id="AC1">
+      <given>I click "Generate Script" on a lesson</given>
+      <when>the button is clicked</when>
+      <then>
+        - A configuration modal appears
+        - The modal contains tone selection, duration adjustment, and additional instructions fields
+        - The modal title indicates this is for script configuration
+      </then>
+    </criterion>
+    <criterion id="AC2">
+      <given>the configuration modal is open</given>
+      <when>I view the form</when>
+      <then>
+        - Tone selector: Dropdown with options: Calming (default), Energizing, Neutral, Guided Visualization
+        - Target duration: Number input pre-filled from lesson duration, adjustable ±5 min (min 1, max 120)
+        - Additional instructions: Optional textarea for specific guidance (max 500 characters)
+        - Key themes preview: Read-only display of lesson's existing key_themes
+      </then>
+    </criterion>
+    <criterion id="AC3">
+      <given>I select a tone and click "Generate" in the modal</given>
+      <when>form is submitted</when>
+      <then>
+        - The generation starts with my selected configuration
+        - The modal closes automatically
+        - The lesson status updates to SCRIPT_GENERATING
+        - A toast notification appears: "Script generation started..."
+      </then>
+    </criterion>
+    <criterion id="AC4">
+      <given>I click "Cancel" or press Escape in the modal</given>
+      <when>modal should close</when>
+      <then>
+        - The modal closes without starting generation
+        - No API call is made
+        - The lesson status remains unchanged
+      </then>
+    </criterion>
+    <criterion id="AC5">
+      <given>I want to skip configuration</given>
+      <when>I hold Shift+Click on "Generate Script"</when>
+      <then>
+        - Generation starts immediately with default settings (tone: calming, duration: lesson default)
+        - No modal appears
+        - Toast notification: "Script generation started with default settings..."
+      </then>
+    </criterion>
+    <criterion id="AC6">
+      <given>I have previously configured generation for this course</given>
+      <when>I open the configuration modal</when>
+      <then>
+        - The last-used tone preference is pre-selected (stored in localStorage)
+        - Target duration defaults to the lesson's configured duration
+      </then>
+    </criterion>
+    <criterion id="AC7">
+      <given>the form has invalid data (duration &lt; 1 or &gt; 120)</given>
+      <when>I attempt to submit</when>
+      <then>
+        - Inline validation errors appear below the invalid field
+        - The form does not submit
+        - The modal remains open
+      </then>
+    </criterion>
+  </acceptanceCriteria>
+
+  <artifacts>
+    <docs>
+      <doc>
+        <path>docs/architecture.md</path>
+        <title>Architecture Document</title>
+        <section>Container Pattern (CRITICAL)</section>
+        <snippet>Strict separation between business logic (connect.ts) and presentation (index.tsx). All API interactions use openapi-react-query with auto-generated types.</snippet>
+      </doc>
+      <doc>
+        <path>docs/architecture.md</path>
+        <title>Architecture Document</title>
+        <section>Form Management: React Hook Form + Zod</section>
+        <snippet>Declarative forms with schema validation. Zod for type-safe schemas, runtime validation + TypeScript types. zodResolver integration with React Hook Form.</snippet>
+      </doc>
+      <doc>
+        <path>docs/architecture.md</path>
+        <title>Architecture Document</title>
+        <section>API Architecture: OpenAPI-First</section>
+        <snippet>All API interactions use auto-generated, type-safe hooks from the backend OpenAPI specification. Use $api.useMutation for POST requests with body configuration.</snippet>
+      </doc>
+      <doc>
+        <path>docs/ux-design-specification.md</path>
+        <title>UX Design Specification</title>
+        <section>Modal &amp; Dialog Patterns</section>
+        <snippet>Size: Medium (600px max-width). Backdrop blur (8px) for depth. Focus trap within modal. Close on Escape key. Auto-focus first input on open.</snippet>
+      </doc>
+      <doc>
+        <path>docs/ux-design-specification.md</path>
+        <title>UX Design Specification</title>
+        <section>Form Patterns</section>
+        <snippet>Labels above inputs (stacked). Help text below textarea showing character count. Error messages in red below invalid fields. Validation on blur and submit.</snippet>
+      </doc>
+      <doc>
+        <path>docs/ux-design-specification.md</path>
+        <title>UX Design Specification</title>
+        <section>Button Hierarchy</section>
+        <snippet>Primary: Solid cyan (#7dcfff) background. Secondary: Transparent, cyan border. Destructive: Red/pink (#f7768e). All interactive elements minimum 44px touch targets.</snippet>
+      </doc>
+      <doc>
+        <path>docs/ux-design-specification.md</path>
+        <title>UX Design Specification</title>
+        <section>Accessibility Patterns</section>
+        <snippet>WCAG 2.1 Level AA. aria-label on all icon-only buttons. aria-describedby connecting form inputs to error text. Focus indicators visible (cyan ring).</snippet>
+      </doc>
+      <doc>
+        <path>docs/epics.md</path>
+        <title>Epic Breakdown</title>
+        <section>Story 4.2: Script Generation Configuration</section>
+        <snippet>Configure tone (Calming, Energizing, Neutral, Guided Visualization), target duration, and additional instructions. Shift+Click bypass. localStorage persistence.</snippet>
+      </doc>
+      <doc>
+        <path>docs/PRD.md</path>
+        <title>Product Requirements</title>
+        <section>Script Generation</section>
+        <snippet>One-click script generation with progress tracking. Preview generated scripts. Edit capabilities post-generation. Version history.</snippet>
+      </doc>
+      <doc>
+        <path>docs/sprint-artifacts/4-1-generate-script-button-status.md</path>
+        <title>Story 4.1 (Completed)</title>
+        <section>Dev Agent Record</section>
+        <snippet>GenerateScriptButton created at src/components/GenerateScriptButton.tsx. LessonScriptGeneration container at src/containers/Main/LessonScriptGeneration/. Mutation uses $api.useMutation('post', '/api/courses/{slug}/lessons/{id}/generate-script').</snippet>
+      </doc>
+    </docs>
+
+    <code>
+      <file>
+        <path>src/components/GenerateScriptButton.tsx</path>
+        <kind>component</kind>
+        <symbol>GenerateScriptButton</symbol>
+        <lines>1-98</lines>
+        <reason>Primary component to modify - needs to open configuration modal on click and support Shift+Click bypass</reason>
+      </file>
+      <file>
+        <path>src/containers/Main/LessonScriptGeneration/connect.ts</path>
+        <kind>hook</kind>
+        <symbol>useScriptGeneration</symbol>
+        <lines>1-78</lines>
+        <reason>Mutation hook to extend - needs to accept configuration parameters (tone, target_duration, instructions) in request body</reason>
+      </file>
+      <file>
+        <path>src/containers/Main/LessonScriptGeneration/constants.ts</path>
+        <kind>constants</kind>
+        <symbol>ELIGIBLE_FOR_GENERATION, GENERATING_STATUSES</symbol>
+        <lines>1-42</lines>
+        <reason>Add TONE_OPTIONS and scriptConfigSchema Zod validation schema here</reason>
+      </file>
+      <file>
+        <path>src/containers/Main/LessonScriptGeneration/types.ts</path>
+        <kind>types</kind>
+        <symbol>UseScriptGenerationProps, UseScriptGenerationReturn</symbol>
+        <lines>1-13</lines>
+        <reason>Add ScriptConfigFormData and ScriptGenerationConfig interfaces</reason>
+      </file>
+      <file>
+        <path>src/containers/Main/LessonScriptGeneration/index.ts</path>
+        <kind>barrel</kind>
+        <symbol>exports</symbol>
+        <lines>1-7</lines>
+        <reason>Export new types and utilities</reason>
+      </file>
+      <file>
+        <path>src/components/SortableLessonItem.tsx</path>
+        <kind>component</kind>
+        <symbol>SortableLessonItem</symbol>
+        <lines>1-126</lines>
+        <reason>Integration point - uses GenerateScriptButton, need to pass lesson data (duration, key_themes) to modal</reason>
+      </file>
+      <file>
+        <path>src/components/ui/dialog.tsx</path>
+        <kind>ui-component</kind>
+        <symbol>Dialog, DialogContent, DialogHeader, DialogFooter</symbol>
+        <lines>1-115</lines>
+        <reason>shadcn/ui Dialog component - use for ScriptConfigModal base</reason>
+      </file>
+      <file>
+        <path>src/components/ui/select.tsx</path>
+        <kind>ui-component</kind>
+        <symbol>Select, SelectContent, SelectItem, SelectTrigger, SelectValue</symbol>
+        <lines>1-145</lines>
+        <reason>shadcn/ui Select component - use for tone dropdown</reason>
+      </file>
+      <file>
+        <path>src/types/models.ts</path>
+        <kind>types</kind>
+        <symbol>Lesson</symbol>
+        <lines>1-26</lines>
+        <reason>Lesson type definition with durationMinutes, status, and other fields</reason>
+      </file>
+      <file>
+        <path>src/lib/api.ts</path>
+        <kind>api-client</kind>
+        <symbol>$api</symbol>
+        <lines>1-40</lines>
+        <reason>OpenAPI client - all mutations use this</reason>
+      </file>
+    </code>
+
+    <dependencies>
+      <npm>
+        <package name="@radix-ui/react-dialog" version="1.1.15">Dialog primitive for modal</package>
+        <package name="@radix-ui/react-select" version="2.2.6">Select primitive for tone dropdown</package>
+        <package name="@hookform/resolvers" version="5.2.2">Zod resolver for React Hook Form</package>
+        <package name="react-hook-form" version="7.63.0">Form state management</package>
+        <package name="zod" version="4.1.11">Schema validation</package>
+        <package name="sonner" version="2.0.7">Toast notifications</package>
+        <package name="lucide-react" version="0.544.0">Icons (Sparkles, etc.)</package>
+        <package name="openapi-react-query" version="0.5.0">Type-safe API hooks</package>
+        <package name="@tanstack/react-query" version="5.90.2">Server state management</package>
+      </npm>
+    </dependencies>
+  </artifacts>
+
+  <interfaces>
+    <interface>
+      <name>POST /api/courses/{slug}/lessons/{id}/generate-script</name>
+      <kind>REST endpoint</kind>
+      <signature>
+        POST /api/courses/{slug}/lessons/{id}/generate-script
+        Path: { slug: string; id: number }
+        Body (optional): { tone?: 'calming' | 'energizing' | 'neutral' | 'visualization'; target_duration?: number; instructions?: string }
+        Response: { id: number; status: 'SCRIPT_GENERATING'; message: string }
+      </signature>
+      <path>Backend API - verify support for body parameters</path>
+    </interface>
+    <interface>
+      <name>Lesson</name>
+      <kind>TypeScript interface</kind>
+      <signature>
+        interface Lesson {
+          id: number;
+          title: string;
+          durationMinutes: number;
+          status: LessonStatus;
+          keyThemes?: string[];
+          updatedAt: string;
+          // ... other fields
+        }
+      </signature>
+      <path>src/types/models.ts</path>
+    </interface>
+    <interface>
+      <name>ScriptConfigFormData</name>
+      <kind>TypeScript interface (to create)</kind>
+      <signature>
+        interface ScriptConfigFormData {
+          tone: 'calming' | 'energizing' | 'neutral' | 'visualization';
+          target_duration: number;
+          instructions?: string;
+        }
+      </signature>
+      <path>src/containers/Main/LessonScriptGeneration/types.ts</path>
+    </interface>
+  </interfaces>
+
+  <constraints>
+    <constraint category="architecture">Container Pattern: All business logic in connect.ts, presentation in index.tsx or component files. Never mix API calls in presentational components.</constraint>
+    <constraint category="api">OpenAPI-First: Use $api.useMutation with auto-generated types. Never write manual fetch calls.</constraint>
+    <constraint category="validation">Form validation with Zod schemas defined in constants.ts. Use zodResolver with React Hook Form.</constraint>
+    <constraint category="styling">Use Tailwind CSS utility classes. Follow UX spec color palette: primary #7dcfff, background #1a1d29, surface #24283b.</constraint>
+    <constraint category="accessibility">WCAG 2.1 AA compliance. aria-labels on icon buttons, aria-describedby for form errors, visible focus indicators.</constraint>
+    <constraint category="state">Client state in Zustand (auth only). Server state in React Query. localStorage for user preferences only.</constraint>
+    <constraint category="testing">Run bun typecheck and bun lint:fix before commit. Manual testing for all acceptance criteria.</constraint>
+    <constraint category="imports">Import types consistently: import type { X } from 'y'. Use @/ path alias for all imports.</constraint>
+    <constraint category="modal">Medium size modal (600px max-width). Backdrop blur. Focus trap. Close on Escape. Auto-focus first input.</constraint>
+    <constraint category="toast">Use toast from sonner. toast.info for start, toast.success for completion, toast.error for failures.</constraint>
+  </constraints>
+
+  <tests>
+    <standards>
+      Type checking with bun typecheck (tsc --noEmit). Linting with ESLint (bun lint:fix).
+      Manual testing for all acceptance criteria. Unit tests with Vitest for complex logic.
+      Pre-commit hooks run lint-staged (eslint --fix, prettier --write, bun typecheck).
+    </standards>
+    <locations>
+      <location>src/**/*.test.ts</location>
+      <location>src/**/*.test.tsx</location>
+      <location>src/test/setup.ts (test setup file)</location>
+    </locations>
+    <ideas>
+      <idea ac="AC1">Verify modal opens when GenerateScriptButton is clicked</idea>
+      <idea ac="AC2">Verify form contains all required fields with correct defaults</idea>
+      <idea ac="AC3">Verify mutation is called with configuration and modal closes on success</idea>
+      <idea ac="AC4">Verify Cancel button and Escape key close modal without API call</idea>
+      <idea ac="AC5">Verify Shift+Click bypasses modal and uses default configuration</idea>
+      <idea ac="AC6">Verify localStorage saves and restores tone preference</idea>
+      <idea ac="AC7">Verify Zod validation rejects duration &lt; 1 or &gt; 120</idea>
+      <idea>Test ScriptConfigModal renders correct form fields with proper labels</idea>
+      <idea>Test validation displays inline errors for invalid duration values</idea>
+      <idea>Test character counter updates on textarea input</idea>
+    </ideas>
+  </tests>
+</story-context>
