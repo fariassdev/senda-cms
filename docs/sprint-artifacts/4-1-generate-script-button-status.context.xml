@@ -1,0 +1,283 @@
+<story-context id="4-1-generate-script-button-status" v="1.0">
+  <metadata>
+    <epicId>4</epicId>
+    <storyId>4.1</storyId>
+    <title>Generate Script Button and Status</title>
+    <status>drafted</status>
+    <generatedAt>2025-12-01</generatedAt>
+    <generator>BMAD Story Context Workflow</generator>
+    <sourceStoryPath>docs/sprint-artifacts/4-1-generate-script-button-status.md</sourceStoryPath>
+  </metadata>
+
+  <story>
+    <asA>Content Manager</asA>
+    <iWant>to generate a script for a lesson with one click</iWant>
+    <soThat>I can quickly create meditation content</soThat>
+    <tasks>
+      <task id="1" title="Create GenerateScriptButton component">
+        <subtask id="1.1">Create src/components/GenerateScriptButton.tsx</subtask>
+        <subtask id="1.2">Implement button variants: primary (Generate Script), secondary (Regenerate Script)</subtask>
+        <subtask id="1.3">Add sparkle icon (Sparkles from lucide-react) for idle state</subtask>
+        <subtask id="1.4">Add spinner icon (Loader2 from lucide-react) for loading state</subtask>
+        <subtask id="1.5">Implement disabled state with "Generating..." text</subtask>
+        <subtask id="1.6">Add aria-label for accessibility ("Generate script for [lesson title]")</subtask>
+        <ac>#1, #2, #3</ac>
+      </task>
+      <task id="2" title="Create LessonScriptGeneration container">
+        <subtask id="2.1">Create src/containers/Main/LessonScriptGeneration/ directory structure</subtask>
+        <subtask id="2.2">Create connect.ts with script generation mutation</subtask>
+        <subtask id="2.3">Create constants.ts with eligible statuses array</subtask>
+        <subtask id="2.4">Create types.ts for container-local types</subtask>
+        <subtask id="2.5">Implement useScriptGeneration hook with mutation logic</subtask>
+        <ac>#4, #5, #6</ac>
+      </task>
+      <task id="3" title="Integrate button into LessonListItem">
+        <subtask id="3.1">Import GenerateScriptButton into src/components/LessonListItem.tsx</subtask>
+        <subtask id="3.2">Pass lesson status and mutation handlers as props</subtask>
+        <subtask id="3.3">Determine button variant based on lesson status</subtask>
+        <subtask id="3.4">Ensure responsive behavior (icon-only on mobile via Tailwind classes)</subtask>
+        <ac>#1, #2, #3, #7</ac>
+      </task>
+      <task id="4" title="Implement script generation mutation">
+        <subtask id="4.1">Add mutation: $api.useMutation('post', '/api/courses/{slug}/lessons/{id}/generate-script')</subtask>
+        <subtask id="4.2">Handle successful mutation response</subtask>
+        <subtask id="4.3">Implement error handling with toast notification</subtask>
+        <subtask id="4.4">Invalidate course query to trigger refetch</subtask>
+        <ac>#4, #6</ac>
+      </task>
+      <task id="5" title="Add toast notifications">
+        <subtask id="5.1">Show "Script generation started..." toast on mutation start</subtask>
+        <subtask id="5.2">Leverage existing polling toasts from Story 3.6 for completion</subtask>
+        <subtask id="5.3">Show error toast with API error message on failure</subtask>
+        <ac>#4, #5, #6</ac>
+      </task>
+      <task id="6" title="Testing and validation">
+        <subtask id="6.1">Run bun typecheck - verify no type errors</subtask>
+        <subtask id="6.2">Run bun lint:fix - verify no lint errors</subtask>
+        <subtask id="6.3">Manual test: verify button appears for PENDING lessons</subtask>
+        <subtask id="6.4">Manual test: verify "Regenerate" appears for SCRIPT_COMPLETED</subtask>
+        <subtask id="6.5">Manual test: verify loading state during generation</subtask>
+        <subtask id="6.6">Manual test: verify toast on generation start</subtask>
+        <subtask id="6.7">Manual test: verify disabled state for SCRIPT_GENERATING</subtask>
+        <subtask id="6.8">Manual test: verify mobile responsiveness (icon-only)</subtask>
+        <ac>#1-7</ac>
+      </task>
+    </tasks>
+  </story>
+
+  <acceptanceCriteria>
+    <criterion id="1">
+      <given>I am viewing a lesson with status PENDING or a status containing FAILED</given>
+      <when>I see the lesson row</when>
+      <then>I see a "Generate Script" button (cyan #7dcfff, with sparkle icon) clearly visible in the lesson row actions area</then>
+    </criterion>
+    <criterion id="2">
+      <given>The lesson has status SCRIPT_COMPLETED, AUDIO_GENERATING, or AUDIO_COMPLETED</given>
+      <when>I see the lesson row</when>
+      <then>The "Generate Script" button shows as "Regenerate Script" (outline style) with secondary styling (transparent background, cyan border)</then>
+    </criterion>
+    <criterion id="3">
+      <given>The lesson has status SCRIPT_GENERATING</given>
+      <when>I view the lesson row</when>
+      <then>The button is disabled with "Generating..." text, a spinner icon replaces the sparkle icon, the button shows a loading state</then>
+    </criterion>
+    <criterion id="4">
+      <when>I click "Generate Script" on an eligible lesson</when>
+      <then>The button immediately shows a loading spinner, lesson status changes to SCRIPT_GENERATING, status badge shows pulse animation (from Story 3.6), toast notification appears: "Script generation started..."</then>
+    </criterion>
+    <criterion id="5">
+      <given>I start script generation</given>
+      <when>The backend processes the request</when>
+      <then>Existing polling mechanism (Story 3.6) detects status changes; when status changes to SCRIPT_COMPLETED, a success toast appears; when status changes to a FAILED state, an error toast appears</then>
+    </criterion>
+    <criterion id="6">
+      <given>The API returns an error when triggering generation</given>
+      <then>An error toast appears with the error message, the button returns to its idle state (not disabled), the lesson status remains unchanged</then>
+    </criterion>
+    <criterion id="7">
+      <given>I view the lesson list on a mobile device</given>
+      <then>The generate button is accessible (touch target ≥ 44px), button text may be hidden with only the icon visible on smaller screens</then>
+    </criterion>
+  </acceptanceCriteria>
+
+  <artifacts>
+    <docs>
+      <doc>
+        <path>docs/architecture.md</path>
+        <title>Senda CMS Architecture Document</title>
+        <section>Container Pattern</section>
+        <snippet>Business logic goes in connect.ts (mutation, handlers). Presentation goes in component files. The LessonListItem component orchestrates the button display.</snippet>
+      </doc>
+      <doc>
+        <path>docs/architecture.md</path>
+        <title>Senda CMS Architecture Document</title>
+        <section>API Architecture: OpenAPI-First</section>
+        <snippet>All API interactions use auto-generated, type-safe hooks from the backend OpenAPI specification. Use $api.useMutation for mutations with onSuccess/onError callbacks.</snippet>
+      </doc>
+      <doc>
+        <path>docs/architecture.md</path>
+        <title>Senda CMS Architecture Document</title>
+        <section>Error Handling Strategy</section>
+        <snippet>Toast Notifications (Sonner): Success green toast 4s auto-dismiss, Error red toast 6s auto-dismiss. API errors displayed via toast.error().</snippet>
+      </doc>
+      <doc>
+        <path>docs/ux-design-specification.md</path>
+        <title>UX Design Specification</title>
+        <section>Button Hierarchy</section>
+        <snippet>Primary: Solid cyan (#7dcfff) background, dark text. Secondary (Regenerate): Transparent background, cyan border, cyan text. Disabled: Grey background, cursor not-allowed.</snippet>
+      </doc>
+      <doc>
+        <path>docs/ux-design-specification.md</path>
+        <title>UX Design Specification</title>
+        <section>Feedback &amp; Notifications</section>
+        <snippet>Success toasts positioned top-right, auto-dismiss 4 seconds. Error toasts auto-dismiss 6 seconds. Use Sparkles icon for generate action, Loader2 with animate-spin for loading.</snippet>
+      </doc>
+      <doc>
+        <path>docs/ux-design-specification.md</path>
+        <title>UX Design Specification</title>
+        <section>Accessibility Patterns</section>
+        <snippet>Keyboard accessible (Tab + Enter/Space). Focus state must show visible cyan outline (2px). Touch target minimum 44x44px on mobile. Use aria-label, aria-busy, disabled attributes.</snippet>
+      </doc>
+      <doc>
+        <path>docs/epics.md</path>
+        <title>Epic Breakdown</title>
+        <section>Epic 4: AI Script Generation</section>
+        <snippet>Story 4.1: Generate Script Button and Status. Mutation: $api.useMutation('post', '/api/lessons/{id}/generate-script'). Rely on Story 3.6 polling to detect completion.</snippet>
+      </doc>
+      <doc>
+        <path>docs/sprint-artifacts/3-6-realtime-status-indicators.md</path>
+        <title>Story 3.6: Real-time Status Indicators</title>
+        <section>Dev Agent Record</section>
+        <snippet>Polling infrastructure already implemented in CourseDetail/connect.ts with 3000ms interval. Status change detection uses previousLessonsRef. Toast notifications for COMPLETED and FAILED transitions already in place.</snippet>
+      </doc>
+      <doc>
+        <path>docs/PRD.md</path>
+        <title>Product Requirements Document</title>
+        <section>Script Generation</section>
+        <snippet>One-click script generation with progress tracking. Preview generated scripts. Edit capabilities post-generation. Version history.</snippet>
+      </doc>
+    </docs>
+    <code>
+      <file>
+        <path>src/components/LessonListItem.tsx</path>
+        <kind>component</kind>
+        <symbol>LessonListItem</symbol>
+        <lines>1-80</lines>
+        <reason>Component to be modified - add GenerateScriptButton to actions column alongside edit/delete buttons</reason>
+      </file>
+      <file>
+        <path>src/components/StatusBadge.tsx</path>
+        <kind>component</kind>
+        <symbol>StatusBadge, LessonStatus</symbol>
+        <lines>1-95</lines>
+        <reason>Existing status badge with pulse animation for GENERATING states. Defines LessonStatus type used for button state logic.</reason>
+      </file>
+      <file>
+        <path>src/containers/Main/CourseDetail/connect.ts</path>
+        <kind>container</kind>
+        <symbol>useConnect</symbol>
+        <lines>1-230</lines>
+        <reason>Main orchestration container with polling logic. Script generation mutation can be added here or in a dedicated container.</reason>
+      </file>
+      <file>
+        <path>src/containers/Main/CourseDetail/constants.ts</path>
+        <kind>constants</kind>
+        <symbol>GENERATING_STATUSES, POLLING_INTERVAL</symbol>
+        <lines>1-32</lines>
+        <reason>Contains GENERATING_STATUSES array used to determine button disabled state.</reason>
+      </file>
+      <file>
+        <path>src/lib/api.ts</path>
+        <kind>library</kind>
+        <symbol>$api, $publicApi</symbol>
+        <reason>OpenAPI clients for authenticated and public API calls. Use $api.useMutation for script generation.</reason>
+      </file>
+      <file>
+        <path>src/types/models.ts</path>
+        <kind>types</kind>
+        <symbol>Lesson, ScriptGenerationResponse</symbol>
+        <lines>1-30</lines>
+        <reason>Type definitions exported from OpenAPI schemas including Lesson and ScriptGenerationResponse.</reason>
+      </file>
+      <file>
+        <path>src/types/api.d.ts</path>
+        <kind>types</kind>
+        <symbol>paths, operations</symbol>
+        <lines>388-410, 2069-2100</lines>
+        <reason>Auto-generated API types for /api/courses/{slug}/lessons/{id}/generate-script endpoint with path parameters slug (string) and id (number).</reason>
+      </file>
+    </code>
+    <dependencies>
+      <ecosystem name="node">
+        <package name="next" version="15.5.4">React framework with App Router</package>
+        <package name="react" version="19.1.0">UI library</package>
+        <package name="@tanstack/react-query" version="5.90.2">Server state management, mutations, caching</package>
+        <package name="openapi-react-query" version="0.5.0">Auto-generated React Query hooks from OpenAPI</package>
+        <package name="openapi-fetch" version="0.14.0">Type-safe fetch wrapper</package>
+        <package name="sonner" version="2.0.7">Toast notifications</package>
+        <package name="lucide-react" version="0.511.0">Icon library - Sparkles, Loader2 icons</package>
+        <package name="zod" version="4.1.11">Schema validation</package>
+        <package name="react-hook-form" version="7.63.0">Form state management</package>
+        <package name="@hookform/resolvers" version="5.0.1">Zod resolver for React Hook Form</package>
+        <package name="tailwindcss" version="4.1.13">Utility-first CSS</package>
+      </ecosystem>
+    </dependencies>
+  </artifacts>
+
+  <constraints>
+    <constraint type="pattern">Container Pattern: All business logic in connect.ts, presentation in component files. Never put mutations or API calls directly in components.</constraint>
+    <constraint type="pattern">OpenAPI-First: Use auto-generated $api hooks for all API interactions. Never write manual fetch calls.</constraint>
+    <constraint type="pattern">Type imports: Use 'import type { X } from ...' for type-only imports.</constraint>
+    <constraint type="pattern">Path alias: Use @/* for imports from src/ directory.</constraint>
+    <constraint type="testing">Run bun typecheck before committing. Pre-commit hooks run ESLint, Prettier, and typecheck.</constraint>
+    <constraint type="style">Use Tailwind utility classes inline. No CSS modules.</constraint>
+    <constraint type="api">API endpoint is POST /api/courses/{slug}/lessons/{id}/generate-script with path params slug (string) and id (number).</constraint>
+    <constraint type="ux">Primary buttons use cyan (#7dcfff). Disabled buttons use grey background. Touch targets minimum 44px on mobile.</constraint>
+    <constraint type="accessibility">All buttons must have aria-label. Use aria-busy for loading states. Keyboard accessible via Tab + Enter/Space.</constraint>
+  </constraints>
+
+  <interfaces>
+    <interface>
+      <name>Generate Lesson Script API</name>
+      <kind>REST POST endpoint</kind>
+      <signature>POST /api/courses/{slug}/lessons/{id}/generate-script - Returns ScriptGenerationResponse</signature>
+      <path>src/types/api.d.ts:388-410, 2069-2100</path>
+    </interface>
+    <interface>
+      <name>LessonStatus type</name>
+      <kind>TypeScript type</kind>
+      <signature>'PENDING' | 'SCRIPT_GENERATING' | 'SCRIPT_COMPLETED' | 'AUDIO_GENERATING' | 'AUDIO_COMPLETED' | 'SCRIPT_FAILED' | 'AUDIO_FAILED'</signature>
+      <path>src/components/StatusBadge.tsx:9-17</path>
+    </interface>
+    <interface>
+      <name>Lesson type</name>
+      <kind>TypeScript type</kind>
+      <signature>components['schemas']['LessonData'] - includes id, title, status, courseSlug, etc.</signature>
+      <path>src/types/models.ts:12</path>
+    </interface>
+    <interface>
+      <name>$api.useMutation</name>
+      <kind>React Query hook</kind>
+      <signature>useMutation(method, path, { onSuccess?, onError?, onMutate? }) - Type-safe mutation with callbacks</signature>
+      <path>src/lib/api.ts</path>
+    </interface>
+  </interfaces>
+
+  <tests>
+    <standards>
+      Testing follows project standards: Type checking with bun typecheck, linting with bun lint:fix, manual testing for UI interactions and visual states. Unit tests use Vitest. Test files use .test.ts(x) suffix. Focus on button states, mutation flow, toast notifications.
+    </standards>
+    <locations>
+      <location>src/**/*.test.ts</location>
+      <location>src/**/*.test.tsx</location>
+      <location>src/test/setup.ts</location>
+    </locations>
+    <ideas>
+      <idea ac="1,2,3">Test GenerateScriptButton renders correct variant based on lesson status (PENDING → primary, SCRIPT_COMPLETED → secondary, SCRIPT_GENERATING → disabled)</idea>
+      <idea ac="4">Test mutation triggers correctly with lesson ID and course slug, button shows loading state</idea>
+      <idea ac="5">Integration: verify polling from Story 3.6 shows completion toast when status changes</idea>
+      <idea ac="6">Test error handling: API error shows toast.error(), button returns to idle state</idea>
+      <idea ac="7">Test responsive behavior: button shows icon-only on mobile breakpoint</idea>
+    </ideas>
+  </tests>
+</story-context>
