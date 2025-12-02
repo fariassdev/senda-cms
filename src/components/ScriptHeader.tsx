@@ -55,7 +55,7 @@ export function ScriptHeader({
 
         {/* Title row */}
         <div className="flex-1">
-          <h1 className="text-lg font-bold text-foreground leading-tight">
+          <h1 className="text-2xl font-bold text-foreground leading-tight">
             {lessonTitle}
           </h1>
           <div className="flex items-center gap-2 mt-1 flex-wrap">
@@ -70,7 +70,7 @@ export function ScriptHeader({
 
         {/* Metrics - single row */}
         {metrics && (
-          <div className="flex items-center gap-4 text-xs overflow-x-auto pb-1">
+          <div className="flex items-center text-center gap-6 text-xs overflow-x-auto pb-1">
             <MetricItem
               icon={Type}
               label="Words"
@@ -102,7 +102,7 @@ export function ScriptHeader({
             <span className="text-sm font-medium text-muted-foreground mr-1">
               Insert pause:
             </span>
-            <div className="flex gap-1 flex-wrap">
+            <div className="flex gap-2 flex-wrap">
               {[
                 { label: '3s', text: '[PAUSE 3s]' },
                 { label: '5s', text: '[PAUSE 5s]', hideMobile: true },
@@ -116,7 +116,7 @@ export function ScriptHeader({
                   variant="outline"
                   size="sm"
                   onClick={() => onInsertPause(button.text)}
-                  className={`h-7 px-2 text-sm ${button.hideMobile ? 'hidden sm:inline-flex' : ''}`}
+                  className={`min-h-[36px] h-7 px-6 text-sm ${button.hideMobile ? 'hidden sm:inline-flex' : ''}`}
                   aria-label={`Insert ${button.label} pause`}
                 >
                   {button.label}
@@ -142,9 +142,11 @@ function MetricItem({
   highlight?: boolean;
 }) {
   return (
-    <div className="flex items-center gap-1">
-      <Icon className="h-4 w-4 text-muted-foreground flex-shrink-0" />
-      <span className="text-sm text-muted-foreground">{label}:</span>
+    <div className="flex flex-col gap-1">
+      <div className="flex items-center gap-3">
+        <Icon className="h-4 w-4 text-muted-foreground flex-shrink-0" />
+        <span className="text-sm text-muted-foreground">{label}:</span>
+      </div>
       <span
         className={`text-sm font-semibold ${highlight ? 'text-orange-400' : 'text-foreground'}`}
       >
