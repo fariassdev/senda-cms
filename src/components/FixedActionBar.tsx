@@ -85,8 +85,8 @@ export const FixedActionBar = ({
 
         {isEditing && (
           <>
-            <Button variant="outline" size="sm" onClick={onExitEdit}>
-              Done
+            <Button variant="outline" onClick={onExitEdit}>
+              Cancel
             </Button>
             <Button
               onClick={onSave}
