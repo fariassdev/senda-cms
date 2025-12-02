@@ -2,7 +2,7 @@
 
 import { useQueryClient } from '@tanstack/react-query';
 import { useRouter } from 'next/navigation';
-import { useEffect, useMemo, useState } from 'react';
+import { useEffect, useMemo, useRef, useState } from 'react';
 import { toast } from 'sonner';
 
 import type { LessonStatus } from '@/components/StatusBadge';
@@ -27,6 +27,7 @@ export default function useConnect({
 }: ScriptPreviewProps) {
   const router = useRouter();
   const queryClient = useQueryClient();
+  const textareaRef = useRef<HTMLTextAreaElement>(null);
 
   // Edit mode state
   const [isEditing, setIsEditing] = useState(false);
@@ -35,6 +36,29 @@ export default function useConnect({
   const [hasUnsavedChanges, setHasUnsavedChanges] = useState(false);
   const [saveStatus, setSaveStatus] = useState<SaveState>('idle');
   const [isUnsavedModalOpen, setIsUnsavedModalOpen] = useState(false);
+
+  const handleInsertPause = (text: string) => {
+    const textarea = textareaRef.current;
+    if (!textarea) return;
+
+    const startPos = textarea.selectionStart;
+    const endPos = textarea.selectionEnd;
+    const textBefore = editedContent.substring(0, startPos);
+    const textAfter = editedContent.substring(endPos);
+
+    const newValue = textBefore + text + textAfter;
+    const newCursorPos = startPos + text.length;
+
+    setEditedContent(newValue);
+    setHasUnsavedChanges(newValue !== originalContent);
+
+    // Set cursor position after React update
+    setTimeout(() => {
+      textarea.selectionStart = newCursorPos;
+      textarea.selectionEnd = newCursorPos;
+      textarea.focus();
+    }, 0);
+  };
 
   // Fetch lessons for this course
   const {
@@ -245,6 +269,8 @@ export default function useConnect({
     handleGenerateAudio,
     handleRetry,
     courseSlug,
+    textareaRef,
+    handleInsertPause,
     // Edit mode state and handlers
     isEditing,
     editedContent,

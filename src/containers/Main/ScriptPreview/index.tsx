@@ -53,6 +53,8 @@ export default function ScriptPreview(props: ScriptPreviewProps) {
     handleDiscardChanges,
     handleContentChange,
     setIsUnsavedModalOpen,
+    textareaRef,
+    handleInsertPause,
   } = useConnect(props);
 
   // Loading state
@@ -99,6 +101,7 @@ export default function ScriptPreview(props: ScriptPreviewProps) {
         lastUpdated={lastUpdated}
         onBack={handleBackToCourse}
         metrics={isEditing ? editedMetrics : metrics}
+        onInsertPause={isEditing ? handleInsertPause : undefined}
       />
 
       {/* Conditional rendering: Edit mode vs Preview mode */}
@@ -114,6 +117,7 @@ export default function ScriptPreview(props: ScriptPreviewProps) {
               isDirty={hasUnsavedChanges}
               saveState={saveStatus}
               onSave={handleSaveScript}
+              ref={textareaRef}
             />
 
             {/* Unsaved Changes Modal */}

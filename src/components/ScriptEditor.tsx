@@ -1,9 +1,6 @@
 'use client';
 
-import { useRef } from 'react';
-
-import { Button } from '@/components/ui/button';
-import { Card, CardContent } from '@/components/ui/card';
+import { Card, CardContent, CardHeader } from '@/components/ui/card';
 import { Textarea } from '@/components/ui/textarea';
 
 interface ScriptEditorProps {
@@ -21,6 +18,7 @@ interface ScriptEditorProps {
   isDirty: boolean;
   saveState: 'idle' | 'saving' | 'success' | 'error';
   onSave: () => void;
+  ref: React.RefObject<HTMLTextAreaElement | null>;
 }
 
 export function ScriptEditor({
@@ -31,67 +29,18 @@ export function ScriptEditor({
   isDirty: _isDirty,
   saveState: _saveState,
   onSave: _onSave,
+  ref,
 }: ScriptEditorProps) {
-  const textareaRef = useRef<HTMLTextAreaElement>(null);
-
-  const insertTextAtCursor = (textToInsert: string) => {
-    const textarea = textareaRef.current;
-    if (!textarea) return;
-
-    const startPos = textarea.selectionStart;
-    const endPos = textarea.selectionEnd;
-    const textBefore = content.substring(0, startPos);
-    const textAfter = content.substring(endPos);
-
-    const newValue = textBefore + textToInsert + textAfter;
-    const newCursorPos = startPos + textToInsert.length;
-
-    onChange(newValue);
-
-    // Set cursor position after React update
-    setTimeout(() => {
-      textarea.selectionStart = newCursorPos;
-      textarea.selectionEnd = newCursorPos;
-      textarea.focus();
-    }, 0);
-  };
-
-  const toolbarButtons = [
-    { label: '[PAUSE 3s]', text: '[PAUSE 3s]' },
-    { label: '[PAUSE 5s]', text: '[PAUSE 5s]' },
-    { label: '[PAUSE 10s]', text: '[PAUSE 10s]' },
-    { label: '[PAUSE 30s]', text: '[PAUSE 30s]' },
-    { label: '[PAUSE 50s]', text: '[PAUSE 50s]' },
-  ];
-
   return (
     <div className="space-y-6">
-      {/* Toolbar */}
-      <Card>
-        <CardContent className="py-4">
-          <div className="flex flex-wrap gap-2">
-            {toolbarButtons.map((button) => (
-              <Button
-                key={button.label}
-                type="button"
-                variant="outline"
-                size="sm"
-                onClick={() => insertTextAtCursor(button.text)}
-                className="min-h-[44px] text-xs sm:text-sm"
-                aria-label={`Insert ${button.label}`}
-              >
-                {button.label}
-              </Button>
-            ))}
-          </div>
-        </CardContent>
-      </Card>
-
       {/* Editor */}
       <Card>
+        <CardHeader>
+          <h2 className="text-lg font-semibold">Script Content</h2>
+        </CardHeader>
         <CardContent>
           <Textarea
-            ref={textareaRef}
+            ref={ref}
             aria-label="Script editor"
             value={content}
             onChange={(e) => onChange(e.target.value)}

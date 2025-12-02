@@ -43,12 +43,14 @@ export function ScriptHeader({
   lastUpdated,
   onBack,
   metrics,
+  onInsertPause,
 }: {
   lessonTitle: string;
   status?: string | null;
   lastUpdated?: string | null;
   onBack: () => void;
   metrics?: Metrics | null;
+  onInsertPause?: (text: string) => void;
 }) {
   return (
     <div className="sticky top-0 z-50">
@@ -132,6 +134,57 @@ export function ScriptHeader({
                     : '-'
                 }
               />
+            </div>
+          </div>
+        )}
+
+        {/* Toolbar for inserting pauses (only in edit mode) */}
+        {onInsertPause && (
+          <div className="mt-6">
+            <div className="flex items-center gap-2 mb-3">
+              <Clock className="h-4 w-4 text-muted-foreground" />
+              <span className="text-sm font-medium text-muted-foreground">
+                Insert Pauses
+              </span>
+            </div>
+            <div className="flex flex-wrap gap-2">
+              {[
+                { label: '[PAUSE 3s]', text: '[PAUSE 3s]', showOnMobile: true },
+                {
+                  label: '[PAUSE 5s]',
+                  text: '[PAUSE 5s]',
+                  showOnMobile: false,
+                },
+                {
+                  label: '[PAUSE 10s]',
+                  text: '[PAUSE 10s]',
+                  showOnMobile: false,
+                },
+                {
+                  label: '[PAUSE 30s]',
+                  text: '[PAUSE 30s]',
+                  showOnMobile: true,
+                },
+                {
+                  label: '[PAUSE 50s]',
+                  text: '[PAUSE 50s]',
+                  showOnMobile: false,
+                },
+              ].map((button) => (
+                <Button
+                  key={button.label}
+                  type="button"
+                  variant="outline"
+                  size="sm"
+                  onClick={() => onInsertPause(button.text)}
+                  className={`min-h-[44px] text-xs sm:text-sm ${
+                    button.showOnMobile ? '' : 'hidden sm:inline-flex'
+                  }`}
+                  aria-label={`Insert ${button.label}`}
+                >
+                  {button.label}
+                </Button>
+              ))}
             </div>
           </div>
         )}
