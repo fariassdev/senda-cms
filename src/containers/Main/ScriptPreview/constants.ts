@@ -54,7 +54,7 @@ export function calculateScriptMetrics(
   }, 0);
 
   const charCount = speakParts.reduce(
-    (acc, p) => acc + (p.content?.length || 0),
+    (acc, p) => acc + (p.content?.replace(/\n/g, '').length || 0),
     0,
   );
 
@@ -85,7 +85,6 @@ export function calculateScriptMetrics(
   return {
     wordCount,
     charCount,
-    readingTimeMinutes,
     totalPauseSeconds,
     totalDurationMinutes,
     pausePercentage,
@@ -214,29 +213,23 @@ export function parseScriptText(text: string): ScriptPart[] {
  */
 export function calculateMetricsFromText(
   text: string,
-  targetDurationMinutes?: number,
-): {
-  wordCount: number;
-  charCount: number;
-  estimatedDurationMinutes: number;
-  totalPauseSeconds: number;
-  pausePercentage: number;
-  targetDurationDiff?: number;
-  isDurationOffTarget?: boolean;
-} {
-  // Remove all cue markers for word/char count
-  const speakContent = text
-    .replace(/\[PAUSE \d+s\]/g, '')
-    .replace(/\[SILENCE \d+s\]/g, '')
-    .replace(/\[BREATHE IN\]/g, '')
-    .replace(/\[BREATHE OUT\]/g, '')
-    .trim();
+  targetDurationMinutes: number,
+): ScriptMetrics {
+  // Parse the text into structured script parts
+  const parsedScript = parseScriptText(text);
 
-  const wordCount = speakContent
-    .split(/\s+/)
-    .filter((w) => w.length > 0).length;
-  const charCount = speakContent.length;
-  const readingTimeMinutes = wordCount / MEDITATION_WORDS_PER_MINUTE;
+  // Calculate word and char count from speak parts only
+  const speakParts = parsedScript.filter(
+    (p) => p.type === 'speak' && p.content,
+  );
+  const wordCount = speakParts.reduce((acc, p) => {
+    const words = p.content?.trim().split(/\s+/).filter(Boolean) || [];
+    return acc + words.length;
+  }, 0);
+  const charCount = speakParts.reduce(
+    (acc, p) => acc + (p.content?.replace(/\n/g, '').length || 0),
+    0,
+  );
 
   // Extract pause durations
   const pauseMatches = [
@@ -248,37 +241,35 @@ export function calculateMetricsFromText(
     0,
   );
 
-  // Combined estimated duration
-  const estimatedDurationMinutes = readingTimeMinutes + totalPauseSeconds / 60;
+  // Calculate reading time in minutes (without pauses)
+  const readingTimeMinutes = Math.max(
+    1,
+    Math.ceil(wordCount / MEDITATION_WORDS_PER_MINUTE),
+  );
+
+  // Calculate total duration including pauses
+  const totalDurationMinutes = Math.max(
+    1,
+    Math.ceil(readingTimeMinutes + totalPauseSeconds / 60),
+  );
+
+  // Calculate pause percentage
   const pausePercentage =
-    estimatedDurationMinutes > 0
-      ? Math.round((totalPauseSeconds / 60 / estimatedDurationMinutes) * 100)
+    totalDurationMinutes > 0
+      ? Math.round((totalPauseSeconds / 60 / totalDurationMinutes) * 100)
       : 0;
 
-  const result: {
-    wordCount: number;
-    charCount: number;
-    estimatedDurationMinutes: number;
-    totalPauseSeconds: number;
-    pausePercentage: number;
-    targetDurationDiff?: number;
-    isDurationOffTarget?: boolean;
-  } = {
+  // Target duration comparison
+  const targetDurationDiff = totalDurationMinutes - targetDurationMinutes;
+  const isDurationOffTarget = Math.abs(targetDurationDiff) > 1;
+
+  return {
     wordCount,
     charCount,
-    estimatedDurationMinutes,
     totalPauseSeconds,
+    totalDurationMinutes,
     pausePercentage,
+    targetDurationMinutes,
+    isDurationOffTarget,
   };
-
-  // Target duration comparison
-  if (targetDurationMinutes !== undefined) {
-    const targetDurationDiff = estimatedDurationMinutes - targetDurationMinutes;
-    const isDurationOffTarget = Math.abs(targetDurationDiff) > 1;
-
-    result.targetDurationDiff = targetDurationDiff;
-    result.isDurationOffTarget = isDurationOffTarget;
-  }
-
-  return result;
 }

@@ -14,11 +14,11 @@ export interface ScriptPreviewProps {
 export interface ScriptMetrics {
   wordCount: number;
   charCount: number;
-  readingTimeMinutes: number;
   totalPauseSeconds: number;
   totalDurationMinutes: number;
   pausePercentage: number;
   targetDurationMinutes: number;
+  isDurationOffTarget?: boolean;
 }
 
 /**

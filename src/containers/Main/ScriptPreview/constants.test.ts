@@ -15,7 +15,6 @@ describe('calculateScriptMetrics', () => {
 
     expect(result.wordCount).toBe(9); // 6 + 3 words
     expect(result.charCount).toBe(47); // 26 + 21 characters (including spaces)
-    expect(result.readingTimeMinutes).toBe(1); // ceil(9 / 150)
     expect(result.totalPauseSeconds).toBe(5); // 3 + 2 seconds
     expect(result.totalDurationMinutes).toBe(2); // ceil(1 + 5/60) = ceil(1.083) = 2
     expect(result.pausePercentage).toBe(4); // round((5/60) / 2 * 100) ≈ 4%
@@ -27,7 +26,6 @@ describe('calculateScriptMetrics', () => {
 
     expect(result.wordCount).toBe(0);
     expect(result.charCount).toBe(0);
-    expect(result.readingTimeMinutes).toBe(1); // minimum 1 minute
     expect(result.totalPauseSeconds).toBe(0);
     expect(result.totalDurationMinutes).toBe(1); // minimum 1 minute
     expect(result.pausePercentage).toBe(0);
@@ -48,7 +46,6 @@ describe('calculateScriptMetrics', () => {
 
     expect(result.wordCount).toBe(13);
     expect(result.charCount).toBe(72);
-    expect(result.readingTimeMinutes).toBe(1); // ceil(13 / 150)
     expect(result.totalPauseSeconds).toBe(0);
     expect(result.totalDurationMinutes).toBe(1);
     expect(result.pausePercentage).toBe(0);
@@ -65,7 +62,6 @@ describe('calculateScriptMetrics', () => {
 
     expect(result.wordCount).toBe(0);
     expect(result.charCount).toBe(0);
-    expect(result.readingTimeMinutes).toBe(1); // minimum 1 minute
     expect(result.totalPauseSeconds).toBe(30);
     expect(result.totalDurationMinutes).toBe(2); // ceil(1 + 30/60) = ceil(1.5) = 2
     expect(result.pausePercentage).toBe(25); // round(30/60 / 2 * 100) = 25%
@@ -97,7 +93,6 @@ describe('calculateScriptMetrics', () => {
     const result = calculateScriptMetrics(script, 5);
 
     expect(result.wordCount).toBe(200);
-    expect(result.readingTimeMinutes).toBe(2); // ceil(200 / 150) = ceil(1.333) = 2
   });
 
   it('handles target duration comparison highlighting', () => {
@@ -124,7 +119,6 @@ describe('calculateScriptMetrics', () => {
 
     const result = calculateScriptMetrics(script, 5);
 
-    expect(result.readingTimeMinutes).toBe(1);
     expect(result.totalPauseSeconds).toBe(18);
     expect(result.totalDurationMinutes).toBe(2); // ceil(1 + 18/60) = ceil(1.3) = 2
     expect(result.pausePercentage).toBe(15); // round(18/60 / 2 * 100) = round(0.3/2 * 100) = 15%
