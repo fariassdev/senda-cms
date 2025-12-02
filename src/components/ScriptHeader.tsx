@@ -1,14 +1,6 @@
 'use client';
 
-import {
-  ArrowLeft,
-  Clock,
-  FileText,
-  Pause,
-  Percent,
-  Target,
-  Type,
-} from 'lucide-react';
+import { ArrowLeft, Pause, Target, Type } from 'lucide-react';
 import { StatusBadge } from '@/components/StatusBadge';
 import { Button } from '@/components/ui/button';
 
@@ -54,122 +46,69 @@ export function ScriptHeader({
 }) {
   return (
     <div className="sticky top-0 z-50">
-      <div className="bg-background/95 backdrop-blur-md rounded-md p-4 shadow-sm">
-        <div className="space-y-2">
-          {/* Back button above title */}
-          <Button variant="ghost" size="sm" onClick={onBack} className="-ml-2">
-            <ArrowLeft className="h-4 w-4" />
-            Back to Course
-          </Button>
+      <div className="bg-background/95 backdrop-blur-md rounded-md p-3 shadow-sm space-y-4">
+        {/* Back button */}
+        <Button variant="ghost" size="sm" onClick={onBack} className="-ml-2">
+          <ArrowLeft className="h-4 w-4" />
+          Back to Course
+        </Button>
 
-          {/* Title and status row */}
-          <div className="flex flex-col sm:flex-row sm:items-start sm:justify-between gap-4">
-            <div className="space-y-2">
-              <h1 className="text-2xl font-bold text-foreground">
-                {lessonTitle}
-              </h1>
-              <div className="flex items-center gap-3 flex-wrap">
-                {status && <StatusBadge status={status} />}
-                {lastUpdated && (
-                  <span className="text-sm text-muted-foreground">
-                    Updated {lastUpdated}
-                  </span>
-                )}
-              </div>
-            </div>
-
-            {/* Placeholder for potential right-side controls (keeps header balanced) */}
-            <div className="flex items-center gap-3" />
+        {/* Title row */}
+        <div className="flex-1">
+          <h1 className="text-lg font-bold text-foreground leading-tight">
+            {lessonTitle}
+          </h1>
+          <div className="flex items-center gap-2 mt-1 flex-wrap">
+            {status && <StatusBadge status={status} />}
+            {lastUpdated && (
+              <span className="text-xs text-muted-foreground">
+                Updated {lastUpdated}
+              </span>
+            )}
           </div>
         </div>
 
-        {/* Metrics (kept in header so they remain visible while scrolling) */}
+        {/* Metrics - single row */}
         {metrics && (
-          <div className="mt-6">
-            <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 gap-4">
-              <MetricItem
-                icon={Type}
-                label="Words"
-                value={metrics.wordCount?.toLocaleString() ?? '-'}
-              />
-              <MetricItem
-                icon={FileText}
-                label="Characters"
-                value={metrics.charCount?.toLocaleString() ?? '-'}
-              />
-              <MetricItem
-                icon={Target}
-                label="Target"
-                value={
-                  metrics.targetDurationMinutes !== undefined
-                    ? `${metrics.targetDurationMinutes} min`
-                    : '-'
-                }
-              />
-              <MetricItem
-                icon={Clock}
-                label="Est. Duration"
-                value={
-                  metrics.totalDurationSeconds !== undefined
-                    ? formatDuration(metrics.totalDurationSeconds)
-                    : '-'
-                }
-                highlight={metrics.isDurationOffTarget}
-              />
-              <MetricItem
-                icon={Pause}
-                label="Total Pauses"
-                value={
-                  metrics.totalPauseSeconds
-                    ? `${metrics.totalPauseSeconds}s`
-                    : '-'
-                }
-              />
-              <MetricItem
-                icon={Percent}
-                label="Pause %"
-                value={
-                  metrics.pausePercentage !== undefined
-                    ? `${metrics.pausePercentage}%`
-                    : '-'
-                }
-              />
-            </div>
+          <div className="flex items-center gap-4 text-xs overflow-x-auto pb-1">
+            <MetricItem
+              icon={Type}
+              label="Words"
+              value={metrics.wordCount?.toLocaleString() ?? '-'}
+            />
+            <div className="w-px h-4 bg-border" />
+            <MetricItem
+              icon={Target}
+              label="Duration"
+              value={
+                metrics.targetDurationMinutes !== undefined
+                  ? `${metrics.totalDurationSeconds !== undefined ? formatDuration(metrics.totalDurationSeconds) : '-'} / ${metrics.targetDurationMinutes} min`
+                  : '-'
+              }
+              highlight={metrics.isDurationOffTarget}
+            />
+            <div className="w-px h-4 bg-border" />
+            <MetricItem
+              icon={Pause}
+              label="Pauses"
+              value={`${metrics.totalPauseSeconds ? `${metrics.totalPauseSeconds}s` : '-'} (${metrics.pausePercentage ?? '-'}%)`}
+            />
           </div>
         )}
 
         {/* Toolbar for inserting pauses (only in edit mode) */}
         {onInsertPause && (
-          <div className="mt-6">
-            <div className="flex items-center gap-2 mb-3">
-              <Clock className="h-4 w-4 text-muted-foreground" />
-              <span className="text-sm font-medium text-muted-foreground">
-                Insert Pauses
-              </span>
-            </div>
-            <div className="flex flex-wrap gap-2">
+          <div className="flex items-center gap-2">
+            <span className="text-sm font-medium text-muted-foreground mr-1">
+              Insert pause:
+            </span>
+            <div className="flex gap-1 flex-wrap">
               {[
-                { label: '[PAUSE 3s]', text: '[PAUSE 3s]', showOnMobile: true },
-                {
-                  label: '[PAUSE 5s]',
-                  text: '[PAUSE 5s]',
-                  showOnMobile: false,
-                },
-                {
-                  label: '[PAUSE 10s]',
-                  text: '[PAUSE 10s]',
-                  showOnMobile: false,
-                },
-                {
-                  label: '[PAUSE 30s]',
-                  text: '[PAUSE 30s]',
-                  showOnMobile: true,
-                },
-                {
-                  label: '[PAUSE 50s]',
-                  text: '[PAUSE 50s]',
-                  showOnMobile: false,
-                },
+                { label: '3s', text: '[PAUSE 3s]' },
+                { label: '5s', text: '[PAUSE 5s]', hideMobile: true },
+                { label: '10s', text: '[PAUSE 10s]', hideMobile: true },
+                { label: '30s', text: '[PAUSE 30s]' },
+                { label: '50s', text: '[PAUSE 50s]', hideMobile: true },
               ].map((button) => (
                 <Button
                   key={button.label}
@@ -177,10 +116,8 @@ export function ScriptHeader({
                   variant="outline"
                   size="sm"
                   onClick={() => onInsertPause(button.text)}
-                  className={`min-h-[44px] text-xs sm:text-sm ${
-                    button.showOnMobile ? '' : 'hidden sm:inline-flex'
-                  }`}
-                  aria-label={`Insert ${button.label}`}
+                  className={`h-7 px-2 text-sm ${button.hideMobile ? 'hidden sm:inline-flex' : ''}`}
+                  aria-label={`Insert ${button.label} pause`}
                 >
                   {button.label}
                 </Button>
@@ -205,13 +142,11 @@ function MetricItem({
   highlight?: boolean;
 }) {
   return (
-    <div className="flex flex-col gap-1">
-      <div className="flex items-center gap-2">
-        <Icon className="h-4 w-4 text-muted-foreground" />
-        <span className="text-xs text-muted-foreground">{label}</span>
-      </div>
+    <div className="flex items-center gap-1">
+      <Icon className="h-4 w-4 text-muted-foreground flex-shrink-0" />
+      <span className="text-sm text-muted-foreground">{label}:</span>
       <span
-        className={`text-base font-semibold ${highlight ? 'text-orange-400' : 'text-foreground'}`}
+        className={`text-sm font-semibold ${highlight ? 'text-orange-400' : 'text-foreground'}`}
       >
         {value}
       </span>
