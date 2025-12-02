@@ -1,6 +1,6 @@
 # Story 4.4: Edit Script Content
 
-Status: review
+Status: done
 
 ## Story
 
@@ -664,6 +664,11 @@ Future unit tests (post-story):
 ## Dev Agent Record
 
 ### Context Reference
+
+### Completion Notes
+
+**Completed:** 2025-12-02
+**Definition of Done:** All acceptance criteria met, code reviewed, tests passing
 
 - **Story Context File**: `docs/sprint-artifacts/4-4-edit-script-content.context.xml`
 - **Generated**: 2025-12-01
