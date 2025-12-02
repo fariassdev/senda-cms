@@ -1,10 +1,9 @@
 'use client';
 
-import { Clock, FileText, Pause, Percent, Target, Type } from 'lucide-react';
 import { useRef } from 'react';
 
 import { Button } from '@/components/ui/button';
-import { Card, CardContent, CardHeader } from '@/components/ui/card';
+import { Card, CardContent } from '@/components/ui/card';
 import { Textarea } from '@/components/ui/textarea';
 
 interface ScriptEditorProps {
@@ -28,11 +27,11 @@ interface ScriptEditorProps {
 export function ScriptEditor({
   content,
   onChange,
-  metrics,
-  targetDurationMinutes,
-  isDirty,
-  saveState,
-  onSave,
+  metrics: _metrics,
+  targetDurationMinutes: _targetDurationMinutes,
+  isDirty: _isDirty,
+  saveState: _saveState,
+  onSave: _onSave,
 }: ScriptEditorProps) {
   const textareaRef = useRef<HTMLTextAreaElement>(null);
 
@@ -66,13 +65,6 @@ export function ScriptEditor({
     { label: '[SILENCE 10s]', text: '[SILENCE 10s]' },
   ];
 
-  const saveButtonText = {
-    idle: 'Save Changes',
-    saving: 'Saving...',
-    success: 'Saved ✓',
-    error: 'Failed to save - Retry',
-  };
-
   return (
     <div className="space-y-6">
       {/* Toolbar */}
@@ -98,9 +90,6 @@ export function ScriptEditor({
 
       {/* Editor */}
       <Card>
-        <CardHeader>
-          <h2 className="text-lg font-semibold">Edit Script</h2>
-        </CardHeader>
         <CardContent>
           <Textarea
             ref={textareaRef}
@@ -112,113 +101,6 @@ export function ScriptEditor({
           />
         </CardContent>
       </Card>
-
-      {/* Metrics */}
-      {metrics && (
-        <Card>
-          <CardContent className="py-4">
-            <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 gap-4">
-              <MetricItem
-                icon={Type}
-                label="Words"
-                value={metrics.wordCount.toLocaleString()}
-              />
-              <MetricItem
-                icon={FileText}
-                label="Characters"
-                value={metrics.charCount.toLocaleString()}
-              />
-              {targetDurationMinutes !== undefined && (
-                <MetricItem
-                  icon={Target}
-                  label="Target Duration"
-                  value={`${targetDurationMinutes.toFixed(1)} min`}
-                />
-              )}
-              <MetricItem
-                icon={Clock}
-                label="Est. Duration"
-                value={`${metrics.estimatedDurationMinutes.toFixed(1)} min`}
-                highlight={metrics.isDurationOffTarget}
-              />
-              <MetricItem
-                icon={Pause}
-                label="Total Pauses"
-                value={`${metrics.totalPauseSeconds}s`}
-              />
-              <MetricItem
-                icon={Percent}
-                label="Pause %"
-                value={`${metrics.pausePercentage}%`}
-              />
-            </div>
-          </CardContent>
-        </Card>
-      )}
-
-      {/* Save State Indicator */}
-      <Card>
-        <CardContent className="py-4">
-          <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
-            <div className="flex items-center gap-2">
-              {isDirty && saveState === 'idle' && (
-                <span className="text-sm text-muted-foreground">
-                  Unsaved changes
-                </span>
-              )}
-              {saveState === 'success' && (
-                <span className="text-sm text-green-600">Saved ✓</span>
-              )}
-            </div>
-            <Button
-              onClick={onSave}
-              disabled={!isDirty || saveState === 'saving'}
-              variant={saveState === 'success' ? 'default' : 'default'}
-              className={`w-full sm:w-auto min-h-[44px] sticky bottom-4 sm:static ${
-                saveState === 'error'
-                  ? 'border-destructive text-destructive hover:bg-destructive/10'
-                  : ''
-              }`}
-            >
-              {saveState === 'saving' && (
-                <span className="animate-spin mr-2">⏳</span>
-              )}
-              {saveButtonText[saveState]}
-            </Button>
-          </div>
-        </CardContent>
-      </Card>
-    </div>
-  );
-}
-
-/**
- * Metric display item component
- */
-function MetricItem({
-  icon: Icon,
-  label,
-  value,
-  highlight = false,
-}: {
-  icon: React.ComponentType<{ className?: string }>;
-  label: string;
-  value: string;
-  highlight?: boolean;
-}) {
-  return (
-    <div className="flex flex-col gap-1">
-      <div className="flex items-center gap-2">
-        <Icon className="h-4 w-4 text-muted-foreground" />
-        <span className="text-xs text-muted-foreground">{label}</span>
-      </div>
-      <span
-        className={`text-base font-semibold ${
-          highlight ? 'text-orange-400' : 'text-foreground'
-        }`}
-      >
-        {value}
-      </span>
     </div>
   );
 }
