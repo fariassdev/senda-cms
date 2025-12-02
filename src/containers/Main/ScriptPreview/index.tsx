@@ -112,11 +112,6 @@ export default function ScriptPreview(props: ScriptPreviewProps) {
             <ScriptEditor
               content={editedContent}
               onChange={handleContentChange}
-              metrics={editedMetrics}
-              targetDurationMinutes={lesson.durationMinutes}
-              isDirty={hasUnsavedChanges}
-              saveState={saveStatus}
-              onSave={handleSaveScript}
               ref={textareaRef}
             />
 

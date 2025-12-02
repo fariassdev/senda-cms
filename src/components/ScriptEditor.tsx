@@ -6,31 +6,10 @@ import { Textarea } from '@/components/ui/textarea';
 interface ScriptEditorProps {
   content: string;
   onChange: (content: string) => void;
-  metrics: {
-    wordCount: number;
-    charCount: number;
-    totalDurationSeconds: number;
-    totalPauseSeconds: number;
-    pausePercentage: number;
-    isDurationOffTarget?: boolean;
-  } | null;
-  targetDurationMinutes?: number;
-  isDirty: boolean;
-  saveState: 'idle' | 'saving' | 'success' | 'error';
-  onSave: () => void;
   ref: React.RefObject<HTMLTextAreaElement | null>;
 }
 
-export function ScriptEditor({
-  content,
-  onChange,
-  metrics: _metrics,
-  targetDurationMinutes: _targetDurationMinutes,
-  isDirty: _isDirty,
-  saveState: _saveState,
-  onSave: _onSave,
-  ref,
-}: ScriptEditorProps) {
+export function ScriptEditor({ content, onChange, ref }: ScriptEditorProps) {
   return (
     <div className="space-y-6">
       {/* Editor */}
