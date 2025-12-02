@@ -17,31 +17,27 @@ export const FixedActionBar = ({
   onGenerateAudio,
   onRegenerate,
   canGenerateAudio,
-  isDirty,
-  saveState,
+  hasUnsavedChanges,
+  saveStatus,
   onSave,
-  onExitEdit,
-  onSaveAndExit: _onSaveAndExit,
-  onDiscard: _onDiscard,
+  onCancelEdit,
 }: {
   isEditing: boolean;
   onEdit?: () => void;
   onGenerateAudio?: () => void;
   onRegenerate?: () => void;
   canGenerateAudio?: boolean;
-  isDirty?: boolean;
-  saveState?: SaveState;
+  hasUnsavedChanges?: boolean;
+  saveStatus?: SaveState;
   onSave?: () => void;
-  onExitEdit?: () => void;
-  onSaveAndExit?: () => void;
-  onDiscard?: () => void;
+  onCancelEdit?: () => void;
 }) => {
   const saveText =
-    saveState === 'idle'
+    saveStatus === 'idle'
       ? 'Save Changes'
-      : saveState === 'saving'
+      : saveStatus === 'saving'
         ? 'Saving...'
-        : saveState === 'success'
+        : saveStatus === 'success'
           ? 'Saved ✓'
           : 'Failed - Retry';
 
@@ -85,14 +81,14 @@ export const FixedActionBar = ({
 
         {isEditing && (
           <>
-            <Button variant="outline" onClick={onExitEdit}>
+            <Button variant="outline" onClick={onCancelEdit}>
               Cancel
             </Button>
             <Button
               onClick={onSave}
-              disabled={!isDirty || saveState === 'saving'}
+              disabled={!hasUnsavedChanges || saveStatus === 'saving'}
               className={
-                saveState === 'error'
+                saveStatus === 'error'
                   ? 'border-destructive text-destructive'
                   : ''
               }

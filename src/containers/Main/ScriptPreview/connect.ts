@@ -32,9 +32,9 @@ export default function useConnect({
   const [isEditing, setIsEditing] = useState(false);
   const [editedContent, setEditedContent] = useState('');
   const [originalContent, setOriginalContent] = useState('');
-  const [isDirty, setIsDirty] = useState(false);
-  const [saveState, setSaveState] = useState<SaveState>('idle');
-  const [showUnsavedModal, setShowUnsavedModal] = useState(false);
+  const [hasUnsavedChanges, setHasUnsavedChanges] = useState(false);
+  const [saveStatus, setSaveStatus] = useState<SaveState>('idle');
+  const [isUnsavedModalOpen, setIsUnsavedModalOpen] = useState(false);
 
   // Fetch lessons for this course
   const {
@@ -83,16 +83,16 @@ export default function useConnect({
     '/api/courses/{slug}/lessons/{id}',
     {
       onMutate: () => {
-        setSaveState('saving');
+        setSaveStatus('saving');
       },
       onSuccess: async () => {
         toast.success('Script saved successfully');
-        setSaveState('success');
-        setIsDirty(false);
+        setSaveStatus('success');
+        setHasUnsavedChanges(false);
         setOriginalContent(editedContent);
 
         // Clear success state after 2 seconds
-        setTimeout(() => setSaveState('idle'), 2000);
+        setTimeout(() => setSaveStatus('idle'), 2000);
 
         // Invalidate queries to refresh data
         await queryClient.invalidateQueries({
@@ -110,7 +110,7 @@ export default function useConnect({
             ? error.message
             : 'Failed to save script. Please try again.';
         toast.error(errorMessage);
-        setSaveState('error');
+        setSaveStatus('error');
       },
     },
   );
@@ -121,13 +121,13 @@ export default function useConnect({
       const serialized = serializeScript(lesson.script);
       setEditedContent(serialized);
       setOriginalContent(serialized);
-      setIsDirty(false);
+      setHasUnsavedChanges(false);
     }
   }, [isEditing, lesson?.script]);
 
   // Browser navigation guard
   useEffect(() => {
-    if (isDirty) {
+    if (hasUnsavedChanges) {
       const handleBeforeUnload = (e: BeforeUnloadEvent) => {
         e.preventDefault();
         e.returnValue = '';
@@ -139,10 +139,10 @@ export default function useConnect({
         window.removeEventListener('beforeunload', handleBeforeUnload);
       };
     }
-  }, [isDirty]);
+  }, [hasUnsavedChanges]);
 
   // Calculate metrics from edited text
-  const editMetrics = useMemo(() => {
+  const editedMetrics = useMemo(() => {
     if (!isEditing || !editedContent) return null;
     return calculateMetricsFromText(
       editedContent,
@@ -152,20 +152,20 @@ export default function useConnect({
 
   // Navigation handlers
   const handleBackToCourse = () => {
-    if (isDirty) {
-      setShowUnsavedModal(true);
+    if (hasUnsavedChanges) {
+      setIsUnsavedModalOpen(true);
     } else {
       router.push(`/courses/${courseSlug}`);
     }
   };
 
-  const handleEnterEditMode = () => {
+  const handleEditScript = () => {
     setIsEditing(true);
   };
 
-  const handleExitEditMode = () => {
-    if (isDirty) {
-      setShowUnsavedModal(true);
+  const handleCancelEdit = () => {
+    if (hasUnsavedChanges) {
+      setIsUnsavedModalOpen(true);
     } else {
       setIsEditing(false);
       setEditedContent('');
@@ -174,7 +174,7 @@ export default function useConnect({
   };
 
   const handleSaveScript = async () => {
-    if (!lesson || !isDirty) return;
+    if (!lesson || !hasUnsavedChanges) return;
 
     // Parse edited text back to structured format
     const parsedScript: ScriptPart[] = parseScriptText(editedContent);
@@ -197,27 +197,22 @@ export default function useConnect({
 
   const handleSaveAndExit = async () => {
     await handleSaveScript();
-    if (saveState !== 'error') {
+    if (saveStatus !== 'error') {
       setIsEditing(false);
-      setShowUnsavedModal(false);
+      setIsUnsavedModalOpen(false);
     }
   };
 
   const handleDiscardChanges = () => {
     setEditedContent(originalContent);
-    setIsDirty(false);
+    setHasUnsavedChanges(false);
     setIsEditing(false);
-    setShowUnsavedModal(false);
+    setIsUnsavedModalOpen(false);
   };
 
   const handleContentChange = (newContent: string) => {
     setEditedContent(newContent);
-    setIsDirty(newContent !== originalContent);
-  };
-
-  // Navigation handlers
-  const handleEditScript = () => {
-    handleEnterEditMode();
+    setHasUnsavedChanges(newContent !== originalContent);
   };
 
   const handleRegenerateScript = () => {
@@ -253,15 +248,15 @@ export default function useConnect({
     // Edit mode state and handlers
     isEditing,
     editedContent,
-    isDirty,
-    saveState,
-    showUnsavedModal,
-    editMetrics,
-    handleExitEditMode,
+    hasUnsavedChanges,
+    saveStatus,
+    isUnsavedModalOpen,
+    editedMetrics,
+    handleCancelEdit,
     handleSaveScript,
     handleSaveAndExit,
     handleDiscardChanges,
     handleContentChange,
-    setShowUnsavedModal,
+    setIsUnsavedModalOpen,
   };
 }

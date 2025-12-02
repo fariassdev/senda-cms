@@ -43,16 +43,16 @@ export default function ScriptPreview(props: ScriptPreviewProps) {
     // Edit mode
     isEditing,
     editedContent,
-    isDirty,
-    saveState,
-    showUnsavedModal,
-    editMetrics,
-    handleExitEditMode,
+    hasUnsavedChanges,
+    saveStatus,
+    isUnsavedModalOpen,
+    editedMetrics,
+    handleCancelEdit,
     handleSaveScript,
     handleSaveAndExit,
     handleDiscardChanges,
     handleContentChange,
-    setShowUnsavedModal,
+    setIsUnsavedModalOpen,
   } = useConnect(props);
 
   // Loading state
@@ -98,7 +98,7 @@ export default function ScriptPreview(props: ScriptPreviewProps) {
         status={lesson.status}
         lastUpdated={lastUpdated}
         onBack={handleBackToCourse}
-        metrics={isEditing ? editMetrics : metrics}
+        metrics={isEditing ? editedMetrics : metrics}
       />
 
       {/* Conditional rendering: Edit mode vs Preview mode */}
@@ -109,15 +109,18 @@ export default function ScriptPreview(props: ScriptPreviewProps) {
             <ScriptEditor
               content={editedContent}
               onChange={handleContentChange}
-              metrics={editMetrics}
+              metrics={editedMetrics}
               targetDurationMinutes={lesson.durationMinutes}
-              isDirty={isDirty}
-              saveState={saveState}
+              isDirty={hasUnsavedChanges}
+              saveState={saveStatus}
               onSave={handleSaveScript}
             />
 
             {/* Unsaved Changes Modal */}
-            <Dialog open={showUnsavedModal} onOpenChange={setShowUnsavedModal}>
+            <Dialog
+              open={isUnsavedModalOpen}
+              onOpenChange={setIsUnsavedModalOpen}
+            >
               <DialogContent>
                 <DialogHeader>
                   <DialogTitle>Unsaved Changes</DialogTitle>
@@ -128,7 +131,7 @@ export default function ScriptPreview(props: ScriptPreviewProps) {
                 <DialogFooter className="flex flex-col sm:flex-row gap-2">
                   <Button
                     variant="outline"
-                    onClick={() => setShowUnsavedModal(false)}
+                    onClick={() => setIsUnsavedModalOpen(false)}
                   >
                     Cancel
                   </Button>
@@ -164,12 +167,10 @@ export default function ScriptPreview(props: ScriptPreviewProps) {
         onGenerateAudio={handleGenerateAudio}
         onRegenerate={handleRegenerateScript}
         canGenerateAudio={canGenerateAudio}
-        isDirty={isDirty}
-        saveState={saveState}
+        hasUnsavedChanges={hasUnsavedChanges}
+        saveStatus={saveStatus}
         onSave={handleSaveScript}
-        onExitEdit={handleExitEditMode}
-        onSaveAndExit={handleSaveAndExit}
-        onDiscard={handleDiscardChanges}
+        onCancelEdit={handleCancelEdit}
       />
     </div>
   );
