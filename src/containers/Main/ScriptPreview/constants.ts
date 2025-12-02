@@ -120,10 +120,8 @@ export function parseScriptText(text: string): ScriptPart[] {
   let currentSpeakContent = '';
 
   for (const line of lines) {
-    const pauseMatch = line.match(/\[PAUSE (\d+)s\]/);
-    const breatheInMatch = line.match(/\[BREATHE IN\]/);
-    const breatheOutMatch = line.match(/\[BREATHE OUT\]/);
-    const silenceMatch = line.match(/\[SILENCE (\d+)s\]/);
+    // Accept cue tokens case-insensitively
+    const pauseMatch = line.match(/\[PAUSE (\d+)s\]/i);
 
     if (pauseMatch) {
       // Save accumulated speak content before pause
@@ -140,57 +138,6 @@ export function parseScriptText(text: string): ScriptPart[] {
         type: 'pause',
         content: null,
         duration: parseInt(pauseMatch[1] || '0', 10),
-      });
-    } else if (breatheInMatch) {
-      // Save accumulated speak content before breath cue
-      if (currentSpeakContent.trim()) {
-        parts.push({
-          type: 'speak',
-          content: currentSpeakContent.trim(),
-          duration: null,
-        });
-        currentSpeakContent = '';
-      }
-
-      // BREATHE IN is a speak cue, not a pause
-      parts.push({
-        type: 'speak',
-        content: '[BREATHE IN]',
-        duration: null,
-      });
-    } else if (breatheOutMatch) {
-      // Save accumulated speak content before breath cue
-      if (currentSpeakContent.trim()) {
-        parts.push({
-          type: 'speak',
-          content: currentSpeakContent.trim(),
-          duration: null,
-        });
-        currentSpeakContent = '';
-      }
-
-      // BREATHE OUT is a speak cue, not a pause
-      parts.push({
-        type: 'speak',
-        content: '[BREATHE OUT]',
-        duration: null,
-      });
-    } else if (silenceMatch) {
-      // Save accumulated speak content before silence
-      if (currentSpeakContent.trim()) {
-        parts.push({
-          type: 'speak',
-          content: currentSpeakContent.trim(),
-          duration: null,
-        });
-        currentSpeakContent = '';
-      }
-
-      // SILENCE is a pause
-      parts.push({
-        type: 'pause',
-        content: null,
-        duration: parseInt(silenceMatch[1] || '0', 10),
       });
     } else if (line.trim()) {
       // Accumulate speak content

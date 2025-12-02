@@ -497,7 +497,7 @@ This document provides the complete epic and story breakdown for Senda CMS, deco
 
 - Lesson title as page heading
 - Script content in a readable format
-- Meditation cues highlighted: [PAUSE 3s], [BREATHE IN], [BREATHE OUT]
+  - Meditation cues highlighted: [PAUSE 3s]
 - Word count and estimated reading time
 - Character count
 
@@ -532,12 +532,14 @@ This document provides the complete epic and story breakdown for Senda CMS, deco
 **When** I click "Edit Script"
 **Then** the view switches to edit mode with:
 
-- Large textarea with monospace font
-- Toolbar with meditation cue buttons:
-  - [PAUSE 3s] - inserts pause marker
-  - [BREATHE IN] - inserts breath in cue
-  - [BREATHE OUT] - inserts breath out cue
-  - [SILENCE 5s] - inserts silence marker
+    - Large textarea with monospace font
+    - Toolbar with meditation cue buttons:
+      - [PAUSE 3s] - inserts pause marker
+      - [PAUSE 5s] - inserts 5-second pause
+      - [PAUSE 10s] - inserts 10-second pause
+      - [PAUSE 30s] - inserts 30-second pause
+      - [PAUSE 50s] - inserts 50-second pause
+
 - Real-time word/character count
 - Save state indicator and explicit save control ("Save changes" button)
 

@@ -39,7 +39,7 @@
         <title>Implement Toolbar with Meditation Cue Buttons</title>
         <subtasks>
           <subtask id="3.1">Create toolbar component within ScriptEditor</subtask>
-          <subtask id="3.2">Add buttons: [PAUSE 3s], [PAUSE 5s], [BREATHE IN], [BREATHE OUT], [SILENCE 10s]</subtask>
+          <subtask id="3.2">Add buttons: [PAUSE 3s], [PAUSE 5s], [PAUSE 10s], [PAUSE 30s], [PAUSE 50s]</subtask>
           <subtask id="3.3">Style buttons with secondary/outline variant</subtask>
           <subtask id="3.4">Implement click handlers that insert text at cursor position</subtask>
           <subtask id="3.5">Preserve cursor position and focus after insertion</subtask>
@@ -134,7 +134,7 @@
       <given>I am in edit mode</given>
       <when>the editor loads</when>
       <then>I see:
-        - Toolbar with meditation cue buttons: [PAUSE 3s], [PAUSE 5s], [BREATHE IN], [BREATHE OUT], [SILENCE 10s]
+        - Toolbar with meditation cue buttons: [PAUSE 3s], [PAUSE 5s], [PAUSE 10s], [PAUSE 30s], [PAUSE 50s]
         - Large textarea with monospace font (minimum height: 400px, auto-expanding)
         - Save state indicator: "Unsaved changes" when modified (dirty state)
         - "Save Changes" button (primary cyan) - enabled only when dirty

@@ -22,9 +22,9 @@ so that I can customize the meditation text and timing to better fit the course 
    - **Toolbar with meditation cue buttons:**
      - [PAUSE 3s] - inserts pause marker at cursor
      - [PAUSE 5s] - inserts 5-second pause
-     - [BREATHE IN] - inserts breath in cue
-     - [BREATHE OUT] - inserts breath out cue
-     - [SILENCE 10s] - inserts longer silence marker
+     - [PAUSE 10s] - inserts 10-second pause
+     - [PAUSE 30s] - inserts 30-second pause
+     - [PAUSE 50s] - inserts 50-second pause
    - **Large textarea:**
      - Monospace font for better readability of cues
      - Minimum height: 400px
@@ -122,7 +122,7 @@ so that I can customize the meditation text and timing to better fit the course 
 
 - [x] **Task 3: Implement Toolbar with Meditation Cue Buttons** (AC: #2, #3)
   - [x] 3.1 Create toolbar component within `ScriptEditor`
-  - [x] 3.2 Add buttons: [PAUSE 3s], [PAUSE 5s], [BREATHE IN], [BREATHE OUT], [SILENCE 10s]
+  - [x] 3.2 Add buttons: [PAUSE 3s], [PAUSE 5s], [PAUSE 10s], [PAUSE 30s], [PAUSE 50s]
   - [x] 3.3 Style buttons with secondary/outline variant
   - [x] 3.4 Implement click handlers that insert text at cursor position
   - [x] 3.5 Preserve cursor position and focus after insertion
@@ -687,7 +687,8 @@ Claude Sonnet 4.5 (via GitHub Copilot) - 2025-12-01
    - Created `serializeScript()` to convert `ScriptPart[]` to plain text with cue markers
    - Created `parseScriptText()` to convert edited text back to structured format
    - Implemented `calculateMetricsFromText()` for real-time metrics in edit mode
-   - Handles all cue types: `[PAUSE Xs]`, `[SILENCE Xs]`, `[BREATHE IN]`, `[BREATHE OUT]`
+
+- Handles pause tokens for editing: `[PAUSE Xs]` (e.g. `[PAUSE 3s]`, `[PAUSE 10s]`).
 
 3. **ScriptEditor Component (Task 2, 3):**
    - Created new component with controlled textarea (monospace, min-h-[400px])

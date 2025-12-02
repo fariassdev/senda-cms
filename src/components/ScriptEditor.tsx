@@ -59,9 +59,9 @@ export function ScriptEditor({
   const toolbarButtons = [
     { label: '[PAUSE 3s]', text: '[PAUSE 3s]' },
     { label: '[PAUSE 5s]', text: '[PAUSE 5s]' },
-    { label: '[BREATHE IN]', text: '[BREATHE IN]' },
-    { label: '[BREATHE OUT]', text: '[BREATHE OUT]' },
-    { label: '[SILENCE 10s]', text: '[SILENCE 10s]' },
+    { label: '[PAUSE 10s]', text: '[PAUSE 10s]' },
+    { label: '[PAUSE 30s]', text: '[PAUSE 30s]' },
+    { label: '[PAUSE 50s]', text: '[PAUSE 50s]' },
   ];
 
   return (
