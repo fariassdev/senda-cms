@@ -12,10 +12,9 @@ interface ScriptEditorProps {
   metrics: {
     wordCount: number;
     charCount: number;
-    totalDurationMinutes: number;
+    totalDurationSeconds: number;
     totalPauseSeconds: number;
     pausePercentage: number;
-    targetDurationDiff?: number;
     isDurationOffTarget?: boolean;
   } | null;
   targetDurationMinutes?: number;

@@ -15,12 +15,26 @@ import { Button } from '@/components/ui/button';
 interface Metrics {
   wordCount?: number;
   charCount?: number;
-  estimatedDurationMinutes?: number;
-  totalDurationMinutes?: number;
+  totalDurationSeconds?: number;
   targetDurationMinutes?: number;
   totalPauseSeconds?: number;
   pausePercentage?: number | string;
   isDurationOffTarget?: boolean;
+}
+
+/**
+ * Format duration in seconds to XXm XXs format
+ */
+function formatDuration(totalSeconds: number): string {
+  const minutes = Math.floor(totalSeconds / 60);
+  const seconds = totalSeconds % 60;
+  if (minutes === 0) {
+    return `${seconds}s`;
+  }
+  if (seconds === 0) {
+    return `${minutes}m`;
+  }
+  return `${minutes}m ${seconds}s`;
 }
 
 export function ScriptHeader({
@@ -93,14 +107,11 @@ export function ScriptHeader({
               <MetricItem
                 icon={Clock}
                 label="Est. Duration"
-                value={(() => {
-                  const durationValue =
-                    metrics.totalDurationMinutes ??
-                    metrics.estimatedDurationMinutes;
-                  return durationValue !== undefined
-                    ? `${durationValue.toFixed(1)} min`
-                    : '-';
-                })()}
+                value={
+                  metrics.totalDurationSeconds !== undefined
+                    ? formatDuration(metrics.totalDurationSeconds)
+                    : '-'
+                }
                 highlight={metrics.isDurationOffTarget}
               />
               <MetricItem

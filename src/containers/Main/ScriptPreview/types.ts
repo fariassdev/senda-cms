@@ -15,7 +15,7 @@ export interface ScriptMetrics {
   wordCount: number;
   charCount: number;
   totalPauseSeconds: number;
-  totalDurationMinutes: number;
+  totalDurationSeconds: number;
   pausePercentage: number;
   targetDurationMinutes: number;
   isDurationOffTarget?: boolean;
