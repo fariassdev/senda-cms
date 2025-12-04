@@ -1,4 +1,4 @@
-import type { LessonEditFormData } from '@/containers/Main/LessonScriptGeneration';
+import type { LessonEditFormData } from '@/containers/Main/CourseDetail/LessonScriptGeneration';
 import type { Lesson } from '@/types/models';
 
 export type LessonStatus =

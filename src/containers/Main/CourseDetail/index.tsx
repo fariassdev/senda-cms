@@ -45,10 +45,10 @@ import { Input } from '@/components/ui/input';
 import { Skeleton } from '@/components/ui/skeleton';
 import { Switch } from '@/components/ui/switch';
 import { Textarea } from '@/components/ui/textarea';
-import LessonCreate from '@/containers/Main/LessonCreate';
-import LessonDelete from '@/containers/Main/LessonDelete';
-import LessonEdit from '@/containers/Main/LessonEdit';
-import { UNSAVED_CHANGES } from '@/containers/Main/LessonReorder';
+import LessonCreate from './LessonCreate';
+import LessonDelete from './LessonDelete';
+import LessonEdit from './LessonEdit';
+import { UNSAVED_CHANGES } from './LessonReorder';
 import { SortableLessonList } from './SortableLessonList';
 
 import useConnect from './connect';

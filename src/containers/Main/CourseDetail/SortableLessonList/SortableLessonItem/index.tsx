@@ -11,7 +11,7 @@ import {
   TooltipContent,
   TooltipTrigger,
 } from '@/components/ui/tooltip';
-import { GenerateScriptButton } from '@/containers/Main/ScriptPreview/GenerateScriptButton';
+import { GenerateScriptButton } from '@/containers/Main/CourseDetail/SortableLessonList/SortableLessonItem/GenerateScriptButton';
 
 import useConnect from './connect';
 import type { LessonDragOverlayProps, SortableLessonItemProps } from './types';

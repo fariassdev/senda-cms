@@ -5,7 +5,7 @@ import { useForm } from 'react-hook-form';
 import { toast } from 'sonner';
 
 import type { LessonStatus } from '@/components/StatusBadge';
-import { useLessonReorder } from '@/containers/Main/LessonReorder';
+import { useLessonReorder } from '@/containers/Main/CourseDetail/LessonReorder';
 import { $api } from '@/lib/api';
 import type { Lesson } from '@/types/models';
 

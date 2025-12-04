@@ -4,7 +4,7 @@ import { Loader2, Sparkles } from 'lucide-react';
 import { useCallback } from 'react';
 
 import { Button } from '@/components/ui/button';
-import { ScriptConfigModal } from '@/containers/Main/LessonScriptGeneration/ScriptConfigModal';
+import { ScriptConfigModal } from '@/containers/Main/CourseDetail/LessonScriptGeneration/ScriptConfigModal';
 import { cn } from '@/lib/utils';
 
 import useConnect from './connect';

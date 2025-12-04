@@ -3,8 +3,8 @@ import { useSortable } from '@dnd-kit/sortable';
 import { CSS } from '@dnd-kit/utilities';
 import type { CSSProperties } from 'react';
 
-import { useScriptGeneration } from '@/containers/Main/LessonScriptGeneration';
-import type { LessonStatus } from '@/containers/Main/ScriptPreview/GenerateScriptButton/types';
+import { useScriptGeneration } from '@/containers/Main/CourseDetail/LessonScriptGeneration';
+import type { LessonStatus } from '@/containers/Main/CourseDetail/SortableLessonList/SortableLessonItem/GenerateScriptButton/types';
 import { formatTimestamp } from '@/lib/utils';
 import type { SortableLessonItemProps } from './types';
 

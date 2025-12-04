@@ -3,4 +3,4 @@ export {
   lessonSchema,
   TONE_SUGGESTIONS,
   type LessonFormData,
-} from '@/containers/Main/LessonCreate/constants';
+} from '@/containers/Main/CourseDetail/LessonCreate/constants';
