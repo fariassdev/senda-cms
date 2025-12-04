@@ -1,32 +1,23 @@
 'use client';
 
 import { formatDistanceToNow } from 'date-fns';
-import {
-  AlertCircle,
-  ArrowLeft,
-  Clock,
-  Edit,
-  FileQuestion,
-  FileText,
-  Loader2,
-  Pause,
-  Percent,
-  RefreshCw,
-  Target,
-  Type,
-  Volume2,
-} from 'lucide-react';
+import { AlertCircle, ArrowLeft, FileQuestion, Loader2 } from 'lucide-react';
 
+import { FixedActionBar } from '@/components/FixedActionBar';
 import { ScriptContent } from '@/components/ScriptContent';
-import { StatusBadge } from '@/components/StatusBadge';
+import { ScriptEditor } from '@/components/ScriptEditor';
+import { ScriptHeader } from '@/components/ScriptHeader';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardHeader } from '@/components/ui/card';
-import { Skeleton } from '@/components/ui/skeleton';
 import {
-  Tooltip,
-  TooltipContent,
-  TooltipTrigger,
-} from '@/components/ui/tooltip';
+  Dialog,
+  DialogContent,
+  DialogDescription,
+  DialogFooter,
+  DialogHeader,
+  DialogTitle,
+} from '@/components/ui/dialog';
+import { Skeleton } from '@/components/ui/skeleton';
 
 import useConnect from './connect';
 import { EMPTY_STATE_MESSAGES } from './constants';
@@ -49,6 +40,21 @@ export default function ScriptPreview(props: ScriptPreviewProps) {
     handleRegenerateScript,
     handleGenerateAudio,
     handleRetry,
+    // Edit mode
+    isEditing,
+    editedContent,
+    hasUnsavedChanges,
+    saveStatus,
+    isUnsavedModalOpen,
+    editedMetrics,
+    handleCancelEdit,
+    handleSaveScript,
+    handleSaveAndExit,
+    handleDiscardChanges,
+    handleContentChange,
+    setIsUnsavedModalOpen,
+    textareaRef,
+    handleInsertPause,
   } = useConnect(props);
 
   // Loading state
@@ -88,172 +94,83 @@ export default function ScriptPreview(props: ScriptPreviewProps) {
 
   return (
     <div className="container mx-auto py-6 px-4 max-w-4xl">
-      {/* Header Section */}
-      <header className="mb-8">
-        <Button
-          variant="ghost"
-          size="sm"
-          onClick={handleBackToCourse}
-          className="mb-4 -ml-2"
-        >
-          <ArrowLeft className="h-4 w-4" />
-          Back to Course
-        </Button>
+      {/* Unified Sticky Header (includes metrics) */}
+      <ScriptHeader
+        lessonTitle={lesson.title}
+        status={lesson.status}
+        lastUpdated={lastUpdated}
+        onBack={handleBackToCourse}
+        metrics={isEditing ? editedMetrics : metrics}
+        onInsertPause={isEditing ? handleInsertPause : undefined}
+      />
 
-        <div className="flex flex-col sm:flex-row sm:items-start sm:justify-between gap-4">
-          <div className="space-y-2">
-            <h1 className="text-2xl font-bold text-foreground">
-              {lesson.title}
-            </h1>
-            <div className="flex items-center gap-3 flex-wrap">
-              <StatusBadge status={lesson.status} />
-              {lastUpdated && (
-                <span className="text-sm text-muted-foreground">
-                  Updated {lastUpdated}
-                </span>
-              )}
-            </div>
-          </div>
-        </div>
-      </header>
+      {/* Conditional rendering: Edit mode vs Preview mode */}
+      <div className="mt-5">
+        {isEditing ? (
+          <>
+            {/* Edit Mode */}
+            <ScriptEditor
+              content={editedContent}
+              onChange={handleContentChange}
+              ref={textareaRef}
+            />
 
-      {/* Metrics Section */}
-      {metrics && (
-        <Card className="mb-6">
-          <CardContent className="py-4">
-            <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 gap-4">
-              <MetricItem
-                icon={Type}
-                label="Words"
-                value={metrics.wordCount.toLocaleString()}
-              />
-              <MetricItem
-                icon={FileText}
-                label="Characters"
-                value={metrics.charCount.toLocaleString()}
-              />
-              <MetricItem
-                icon={Target}
-                label="Target Duration"
-                value={`${metrics.targetDurationMinutes} min`}
-              />
-              <MetricItem
-                icon={Clock}
-                label="Est. Duration"
-                value={`${metrics.totalDurationMinutes} min`}
-                highlight={
-                  Math.abs(
-                    metrics.totalDurationMinutes -
-                      metrics.targetDurationMinutes,
-                  ) > 1
-                }
-              />
-              <MetricItem
-                icon={Pause}
-                label="Total Pauses"
-                value={`${metrics.totalPauseSeconds}s`}
-              />
-              <MetricItem
-                icon={Percent}
-                label="Pause %"
-                value={`${metrics.pausePercentage}%`}
-              />
-            </div>
-          </CardContent>
-        </Card>
-      )}
+            {/* Unsaved Changes Modal */}
+            <Dialog
+              open={isUnsavedModalOpen}
+              onOpenChange={setIsUnsavedModalOpen}
+            >
+              <DialogContent>
+                <DialogHeader>
+                  <DialogTitle>Unsaved Changes</DialogTitle>
+                  <DialogDescription>
+                    You have unsaved changes. What would you like to do?
+                  </DialogDescription>
+                </DialogHeader>
+                <DialogFooter className="flex flex-col sm:flex-row gap-2">
+                  <Button
+                    variant="outline"
+                    onClick={() => setIsUnsavedModalOpen(false)}
+                  >
+                    Cancel
+                  </Button>
+                  <Button variant="destructive" onClick={handleDiscardChanges}>
+                    Discard Changes
+                  </Button>
+                  <Button onClick={handleSaveAndExit}>Save & Exit</Button>
+                </DialogFooter>
+              </DialogContent>
+            </Dialog>
+          </>
+        ) : (
+          <>
+            {/* Preview Mode */}
 
-      {/* Script Content Area */}
-      <Card className="mb-6">
-        <CardHeader>
-          <h2 className="text-lg font-semibold">Script Content</h2>
-        </CardHeader>
-        <CardContent>
-          <ScriptContent script={lesson.script || []} />
-        </CardContent>
-      </Card>
-
-      {/* Action Buttons */}
-      <div className="flex flex-col sm:flex-row gap-3 justify-end">
-        <Button
-          variant="ghost"
-          onClick={handleBackToCourse}
-          className="order-4 sm:order-1"
-        >
-          <ArrowLeft className="h-4 w-4" />
-          Back to Course
-        </Button>
-
-        <Button
-          variant="outline"
-          onClick={handleRegenerateScript}
-          className="order-3 sm:order-2"
-        >
-          <RefreshCw className="h-4 w-4" />
-          Regenerate Script
-        </Button>
-
-        <Tooltip>
-          <TooltipTrigger asChild>
-            <span className="order-2 sm:order-3">
-              <Button
-                variant="secondary"
-                onClick={handleGenerateAudio}
-                disabled={!canGenerateAudio}
-                className="w-full sm:w-auto"
-              >
-                <Volume2 className="h-4 w-4" />
-                Generate Audio
-              </Button>
-            </span>
-          </TooltipTrigger>
-          {!canGenerateAudio && (
-            <TooltipContent>
-              <p>Audio can only be generated when script is completed</p>
-            </TooltipContent>
-          )}
-        </Tooltip>
-
-        <Button
-          variant="default"
-          onClick={handleEditScript}
-          className="order-1 sm:order-4"
-        >
-          <Edit className="h-4 w-4" />
-          Edit Script
-        </Button>
+            {/* Script Content Area */}
+            <Card className="mb-6">
+              <CardHeader>
+                <h2 className="text-lg font-semibold">Script Content</h2>
+              </CardHeader>
+              <CardContent>
+                <ScriptContent script={lesson.script || []} />
+              </CardContent>
+            </Card>
+          </>
+        )}
       </div>
-    </div>
-  );
-}
 
-/**
- * Metric display item component
- */
-function MetricItem({
-  icon: Icon,
-  label,
-  value,
-  highlight = false,
-}: {
-  icon: React.ComponentType<{ className?: string }>;
-  label: string;
-  value: string;
-  highlight?: boolean;
-}) {
-  return (
-    <div className="flex flex-col gap-1">
-      <div className="flex items-center gap-2">
-        <Icon className="h-4 w-4 text-muted-foreground" />
-        <span className="text-xs text-muted-foreground">{label}</span>
-      </div>
-      <span
-        className={`text-base font-semibold ${
-          highlight ? 'text-orange-400' : 'text-foreground'
-        }`}
-      >
-        {value}
-      </span>
+      {/* Fixed action bar (edit/save or preview actions) */}
+      <FixedActionBar
+        isEditing={isEditing}
+        onEdit={handleEditScript}
+        onGenerateAudio={handleGenerateAudio}
+        onRegenerate={handleRegenerateScript}
+        canGenerateAudio={canGenerateAudio}
+        hasUnsavedChanges={hasUnsavedChanges}
+        saveStatus={saveStatus}
+        onSave={handleSaveScript}
+        onCancelEdit={handleCancelEdit}
+      />
     </div>
   );
 }

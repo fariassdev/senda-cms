@@ -435,7 +435,7 @@ Based on PRD analysis and AI-first philosophy, five critical journeys defined:
 
 - Navigate to: Lesson Script Editor page
 - User sees:
-  - Generated script with formatting ([PAUSE 3s], [BREATHE IN], etc.)
+  - Generated script with formatting ([PAUSE 3s], etc.)
   - Rich text editor with meditation-specific controls
   - Word count, character count
   - Version history sidebar (AI generated timestamps)
@@ -656,7 +656,7 @@ graph TD
 4. **ScriptEditor**
 
 - Purpose: Edit meditation scripts with special formatting
-- Content: Rich text area with meditation cue buttons ([PAUSE], [BREATHE], etc.)
+- Content: Rich text area with pause insertion buttons ([PAUSE 3s], [PAUSE 5s], [PAUSE 10s], [PAUSE 30s], [PAUSE 50s])
 - States: Editing, saving (manual - explicit Save), saved
 - Features: Word count, character count, explicit Save control and save indicator
 

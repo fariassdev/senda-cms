@@ -716,9 +716,9 @@ import { Input } from '@/components/ui/input';
 ```typescript
 <div>
   <div className="flex gap-2 mb-2">
-    <Button onClick={() => insertText('[PAUSE 3s]')}>Add Pause</Button>
-    <Button onClick={() => insertText('[BREATHE IN]')}>Breathe In</Button>
-    <Button onClick={() => insertText('[BREATHE OUT]')}>Breathe Out</Button>
+    <Button onClick={() => insertText('[PAUSE 3s]')}>[PAUSE 3s]</Button>
+    <Button onClick={() => insertText('[PAUSE 5s]')}>[PAUSE 5s]</Button>
+    <Button onClick={() => insertText('[PAUSE 10s]')}>[PAUSE 10s]</Button>
   </div>
   <textarea
     value={script}

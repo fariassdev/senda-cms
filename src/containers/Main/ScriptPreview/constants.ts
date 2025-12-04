@@ -1,4 +1,5 @@
 import type { LessonStatus } from '@/components/StatusBadge';
+import type { ScriptPart } from '@/types/models';
 
 import type { EmptyStateStatus, ScriptMetrics } from './types';
 
@@ -53,7 +54,7 @@ export function calculateScriptMetrics(
   }, 0);
 
   const charCount = speakParts.reduce(
-    (acc, p) => acc + (p.content?.length || 0),
+    (acc, p) => acc + (p.content?.replace(/\n/g, '').length || 0),
     0,
   );
 
@@ -63,31 +64,108 @@ export function calculateScriptMetrics(
     0,
   );
 
-  // Calculate reading time in minutes (without pauses)
-  const readingTimeMinutes = Math.max(
-    1,
-    Math.ceil(wordCount / MEDITATION_WORDS_PER_MINUTE),
+  // Calculate reading time in seconds (words / words per minute * 60)
+  const readingTimeSeconds = Math.round(
+    (wordCount / MEDITATION_WORDS_PER_MINUTE) * 60,
   );
 
-  // Calculate total duration including pauses
-  const totalDurationMinutes = Math.max(
-    1,
-    Math.ceil(readingTimeMinutes + totalPauseSeconds / 60),
-  );
+  // Calculate total duration in seconds (reading time + pauses)
+  const totalDurationSeconds = readingTimeSeconds + totalPauseSeconds;
 
-  // Calculate pause percentage
+  // Calculate pause percentage based on total duration
   const pausePercentage =
-    totalDurationMinutes > 0
-      ? Math.round((totalPauseSeconds / 60 / totalDurationMinutes) * 100)
+    totalDurationSeconds > 0
+      ? Math.round((totalPauseSeconds / totalDurationSeconds) * 100)
       : 0;
+
+  // Target duration comparison (convert target to seconds for comparison)
+  const targetDurationSeconds = targetDurationMinutes * 60;
+  const isDurationOffTarget =
+    Math.abs(totalDurationSeconds - targetDurationSeconds) > 60;
 
   return {
     wordCount,
     charCount,
-    readingTimeMinutes,
     totalPauseSeconds,
-    totalDurationMinutes,
+    totalDurationSeconds,
     pausePercentage,
     targetDurationMinutes,
+    isDurationOffTarget,
   };
+}
+
+/**
+ * Serialize structured script to plain text for editing
+ */
+export function serializeScript(script: ScriptPart[]): string {
+  return script
+    .map((part) => {
+      if (part.type === 'speak') {
+        return part.content || '';
+      } else if (part.type === 'pause') {
+        return `[PAUSE ${part.duration}s]`;
+      }
+      return '';
+    })
+    .join('\n\n');
+}
+
+/**
+ * Parse plain text back to structured script format
+ */
+export function parseScriptText(text: string): ScriptPart[] {
+  const parts: ScriptPart[] = [];
+  const lines = text.split('\n');
+
+  let currentSpeakContent = '';
+
+  for (const line of lines) {
+    // Accept cue tokens case-insensitively
+    const pauseMatch = line.match(/\[PAUSE (\d+)s\]/i);
+
+    if (pauseMatch) {
+      // Save accumulated speak content before pause
+      if (currentSpeakContent.trim()) {
+        parts.push({
+          type: 'speak',
+          content: currentSpeakContent.trim(),
+          duration: null,
+        });
+        currentSpeakContent = '';
+      }
+
+      parts.push({
+        type: 'pause',
+        content: null,
+        duration: parseInt(pauseMatch[1] || '0', 10),
+      });
+    } else if (line.trim()) {
+      // Accumulate speak content
+      currentSpeakContent += (currentSpeakContent ? '\n' : '') + line;
+    }
+  }
+
+  // Add any remaining speak content
+  if (currentSpeakContent.trim()) {
+    parts.push({
+      type: 'speak',
+      content: currentSpeakContent.trim(),
+      duration: null,
+    });
+  }
+
+  return parts;
+}
+
+/**
+ * Calculate metrics from plain text (for edit mode)
+ * Uses the same logic as calculateScriptMetrics for consistency
+ */
+export function calculateMetricsFromText(
+  text: string,
+  targetDurationMinutes: number,
+): ScriptMetrics {
+  // Parse the text into structured script parts and use the same calculation
+  const parsedScript = parseScriptText(text);
+  return calculateScriptMetrics(parsedScript, targetDurationMinutes);
 }
