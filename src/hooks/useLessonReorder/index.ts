@@ -4,64 +4,20 @@ import { toast } from 'sonner';
 
 import { $api } from '@/lib/api';
 import type { Lesson } from '@/types/models';
-
 import { TOAST_MESSAGES } from './constants';
+import {
+  arraysEqual,
+  buildReorderRequest,
+  getOriginalOrder,
+  reorderLessonsInCache,
+} from './logic';
 import type {
   LessonReorderContext,
   LessonReorderState,
-  ReorderParams,
   UseLessonReorderOptions,
 } from './types';
 
-/**
- * Reorder lessons based on new ordered IDs
- */
-function reorderLessonsInCache(
-  lessons: Lesson[] | undefined,
-  orderedIds: number[],
-): Lesson[] {
-  if (!lessons) return [];
-
-  return orderedIds.map((id, index) => {
-    const lesson = lessons.find((l) => l.id === id);
-    if (!lesson) {
-      throw new Error(`Lesson ${id} not found`);
-    }
-    return { ...lesson, lessonNumber: index + 1 };
-  });
-}
-
-/**
- * Build request body from reordered lessons
- */
-function buildReorderRequest(orderedIds: number[]): ReorderParams {
-  return {
-    lessons: orderedIds.map((id, index) => ({
-      lesson_id: id,
-      lesson_number: index + 1,
-    })),
-  };
-}
-
-/**
- * Get the original order of lesson IDs from lessons sorted by lessonNumber
- */
-function getOriginalOrder(lessons: Lesson[] | undefined): number[] {
-  if (!lessons) return [];
-  return [...lessons]
-    .sort((a, b) => a.lessonNumber - b.lessonNumber)
-    .map((l) => l.id);
-}
-
-/**
- * Check if two arrays of IDs are in the same order
- */
-function arraysEqual(a: number[], b: number[]): boolean {
-  if (a.length !== b.length) return false;
-  return a.every((val, idx) => val === b[idx]);
-}
-
-export default function useLessonReorder({
+export function useLessonReorder({
   courseSlug,
   onSuccess,
 }: UseLessonReorderOptions) {
@@ -222,5 +178,3 @@ export default function useLessonReorder({
     isReordering: reorderMutation.isPending,
   };
 }
-
-export { reorderLessonsInCache, buildReorderRequest, getOriginalOrder };

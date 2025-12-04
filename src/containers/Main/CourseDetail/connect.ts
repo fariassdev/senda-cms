@@ -4,7 +4,7 @@ import { useEffect, useMemo, useRef, useState } from 'react';
 import { useForm } from 'react-hook-form';
 import { toast } from 'sonner';
 
-import { useLessonReorder } from '@/containers/Main/CourseDetail/LessonReorder';
+import { useLessonReorder } from '@/hooks/useLessonReorder';
 import { $api } from '@/lib/api';
 import type { LessonStatus, Lesson } from '@/types/models';
 

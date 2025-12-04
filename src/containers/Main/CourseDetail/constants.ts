@@ -15,6 +15,15 @@ export const GENERATING_STATUSES: LessonStatus[] = [
   'AUDIO_GENERATING',
 ];
 
+export const UNSAVED_CHANGES = {
+  title: 'Unsaved Changes',
+  description:
+    'You have unsaved changes to the lesson order. Do you want to save them before leaving?',
+  saveButton: 'Save Changes',
+  discardButton: 'Discard',
+  cancelButton: 'Cancel',
+};
+
 /**
  * Course update form validation schema
  * Matches the UpdateCourseData schema from the API

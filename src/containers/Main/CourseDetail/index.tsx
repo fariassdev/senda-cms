@@ -48,10 +48,11 @@ import { Textarea } from '@/components/ui/textarea';
 import LessonCreate from './LessonCreate';
 import LessonDelete from './LessonDelete';
 import LessonEdit from './LessonEdit';
-import { UNSAVED_CHANGES } from './LessonReorder';
+
 import { SortableLessonList } from './SortableLessonList';
 
 import useConnect from './connect';
+import { UNSAVED_CHANGES } from './constants';
 import type { CourseDetailProps } from './types';
 
 export default function CourseDetail({ courseSlug }: CourseDetailProps) {
