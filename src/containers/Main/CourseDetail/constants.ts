@@ -1,6 +1,6 @@
 import { z } from 'zod';
 
-import type { LessonStatus } from '@/components/StatusBadge';
+import type { LessonStatus } from '@/types/models';
 
 /**
  * Polling interval in milliseconds for generating lessons

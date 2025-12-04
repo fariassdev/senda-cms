@@ -1,6 +1,6 @@
 import { useState } from 'react';
 
-import type { LessonStatus } from './types';
+import type { LessonStatus } from '@/types/models';
 
 export default function useConnect() {
   const [isModalOpen, setIsModalOpen] = useState(false);

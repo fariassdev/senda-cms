@@ -1,18 +1,6 @@
 import { z } from 'zod';
 
-import type { LessonStatus } from '@/containers/Main/ScriptPreview/GenerateScriptButton/types';
-
-/**
- * Tone options for script generation configuration
- */
-export const TONE_OPTIONS = [
-  { value: 'calming', label: 'Calming' },
-  { value: 'energizing', label: 'Energizing' },
-  { value: 'neutral', label: 'Neutral' },
-  { value: 'visualization', label: 'Guided Visualization' },
-] as const;
-
-export type ToneValue = (typeof TONE_OPTIONS)[number]['value'];
+import type { LessonStatus } from '@/types/models';
 
 /**
  * Zod schema for the complete lesson editing form in script generation modal
@@ -84,11 +72,6 @@ export const DEFAULT_LESSON_EDIT_VALUES: Partial<LessonEditFormData> = {
   durationMinutes: 10,
   instructions: '',
 };
-
-/**
- * Maximum characters for instructions field
- */
-export const MAX_INSTRUCTIONS_LENGTH = 500;
 
 /**
  * Statuses that allow generating a new script (primary button)

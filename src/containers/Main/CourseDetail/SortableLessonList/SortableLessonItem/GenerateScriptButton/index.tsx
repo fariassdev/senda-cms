@@ -4,11 +4,12 @@ import { Loader2, Sparkles } from 'lucide-react';
 import { useCallback } from 'react';
 
 import { Button } from '@/components/ui/button';
-import { ScriptConfigModal } from '@/containers/Main/CourseDetail/LessonScriptGeneration/ScriptConfigModal';
+import { ScriptConfigModal } from '@/containers/Main/CourseDetail/SortableLessonList/ScriptConfigModal';
 import { cn } from '@/lib/utils';
 
+import type { LessonStatus } from '@/types/models';
 import useConnect from './connect';
-import type { GenerateScriptButtonProps, LessonStatus } from './types';
+import type { GenerateScriptButtonProps } from './types';
 
 export function GenerateScriptButton({
   lesson,

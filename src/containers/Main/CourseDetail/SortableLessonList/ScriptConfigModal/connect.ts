@@ -1,8 +1,9 @@
 import { zodResolver } from '@hookform/resolvers/zod';
 import { useForm } from 'react-hook-form';
 
-import type { LessonEditFormData } from '../constants';
-import { lessonEditSchema, MAX_INSTRUCTIONS_LENGTH } from '../constants';
+import type { LessonEditFormData } from '@/constants/lessonScript';
+import { lessonEditSchema } from '@/constants/lessonScript';
+import { MAX_INSTRUCTIONS_LENGTH } from './constants';
 
 export default function useConnect() {
   const form = useForm<LessonEditFormData>({

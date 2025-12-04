@@ -6,8 +6,6 @@ import { cn } from '@/lib/utils';
 import useConnect from './connect';
 import type { StatusBadgeProps } from './types';
 
-export type { LessonStatus } from './types';
-
 export function StatusBadge({ status, className }: StatusBadgeProps) {
   const { getStatusConfig } = useConnect();
   const config = getStatusConfig(status);

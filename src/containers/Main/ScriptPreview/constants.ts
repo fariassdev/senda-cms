@@ -1,5 +1,4 @@
-import type { LessonStatus } from '@/components/StatusBadge';
-import type { ScriptPart } from '@/types/models';
+import type { LessonStatus, ScriptPart } from '@/types/models';
 
 import type { EmptyStateStatus, ScriptMetrics } from './types';
 

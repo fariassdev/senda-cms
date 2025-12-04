@@ -23,11 +23,9 @@ import {
 } from '@/components/ui/form';
 import { Input } from '@/components/ui/input';
 import { Textarea } from '@/components/ui/textarea';
-import { TONE_SUGGESTIONS } from '@/containers/Main/LessonCreate/constants';
-import type { LessonEditFormData } from '../constants';
-import { MAX_INSTRUCTIONS_LENGTH } from '../constants';
-
+import type { LessonEditFormData } from '@/constants/lessonScript';
 import useConnect from './connect';
+import { MAX_INSTRUCTIONS_LENGTH, TONE_OPTIONS } from './constants';
 import type { ScriptConfigModalProps } from './types';
 
 export function ScriptConfigModal({
@@ -177,8 +175,8 @@ export function ScriptConfigModal({
                     />
                   </FormControl>
                   <datalist id="tone-suggestions-script-modal">
-                    {TONE_SUGGESTIONS.map((tone) => (
-                      <option key={tone} value={tone} />
+                    {TONE_OPTIONS.map((tone) => (
+                      <option key={tone.value} value={tone.value} />
                     ))}
                   </datalist>
                   <FormMessage id="tone-error" />

@@ -1,6 +1,5 @@
 import { CheckCircle, Circle, Loader2, XCircle } from 'lucide-react';
-
-import type { LessonStatus } from './types';
+import type { LessonStatus } from '@/types/models';
 
 interface StatusConfig {
   label: string;

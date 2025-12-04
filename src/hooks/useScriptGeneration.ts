@@ -2,14 +2,24 @@ import { useQueryClient } from '@tanstack/react-query';
 import { useRef } from 'react';
 import { toast } from 'sonner';
 
-import { $api } from '@/lib/api';
-import type { Lesson } from '@/types/models';
-
-import type { LessonEditFormData, ScriptConfigFormData } from './constants';
 import type {
-  UseScriptGenerationProps,
-  UseScriptGenerationReturn,
-} from './types';
+  LessonEditFormData,
+  ScriptConfigFormData,
+} from '@/constants/lessonScript';
+import { $api } from '@/lib/api';
+import type { Lesson, LessonStatus } from '@/types/models';
+
+export interface UseScriptGenerationProps {
+  courseSlug: string;
+  lessonId: number;
+  lessonTitle: string;
+  status: LessonStatus;
+}
+
+export interface UseScriptGenerationReturn {
+  generateScript: (config?: ScriptConfigFormData) => void;
+  isGenerating: boolean;
+}
 
 interface ApiError {
   detail?: Array<{ loc: (string | number)[]; msg: string; type: string }>;
