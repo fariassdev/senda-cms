@@ -3,6 +3,8 @@ import { useSortable } from '@dnd-kit/sortable';
 import { CSS } from '@dnd-kit/utilities';
 import type { CSSProperties } from 'react';
 
+import type { LessonFormData } from '@/components/LessonForm';
+import { useLessonActions } from '@/hooks/useLessonActions';
 import { useScriptGeneration } from '@/hooks/useScriptGeneration';
 import { formatTimestamp } from '@/lib/utils';
 import type { LessonStatus } from '@/types/models';
@@ -25,14 +27,23 @@ export default function useConnect({
     disabled,
   });
 
-  // Script generation hook
-  const { generateScript, updateAndGenerateScript, isGenerating, isUpdating } =
-    useScriptGeneration({
-      courseSlug,
-      lessonId: lesson.id,
-      lessonTitle: lesson.title,
-      status: lesson.status as LessonStatus,
-    });
+  // Lesson update actions
+  const { updateLesson, isUpdating } = useLessonActions({
+    courseSlug,
+    lessonId: lesson.id,
+  });
+
+  // Script generation
+  const { generateScript, isGenerating } = useScriptGeneration({
+    courseSlug,
+    lessonId: lesson.id,
+  });
+
+  // Compose: update lesson then generate script
+  const updateAndGenerateScript = async (data: LessonFormData) => {
+    await updateLesson(data);
+    generateScript();
+  };
 
   // Check if script is available for viewing
   const SCRIPT_VIEWABLE_STATUSES: LessonStatus[] = [

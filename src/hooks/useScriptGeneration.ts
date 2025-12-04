@@ -2,22 +2,8 @@ import { useQueryClient } from '@tanstack/react-query';
 import { useRef } from 'react';
 import { toast } from 'sonner';
 
-import type { LessonFormData } from '@/components/LessonForm/constants';
-import type { ScriptConfigFormData } from '@/constants/lessonScript';
 import { $api } from '@/lib/api';
-import type { Lesson, LessonStatus } from '@/types/models';
-
-export interface UseScriptGenerationProps {
-  courseSlug: string;
-  lessonId: number;
-  lessonTitle: string;
-  status: LessonStatus;
-}
-
-export interface UseScriptGenerationReturn {
-  generateScript: (config?: ScriptConfigFormData) => void;
-  isGenerating: boolean;
-}
+import type { Lesson } from '@/types/models';
 
 interface ApiError {
   detail?: Array<{ loc: (string | number)[]; msg: string; type: string }>;
@@ -28,62 +14,30 @@ interface LessonsQueryData {
 }
 
 /**
- * Return type for the extended script generation hook
- */
-export interface UseScriptGenerationExtendedReturn
-  extends UseScriptGenerationReturn {
-  updateAndGenerateScript: (data: LessonFormData) => Promise<void>;
-  isUpdating: boolean;
-}
-
-/**
  * Hook for script generation mutation logic
- * Follows container pattern: all business logic in connect.ts
  */
 export function useScriptGeneration({
   courseSlug,
   lessonId,
-}: UseScriptGenerationProps): UseScriptGenerationExtendedReturn {
+}: {
+  courseSlug: string;
+  lessonId: number;
+}) {
   const queryClient = useQueryClient();
   // Store previous data for rollback on error
   const previousDataRef = useRef<LessonsQueryData | undefined>(undefined);
 
-  // Mutation for updating lesson data (PUT /api/courses/{slug}/lessons/{id})
-  const updateMutation = $api.useMutation(
-    'put',
-    '/api/courses/{slug}/lessons/{id}',
-    {
-      onSuccess: async () => {
-        // Invalidate to refetch fresh data from server
-        await queryClient.invalidateQueries({
-          queryKey: ['get', '/api/courses/{slug}/lessons'],
-        });
-      },
-      onError: (error: ApiError) => {
-        const errorMessage =
-          error.detail?.[0]?.msg ||
-          'Failed to update lesson. Please try again.';
-        toast.error(errorMessage);
-        console.error('Lesson update error:', error);
-      },
-    },
-  );
-
-  // Mutation for generating script
   const generateMutation = $api.useMutation(
     'post',
     '/api/courses/{slug}/lessons/{id}/generate-script',
     {
       onMutate: async () => {
-        // Show toast immediately when mutation starts
-        toast.info('Script generation started with default settings...');
+        toast.info('Script generation started...');
 
-        // Cancel any outgoing refetches to avoid overwriting optimistic update
         await queryClient.cancelQueries({
           queryKey: ['get', '/api/courses/{slug}/lessons'],
         });
 
-        // Snapshot the previous value for potential rollback
         const queries = queryClient.getQueriesData<LessonsQueryData>({
           queryKey: ['get', '/api/courses/{slug}/lessons'],
         });
@@ -108,13 +62,11 @@ export function useScriptGeneration({
         );
       },
       onSuccess: async () => {
-        // Invalidate to refetch fresh data from server
         await queryClient.invalidateQueries({
           queryKey: ['get', '/api/courses/{slug}/lessons'],
         });
       },
       onError: (error: ApiError) => {
-        // Rollback to previous data on error
         if (previousDataRef.current) {
           queryClient.setQueriesData<LessonsQueryData>(
             { queryKey: ['get', '/api/courses/{slug}/lessons'] },
@@ -122,7 +74,6 @@ export function useScriptGeneration({
           );
         }
 
-        // Extract error message from API error structure
         const errorMessage =
           error.detail?.[0]?.msg ||
           'Failed to start script generation. Please try again.';
@@ -132,7 +83,7 @@ export function useScriptGeneration({
     },
   );
 
-  const generateScript = (_config?: ScriptConfigFormData) => {
+  const generateScript = () => {
     generateMutation.mutate({
       params: {
         path: {
@@ -140,46 +91,12 @@ export function useScriptGeneration({
           id: lessonId,
         },
       },
-      // NOTE: Backend API does not yet support configuration body.
-      // The lesson already contains all needed data (tone, corePractice, keyPoint, etc.)
     });
-  };
-
-  const updateAndGenerateScript = async (
-    data: LessonFormData,
-  ): Promise<void> => {
-    // First update the lesson
-    toast.info('Saving lesson changes...');
-
-    await updateMutation.mutateAsync({
-      params: {
-        path: {
-          slug: courseSlug,
-          id: lessonId,
-        },
-      },
-      body: {
-        lesson: {
-          title: data.title,
-          core_practice: data.corePractice,
-          key_point: data.keyPoint,
-          tone: data.tone,
-          duration_minutes: data.durationMinutes,
-        },
-      },
-    });
-
-    toast.success('Lesson updated successfully');
-
-    // Then generate the script
-    generateScript();
   };
 
   return {
     generateScript,
-    updateAndGenerateScript,
     isGenerating: generateMutation.isPending,
-    isUpdating: updateMutation.isPending,
   };
 }
 
