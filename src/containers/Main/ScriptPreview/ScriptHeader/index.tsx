@@ -1,33 +1,13 @@
 'use client';
 
 import { ArrowLeft, Pause, Target, Type } from 'lucide-react';
+
 import { StatusBadge } from '@/components/StatusBadge';
 import { Button } from '@/components/ui/button';
 
-interface Metrics {
-  wordCount?: number;
-  charCount?: number;
-  totalDurationSeconds?: number;
-  targetDurationMinutes?: number;
-  totalPauseSeconds?: number;
-  pausePercentage?: number | string;
-  isDurationOffTarget?: boolean;
-}
-
-/**
- * Format duration in seconds to XXm XXs format
- */
-function formatDuration(totalSeconds: number): string {
-  const minutes = Math.floor(totalSeconds / 60);
-  const seconds = totalSeconds % 60;
-  if (minutes === 0) {
-    return `${seconds}s`;
-  }
-  if (seconds === 0) {
-    return `${minutes}m`;
-  }
-  return `${minutes}m ${seconds}s`;
-}
+import useConnect from './connect';
+import { PAUSE_BUTTONS } from './constants';
+import type { ScriptHeaderProps } from './types';
 
 export function ScriptHeader({
   lessonTitle,
@@ -36,14 +16,9 @@ export function ScriptHeader({
   onBack,
   metrics,
   onInsertPause,
-}: {
-  lessonTitle: string;
-  status?: string | null;
-  lastUpdated?: string | null;
-  onBack: () => void;
-  metrics?: Metrics | null;
-  onInsertPause?: (text: string) => void;
-}) {
+}: ScriptHeaderProps) {
+  const { formatDuration } = useConnect();
+
   return (
     <div className="sticky top-0 z-50">
       <div className="bg-background/95 backdrop-blur-md rounded-md p-3 shadow-sm space-y-4">
@@ -103,13 +78,7 @@ export function ScriptHeader({
               Insert pause:
             </span>
             <div className="flex gap-2 flex-wrap">
-              {[
-                { label: '3s', text: '[PAUSE 3s]' },
-                { label: '5s', text: '[PAUSE 5s]', hideMobile: true },
-                { label: '10s', text: '[PAUSE 10s]', hideMobile: true },
-                { label: '30s', text: '[PAUSE 30s]' },
-                { label: '50s', text: '[PAUSE 50s]', hideMobile: true },
-              ].map((button) => (
+              {PAUSE_BUTTONS.map((button) => (
                 <Button
                   key={button.label}
                   type="button"

@@ -1,75 +1,14 @@
 'use client';
 
 import { Loader2, Sparkles } from 'lucide-react';
-import { useCallback, useState } from 'react';
+import { useCallback } from 'react';
 
-import { ScriptConfigModal } from '@/components/ScriptConfigModal';
 import { Button } from '@/components/ui/button';
-import type { LessonEditFormData } from '@/containers/Main/LessonScriptGeneration';
+import { ScriptConfigModal } from '@/containers/Main/LessonScriptGeneration/ScriptConfigModal';
 import { cn } from '@/lib/utils';
-import type { Lesson } from '@/types/models';
 
-export type LessonStatus =
-  | 'PENDING'
-  | 'SCRIPT_GENERATING'
-  | 'SCRIPT_COMPLETED'
-  | 'AUDIO_GENERATING'
-  | 'AUDIO_COMPLETED'
-  | 'SCRIPT_FAILED'
-  | 'AUDIO_FAILED';
-
-interface GenerateScriptButtonProps {
-  lesson: Lesson;
-  courseSlug: string;
-  onGenerate: () => void;
-  onUpdateAndGenerate: (data: LessonEditFormData) => Promise<void>;
-  isGenerating?: boolean;
-  isUpdating?: boolean;
-  className?: string;
-}
-
-/**
- * Determines button state based on lesson status
- */
-function getButtonState(status: LessonStatus, isGenerating: boolean) {
-  // If mutation is in progress or status is generating
-  if (isGenerating || status === 'SCRIPT_GENERATING') {
-    return {
-      variant: 'outline' as const,
-      label: 'Generating...',
-      icon: 'spinner' as const,
-      disabled: true,
-    };
-  }
-
-  // Audio generating - show regenerate but disabled
-  if (status === 'AUDIO_GENERATING') {
-    return {
-      variant: 'outline' as const,
-      label: 'Regenerate Script',
-      icon: 'sparkles' as const,
-      disabled: true,
-    };
-  }
-
-  // PENDING or FAILED states - show primary generate button
-  if (status === 'PENDING' || status.includes('FAILED')) {
-    return {
-      variant: 'default' as const,
-      label: 'Generate Script',
-      icon: 'sparkles' as const,
-      disabled: false,
-    };
-  }
-
-  // SCRIPT_COMPLETED, AUDIO_COMPLETED - show secondary regenerate button
-  return {
-    variant: 'outline' as const,
-    label: 'Regenerate Script',
-    icon: 'sparkles' as const,
-    disabled: false,
-  };
-}
+import useConnect from './connect';
+import type { GenerateScriptButtonProps, LessonStatus } from './types';
 
 export function GenerateScriptButton({
   lesson,
@@ -80,11 +19,11 @@ export function GenerateScriptButton({
   isUpdating = false,
   className,
 }: GenerateScriptButtonProps) {
+  const { isModalOpen, setIsModalOpen, getButtonState } = useConnect();
+
   const status = lesson.status as LessonStatus;
   const buttonState = getButtonState(status, isGenerating);
   const isPrimary = buttonState.variant === 'default';
-
-  const [isModalOpen, setIsModalOpen] = useState(false);
 
   const handleClick = useCallback(
     (e: React.MouseEvent) => {
@@ -97,7 +36,7 @@ export function GenerateScriptButton({
       // Normal click opens configuration modal
       setIsModalOpen(true);
     },
-    [onGenerate],
+    [onGenerate, setIsModalOpen],
   );
 
   return (

@@ -1,6 +1,6 @@
 import { z } from 'zod';
 
-import type { LessonStatus } from '@/components/GenerateScriptButton';
+import type { LessonStatus } from '@/containers/Main/ScriptPreview/GenerateScriptButton/types';
 
 /**
  * Tone options for script generation configuration

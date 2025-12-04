@@ -1,14 +1,8 @@
-import type { UniqueIdentifier } from '@dnd-kit/core';
-import { useSortable } from '@dnd-kit/sortable';
-import { CSS } from '@dnd-kit/utilities';
+'use client';
+
 import { Clock, Eye, GripVertical, Pencil, Trash2 } from 'lucide-react';
 import Link from 'next/link';
-import type { CSSProperties } from 'react';
 
-import {
-  GenerateScriptButton,
-  type LessonStatus,
-} from '@/components/GenerateScriptButton';
 import { StatusBadge } from '@/components/StatusBadge';
 import { Button } from '@/components/ui/button';
 import { TableCell, TableRow } from '@/components/ui/table';
@@ -17,63 +11,27 @@ import {
   TooltipContent,
   TooltipTrigger,
 } from '@/components/ui/tooltip';
-import { useScriptGeneration } from '@/containers/Main/LessonScriptGeneration';
-import { formatTimestamp } from '@/lib/utils';
-import type { Lesson } from '@/types/models';
+import { GenerateScriptButton } from '@/containers/Main/ScriptPreview/GenerateScriptButton';
 
-interface SortableLessonItemProps {
-  lesson: Lesson;
-  courseSlug: string;
-  disabled?: boolean;
-  onEdit?: (lesson: Lesson) => void;
-  onDelete?: (lesson: Lesson) => void;
-}
+import useConnect from './connect';
+import type { LessonDragOverlayProps, SortableLessonItemProps } from './types';
 
-export function SortableLessonItem({
-  lesson,
-  courseSlug,
-  disabled = false,
-  onEdit,
-  onDelete,
-}: SortableLessonItemProps) {
+export function SortableLessonItem(props: SortableLessonItemProps) {
   const {
     attributes,
     listeners,
     setNodeRef,
-    transform,
-    transition,
+    style,
     isDragging,
-  } = useSortable({
-    id: lesson.id as UniqueIdentifier,
-    disabled,
-  });
+    generateScript,
+    updateAndGenerateScript,
+    isGenerating,
+    isUpdating,
+    hasViewableScript,
+    formatTimestamp,
+  } = useConnect(props);
 
-  // Script generation hook - now returns extended interface
-  const { generateScript, updateAndGenerateScript, isGenerating, isUpdating } =
-    useScriptGeneration({
-      courseSlug,
-      lessonId: lesson.id,
-      lessonTitle: lesson.title,
-      status: lesson.status as LessonStatus,
-    });
-
-  // Check if script is available for viewing
-  const SCRIPT_VIEWABLE_STATUSES: LessonStatus[] = [
-    'SCRIPT_COMPLETED',
-    'AUDIO_GENERATING',
-    'AUDIO_COMPLETED',
-  ];
-  const hasViewableScript = SCRIPT_VIEWABLE_STATUSES.includes(
-    lesson.status as LessonStatus,
-  );
-
-  const style: CSSProperties = {
-    transform: CSS.Transform.toString(transform),
-    transition,
-    opacity: isDragging ? 0.5 : 1,
-    position: 'relative' as const,
-    zIndex: isDragging ? 1 : 0,
-  };
+  const { lesson, courseSlug, disabled = false, onEdit, onDelete } = props;
 
   return (
     <TableRow
@@ -194,10 +152,6 @@ export function SortableLessonItem({
       </TableCell>
     </TableRow>
   );
-}
-
-interface LessonDragOverlayProps {
-  lesson: Lesson;
 }
 
 export function LessonDragOverlay({ lesson }: LessonDragOverlayProps) {

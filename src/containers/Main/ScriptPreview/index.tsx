@@ -3,10 +3,6 @@
 import { formatDistanceToNow } from 'date-fns';
 import { AlertCircle, ArrowLeft, FileQuestion, Loader2 } from 'lucide-react';
 
-import { FixedActionBar } from '@/components/FixedActionBar';
-import { ScriptContent } from '@/components/ScriptContent';
-import { ScriptEditor } from '@/components/ScriptEditor';
-import { ScriptHeader } from '@/components/ScriptHeader';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardHeader } from '@/components/ui/card';
 import {
@@ -18,6 +14,10 @@ import {
   DialogTitle,
 } from '@/components/ui/dialog';
 import { Skeleton } from '@/components/ui/skeleton';
+import { FixedActionBar } from './FixedActionBar';
+import { ScriptContent } from './ScriptContent';
+import { ScriptEditor } from './ScriptEditor';
+import { ScriptHeader } from './ScriptHeader';
 
 import useConnect from './connect';
 import { EMPTY_STATE_MESSAGES } from './constants';

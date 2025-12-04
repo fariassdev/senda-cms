@@ -1,4 +1,4 @@
-import type { LessonStatus } from '@/components/GenerateScriptButton';
+import type { LessonStatus } from '@/containers/Main/ScriptPreview/GenerateScriptButton/types';
 import type { Lesson } from '@/types/models';
 
 import type { LessonEditFormData, ScriptConfigFormData } from './constants';

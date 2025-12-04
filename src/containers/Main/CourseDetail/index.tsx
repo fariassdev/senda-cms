@@ -13,7 +13,6 @@ import {
 import Image from 'next/image';
 import Link from 'next/link';
 
-import { SortableLessonList } from '@/components/SortableLessonList';
 import {
   AlertDialog,
   AlertDialogAction,
@@ -50,6 +49,7 @@ import LessonCreate from '@/containers/Main/LessonCreate';
 import LessonDelete from '@/containers/Main/LessonDelete';
 import LessonEdit from '@/containers/Main/LessonEdit';
 import { UNSAVED_CHANGES } from '@/containers/Main/LessonReorder';
+import { SortableLessonList } from './SortableLessonList';
 
 import useConnect from './connect';
 import type { CourseDetailProps } from './types';

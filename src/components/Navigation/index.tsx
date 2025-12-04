@@ -1,8 +1,7 @@
 'use client';
 
-import { BookOpenIcon, HomeIcon, LogOutIcon, UserIcon } from 'lucide-react';
+import { BookOpenIcon, LogOutIcon, UserIcon } from 'lucide-react';
 import Link from 'next/link';
-import { usePathname } from 'next/navigation';
 
 import {
   Sidebar,
@@ -18,11 +17,9 @@ import {
   SidebarProvider,
   SidebarTrigger,
 } from '@/components/ui/sidebar';
-import { useAuthStore } from '@/stores/authStore';
 
-interface NavigationProps {
-  children: React.ReactNode;
-}
+import useConnect from './connect';
+import type { NavigationProps } from './types';
 
 /**
  * Navigation component that provides the main application navigation using shadcn/ui sidebar
@@ -31,26 +28,8 @@ interface NavigationProps {
  * - User authentication status and logout functionality
  * - Organized navigation structure for different app sections
  */
-export default function Navigation({ children }: NavigationProps) {
-  const pathname = usePathname();
-  const { user, clearAuth } = useAuthStore();
-
-  const navigationItems = [
-    {
-      title: 'Dashboard',
-      url: '/',
-      icon: HomeIcon,
-    },
-    {
-      title: 'Courses',
-      url: '/courses',
-      icon: BookOpenIcon,
-    },
-  ];
-
-  const handleLogout = () => {
-    clearAuth();
-  };
+export function Navigation({ children }: NavigationProps) {
+  const { pathname, user, navigationItems, handleLogout } = useConnect();
 
   return (
     <SidebarProvider>

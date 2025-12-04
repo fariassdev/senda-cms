@@ -1,16 +1,15 @@
 import { cn } from '@/lib/utils';
-import type { ScriptPart } from '@/types/models';
 
-interface ScriptContentProps {
-  script: ScriptPart[];
-  className?: string;
-}
+import useConnect from './connect';
+import type { ScriptContentProps } from './types';
 
 /**
  * Renders script content with speak parts as paragraphs and pause parts as visual cues.
  * Follows accessibility guidelines with proper semantic HTML and ARIA attributes.
  */
 export function ScriptContent({ script, className }: ScriptContentProps) {
+  useConnect();
+
   if (!script || script.length === 0) {
     return null;
   }

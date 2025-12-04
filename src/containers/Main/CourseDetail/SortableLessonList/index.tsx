@@ -1,33 +1,12 @@
 'use client';
 
-import type {
-  DragEndEvent,
-  DragStartEvent,
-  UniqueIdentifier,
-} from '@dnd-kit/core';
+import { closestCenter, DndContext, DragOverlay } from '@dnd-kit/core';
 import {
-  closestCenter,
-  DndContext,
-  DragOverlay,
-  KeyboardSensor,
-  PointerSensor,
-  useSensor,
-  useSensors,
-} from '@dnd-kit/core';
-import {
-  arrayMove,
   SortableContext,
-  sortableKeyboardCoordinates,
   verticalListSortingStrategy,
 } from '@dnd-kit/sortable';
-import { AlertCircle, RefreshCw } from 'lucide-react';
-import { useMemo, useState } from 'react';
+import { AlertCircle, FilePlus2, RefreshCw } from 'lucide-react';
 
-import { LessonListEmpty } from '@/components/LessonListEmpty';
-import {
-  LessonDragOverlay,
-  SortableLessonItem,
-} from '@/components/SortableLessonItem';
 import { Button } from '@/components/ui/button';
 import { Skeleton } from '@/components/ui/skeleton';
 import {
@@ -37,20 +16,10 @@ import {
   TableHeader,
   TableRow,
 } from '@/components/ui/table';
-import type { Lesson } from '@/types/models';
+import { LessonDragOverlay, SortableLessonItem } from './SortableLessonItem';
 
-interface SortableLessonListProps {
-  lessons: Lesson[];
-  isLoading: boolean;
-  isError: boolean;
-  courseSlug: string;
-  onRetry: () => void;
-  onAddLesson?: () => void;
-  onEditLesson?: (lesson: Lesson) => void;
-  onDeleteLesson?: (lesson: Lesson) => void;
-  onReorder: (orderedIds: number[]) => void;
-  isReordering?: boolean;
-}
+import useConnect from './connect';
+import type { SortableLessonListProps } from './types';
 
 export function SortableLessonList({
   lessons,
@@ -64,111 +33,16 @@ export function SortableLessonList({
   onReorder,
   isReordering = false,
 }: SortableLessonListProps) {
-  const [activeId, setActiveId] = useState<UniqueIdentifier | null>(null);
-
-  // Get lesson IDs for SortableContext (lessons are already sorted by parent)
-  const lessonIds = useMemo(
-    () => lessons.map((lesson) => lesson.id as UniqueIdentifier),
-    [lessons],
-  );
-
-  // Get active lesson for DragOverlay
-  const activeLesson = useMemo(
-    () => lessons.find((lesson) => lesson.id === activeId),
-    [lessons, activeId],
-  );
-
-  // Disable drag if only 1 lesson (AC6)
-  const isDragDisabled = lessons.length <= 1;
-
-  // Configure sensors for pointer and keyboard (AC5)
-  const sensors = useSensors(
-    useSensor(PointerSensor, {
-      activationConstraint: {
-        distance: 8, // 8px drag threshold
-      },
-    }),
-    useSensor(KeyboardSensor, {
-      coordinateGetter: sortableKeyboardCoordinates,
-    }),
-  );
-
-  // Accessibility announcements (AC5)
-  const announcements = useMemo(
-    () => ({
-      onDragStart({ active }: DragStartEvent) {
-        const lesson = lessons.find((l) => l.id === active.id);
-        const position = lessons.findIndex((l) => l.id === active.id) + 1;
-        return `Picked up lesson "${lesson?.title || active.id}". Position ${position} of ${lessons.length}. Use arrow keys to move, Enter to drop, Escape to cancel.`;
-      },
-      onDragOver({
-        active,
-        over,
-      }: {
-        active: { id: UniqueIdentifier };
-        over: { id: UniqueIdentifier } | null;
-      }) {
-        if (over) {
-          const overPosition = lessons.findIndex((l) => l.id === over.id) + 1;
-          const lesson = lessons.find((l) => l.id === active.id);
-          return `Lesson "${lesson?.title || active.id}" is over position ${overPosition} of ${lessons.length}.`;
-        }
-        return undefined;
-      },
-      onDragEnd({
-        active,
-        over,
-      }: {
-        active: { id: UniqueIdentifier };
-        over: { id: UniqueIdentifier } | null;
-      }) {
-        if (over) {
-          const overPosition = lessons.findIndex((l) => l.id === over.id) + 1;
-          const lesson = lessons.find((l) => l.id === active.id);
-          return `Lesson "${lesson?.title || active.id}" was dropped at position ${overPosition} of ${lessons.length}.`;
-        }
-        const lesson = lessons.find((l) => l.id === active.id);
-        return `Lesson "${lesson?.title || active.id}" was dropped.`;
-      },
-      onDragCancel({ active }: { active: { id: UniqueIdentifier } }) {
-        const lesson = lessons.find((l) => l.id === active.id);
-        return `Dragging cancelled. Lesson "${lesson?.title || active.id}" was returned to its original position.`;
-      },
-    }),
-    [lessons],
-  );
-
-  const handleDragStart = (event: DragStartEvent) => {
-    setActiveId(event.active.id);
-  };
-
-  const handleDragEnd = (event: DragEndEvent) => {
-    const { active, over } = event;
-
-    setActiveId(null);
-
-    if (!over || active.id === over.id) {
-      return;
-    }
-
-    // Calculate new order
-    const oldIndex = lessons.findIndex((l) => l.id === active.id);
-    const newIndex = lessons.findIndex((l) => l.id === over.id);
-
-    if (oldIndex === -1 || newIndex === -1) {
-      return;
-    }
-
-    const reorderedLessons = arrayMove(lessons, oldIndex, newIndex);
-    const orderedIds = reorderedLessons.map((l) => l.id);
-
-    // Notify parent of new order (local change, not saved yet)
-    onReorder(orderedIds);
-  };
-
-  const handleDragCancel = () => {
-    setActiveId(null);
-  };
+  const {
+    sensors,
+    lessonIds,
+    activeLesson,
+    isDragDisabled,
+    announcements,
+    handleDragStart,
+    handleDragEnd,
+    handleDragCancel,
+  } = useConnect({ lessons, onReorder });
 
   if (isLoading) {
     return <LessonListSkeleton />;
@@ -275,6 +149,26 @@ function LessonListSkeleton() {
           </div>
         </div>
       ))}
+    </div>
+  );
+}
+
+function LessonListEmpty({ onAddLesson }: { onAddLesson?: () => void }) {
+  return (
+    <div className="flex flex-col items-center justify-center rounded-lg border-2 border-dashed border-muted-foreground/25 p-8 text-center">
+      <FilePlus2 className="mb-4 h-16 w-16 text-muted-foreground/50" />
+      <h3 className="mb-2 text-lg font-semibold">No lessons yet</h3>
+      <p className="mb-6 max-w-sm text-sm text-muted-foreground">
+        Create your first lesson to start building this course
+      </p>
+      <Button
+        onClick={onAddLesson}
+        disabled={!onAddLesson}
+        className="bg-cyan-600 hover:bg-cyan-700"
+      >
+        <FilePlus2 className="mr-2 h-4 w-4" />
+        Add First Lesson
+      </Button>
     </div>
   );
 }

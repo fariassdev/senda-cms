@@ -3,13 +3,13 @@
 import { Card, CardContent, CardHeader } from '@/components/ui/card';
 import { Textarea } from '@/components/ui/textarea';
 
-interface ScriptEditorProps {
-  content: string;
-  onChange: (content: string) => void;
-  ref: React.RefObject<HTMLTextAreaElement | null>;
-}
+import useConnect from './connect';
+import { EDITOR_MIN_HEIGHT } from './constants';
+import type { ScriptEditorProps } from './types';
 
 export function ScriptEditor({ content, onChange, ref }: ScriptEditorProps) {
+  useConnect();
+
   return (
     <div className="space-y-6">
       {/* Editor */}
@@ -23,7 +23,7 @@ export function ScriptEditor({ content, onChange, ref }: ScriptEditorProps) {
             aria-label="Script editor"
             value={content}
             onChange={(e) => onChange(e.target.value)}
-            className="w-full min-h-[400px] font-mono text-sm leading-relaxed resize-y"
+            className={`w-full min-h-[${EDITOR_MIN_HEIGHT}] font-mono text-sm leading-relaxed resize-y`}
             placeholder="Start typing or use the toolbar buttons to insert meditation cues..."
           />
         </CardContent>

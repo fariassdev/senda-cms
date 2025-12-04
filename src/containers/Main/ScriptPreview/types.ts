@@ -1,5 +1,3 @@
-import type { ScriptPart } from '@/types/models';
-
 /**
  * Props for the ScriptPreview container
  */
@@ -19,13 +17,6 @@ export interface ScriptMetrics {
   pausePercentage: number;
   targetDurationMinutes: number;
   isDurationOffTarget?: boolean;
-}
-
-/**
- * Props for the ScriptContent component
- */
-export interface ScriptContentProps {
-  script: ScriptPart[];
 }
 
 /**

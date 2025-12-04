@@ -1,18 +1,6 @@
 import { CheckCircle, Circle, Loader2, XCircle } from 'lucide-react';
-import React from 'react';
 
-import { Badge } from '@/components/ui/badge';
-import { cn } from '@/lib/utils';
-
-// Lesson status values from API
-export type LessonStatus =
-  | 'PENDING'
-  | 'SCRIPT_GENERATING'
-  | 'SCRIPT_COMPLETED'
-  | 'AUDIO_GENERATING'
-  | 'AUDIO_COMPLETED'
-  | 'SCRIPT_FAILED'
-  | 'AUDIO_FAILED';
+import type { LessonStatus } from './types';
 
 interface StatusConfig {
   label: string;
@@ -72,40 +60,19 @@ const statusConfigMap: Record<LessonStatus, StatusConfig> = {
   },
 };
 
-interface StatusBadgeProps {
-  status: string;
-  className?: string;
-}
+export default function useConnect() {
+  function getStatusConfig(status: string) {
+    return (
+      statusConfigMap[status as LessonStatus] ?? {
+        label: status,
+        icon: Circle,
+        colorClass: 'text-gray-500',
+        bgClass: 'bg-gray-500/10 border-gray-500/20',
+      }
+    );
+  }
 
-export function StatusBadge({ status, className }: StatusBadgeProps) {
-  const config = statusConfigMap[status as LessonStatus] ?? {
-    label: status,
-    icon: Circle,
-    colorClass: 'text-gray-500',
-    bgClass: 'bg-gray-500/10 border-gray-500/20',
+  return {
+    getStatusConfig,
   };
-
-  const Icon = config.icon;
-
-  return (
-    <Badge
-      variant="outline"
-      className={cn(
-        config.bgClass,
-        config.colorClass,
-        config.animatePulse && 'animate-pulse',
-        className,
-      )}
-    >
-      <Icon
-        className={cn(
-          'h-3 w-3',
-          config.colorClass,
-          config.animateSpin && 'animate-spin',
-        )}
-        aria-hidden="true"
-      />
-      <span>{config.label}</span>
-    </Badge>
-  );
 }

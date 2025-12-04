@@ -2,6 +2,7 @@
 
 import { Edit, RefreshCw, Volume2 } from 'lucide-react';
 import React from 'react';
+
 import { Button } from '@/components/ui/button';
 import {
   Tooltip,
@@ -9,7 +10,8 @@ import {
   TooltipTrigger,
 } from '@/components/ui/tooltip';
 
-type SaveState = 'idle' | 'saving' | 'success' | 'error';
+import useConnect from './connect';
+import type { FixedActionBarProps } from './types';
 
 export const FixedActionBar = ({
   isEditing,
@@ -21,25 +23,10 @@ export const FixedActionBar = ({
   saveStatus,
   onSave,
   onCancelEdit,
-}: {
-  isEditing: boolean;
-  onEdit?: () => void;
-  onGenerateAudio?: () => void;
-  onRegenerate?: () => void;
-  canGenerateAudio?: boolean;
-  hasUnsavedChanges?: boolean;
-  saveStatus?: SaveState;
-  onSave?: () => void;
-  onCancelEdit?: () => void;
-}) => {
-  const saveText =
-    saveStatus === 'idle'
-      ? 'Save Changes'
-      : saveStatus === 'saving'
-        ? 'Saving...'
-        : saveStatus === 'success'
-          ? 'Saved ✓'
-          : 'Failed - Retry';
+}: FixedActionBarProps) => {
+  const { getSaveText } = useConnect();
+
+  const saveText = getSaveText(saveStatus);
 
   return (
     <div className="sticky bottom-0 pointer-events-auto">

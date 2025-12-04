@@ -1,9 +1,7 @@
 'use client';
 
-import { zodResolver } from '@hookform/resolvers/zod';
 import { Loader2 } from 'lucide-react';
 import { useEffect } from 'react';
-import { useForm } from 'react-hook-form';
 
 import { Button } from '@/components/ui/button';
 import {
@@ -26,14 +24,11 @@ import {
 import { Input } from '@/components/ui/input';
 import { Textarea } from '@/components/ui/textarea';
 import { TONE_SUGGESTIONS } from '@/containers/Main/LessonCreate/constants';
-import {
-  lessonEditSchema,
-  MAX_INSTRUCTIONS_LENGTH,
-} from '@/containers/Main/LessonScriptGeneration';
-import type {
-  LessonEditFormData,
-  ScriptConfigModalProps,
-} from '@/containers/Main/LessonScriptGeneration';
+import type { LessonEditFormData } from '../constants';
+import { MAX_INSTRUCTIONS_LENGTH } from '../constants';
+
+import useConnect from './connect';
+import type { ScriptConfigModalProps } from './types';
 
 export function ScriptConfigModal({
   open,
@@ -44,19 +39,8 @@ export function ScriptConfigModal({
   isGenerating,
   isUpdating,
 }: ScriptConfigModalProps) {
-  const form = useForm<LessonEditFormData>({
-    resolver: zodResolver(lessonEditSchema),
-    defaultValues: {
-      title: lesson.title,
-      corePractice: lesson.corePractice,
-      keyPoint: lesson.keyPoint,
-      tone: lesson.tone,
-      durationMinutes: lesson.durationMinutes,
-      instructions: '',
-    },
-  });
+  const { form, isDirty, isValid, charactersRemaining } = useConnect();
 
-  const { isDirty, isValid } = form.formState;
   const isLoading = isGenerating || isUpdating;
 
   // Reset form when modal opens with fresh lesson data
@@ -72,10 +56,6 @@ export function ScriptConfigModal({
       });
     }
   }, [open, lesson, form]);
-
-  const instructionsValue = form.watch('instructions') ?? '';
-  const charactersRemaining =
-    MAX_INSTRUCTIONS_LENGTH - instructionsValue.length;
 
   const handleSubmit = async (data: LessonEditFormData) => {
     if (isDirty) {
