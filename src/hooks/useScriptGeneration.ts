@@ -2,10 +2,8 @@ import { useQueryClient } from '@tanstack/react-query';
 import { useRef } from 'react';
 import { toast } from 'sonner';
 
-import type {
-  LessonEditFormData,
-  ScriptConfigFormData,
-} from '@/constants/lessonScript';
+import type { LessonFormData } from '@/components/LessonForm/constants';
+import type { ScriptConfigFormData } from '@/constants/lessonScript';
 import { $api } from '@/lib/api';
 import type { Lesson, LessonStatus } from '@/types/models';
 
@@ -34,7 +32,7 @@ interface LessonsQueryData {
  */
 export interface UseScriptGenerationExtendedReturn
   extends UseScriptGenerationReturn {
-  updateAndGenerateScript: (data: LessonEditFormData) => Promise<void>;
+  updateAndGenerateScript: (data: LessonFormData) => Promise<void>;
   isUpdating: boolean;
 }
 
@@ -148,7 +146,7 @@ export function useScriptGeneration({
   };
 
   const updateAndGenerateScript = async (
-    data: LessonEditFormData,
+    data: LessonFormData,
   ): Promise<void> => {
     // First update the lesson
     toast.info('Saving lesson changes...');

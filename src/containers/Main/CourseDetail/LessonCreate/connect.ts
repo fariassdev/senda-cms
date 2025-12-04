@@ -1,16 +1,10 @@
-import { zodResolver } from '@hookform/resolvers/zod';
 import { useQueryClient } from '@tanstack/react-query';
-import { useState } from 'react';
-import { useForm } from 'react-hook-form';
+import { useState, useCallback } from 'react';
 import { toast } from 'sonner';
 
+import { type LessonFormData } from '@/components/LessonForm/constants';
 import { $api } from '@/lib/api';
 
-import {
-  DEFAULT_FORM_VALUES,
-  lessonSchema,
-  type LessonFormData,
-} from './constants';
 import type { LessonCreateProps } from './types';
 
 export default function useConnect({
@@ -21,13 +15,7 @@ export default function useConnect({
 }: Omit<LessonCreateProps, 'open'>) {
   const queryClient = useQueryClient();
   const [showDiscardDialog, setShowDiscardDialog] = useState(false);
-
-  const form = useForm<LessonFormData>({
-    resolver: zodResolver(lessonSchema),
-    defaultValues: DEFAULT_FORM_VALUES,
-  });
-
-  const { isDirty } = form.formState;
+  const [isDirty, setIsDirty] = useState(false);
 
   const createLessonMutation = $api.useMutation(
     'post',
@@ -56,7 +44,6 @@ export default function useConnect({
           refetchType: 'active',
         });
 
-        form.reset(DEFAULT_FORM_VALUES);
         onOpenChange(false);
         onSuccess?.();
       },
@@ -68,47 +55,48 @@ export default function useConnect({
     },
   );
 
-  const onSubmit = async (data: LessonFormData) => {
-    createLessonMutation.mutate({
-      params: {
-        path: {
-          slug: courseSlug,
+  const onSubmit = useCallback(
+    async (data: LessonFormData) => {
+      createLessonMutation.mutate({
+        params: {
+          path: {
+            slug: courseSlug,
+          },
         },
-      },
-      body: {
-        lesson: {
-          lesson_number: nextLessonNumber,
-          title: data.title,
-          core_practice: data.corePractice,
-          key_point: data.keyPoint,
-          tone: data.tone,
-          duration_minutes: data.durationMinutes,
+        body: {
+          lesson: {
+            lesson_number: nextLessonNumber,
+            title: data.title,
+            core_practice: data.corePractice,
+            key_point: data.keyPoint,
+            tone: data.tone,
+            duration_minutes: data.durationMinutes,
+          },
         },
-      },
-    });
-  };
+      });
+    },
+    [courseSlug, nextLessonNumber, createLessonMutation],
+  );
 
-  const handleClose = () => {
+  const handleClose = useCallback(() => {
     if (isDirty) {
       setShowDiscardDialog(true);
     } else {
-      form.reset(DEFAULT_FORM_VALUES);
       onOpenChange(false);
     }
-  };
+  }, [isDirty, onOpenChange]);
 
-  const handleConfirmDiscard = () => {
+  const handleConfirmDiscard = useCallback(() => {
     setShowDiscardDialog(false);
-    form.reset(DEFAULT_FORM_VALUES);
+    setIsDirty(false);
     onOpenChange(false);
-  };
+  }, [onOpenChange]);
 
-  const handleCancelDiscard = () => {
+  const handleCancelDiscard = useCallback(() => {
     setShowDiscardDialog(false);
-  };
+  }, []);
 
   return {
-    form,
     onSubmit,
     isLoading: createLessonMutation.isPending,
     isDirty,
@@ -116,5 +104,6 @@ export default function useConnect({
     handleClose,
     handleConfirmDiscard,
     handleCancelDiscard,
+    setIsDirty,
   };
 }
