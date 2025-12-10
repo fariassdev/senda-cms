@@ -13,6 +13,14 @@ export type LessonGenerationData =
   components['schemas']['LessonGenerationData'];
 export type CreateLessonData = components['schemas']['CreateLessonData'];
 export type UpdateLessonData = components['schemas']['UpdateLessonData'];
+export type LessonStatus =
+  | 'PENDING'
+  | 'SCRIPT_GENERATING'
+  | 'SCRIPT_COMPLETED'
+  | 'AUDIO_GENERATING'
+  | 'AUDIO_COMPLETED'
+  | 'SCRIPT_FAILED'
+  | 'AUDIO_FAILED';
 
 // Script and Audio types
 export type ScriptPart = components['schemas']['ScriptPartResponse'];

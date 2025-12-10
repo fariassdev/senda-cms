@@ -13,7 +13,6 @@ import {
 import Image from 'next/image';
 import Link from 'next/link';
 
-import { SortableLessonList } from '@/components/SortableLessonList';
 import {
   AlertDialog,
   AlertDialogAction,
@@ -46,12 +45,14 @@ import { Input } from '@/components/ui/input';
 import { Skeleton } from '@/components/ui/skeleton';
 import { Switch } from '@/components/ui/switch';
 import { Textarea } from '@/components/ui/textarea';
-import LessonCreate from '@/containers/Main/LessonCreate';
-import LessonDelete from '@/containers/Main/LessonDelete';
-import LessonEdit from '@/containers/Main/LessonEdit';
-import { UNSAVED_CHANGES } from '@/containers/Main/LessonReorder';
+import LessonCreate from './LessonCreate';
+import LessonDelete from './LessonDelete';
+import LessonEdit from './LessonEdit';
+
+import { SortableLessonList } from './SortableLessonList';
 
 import useConnect from './connect';
+import { UNSAVED_CHANGES } from './constants';
 import type { CourseDetailProps } from './types';
 
 export default function CourseDetail({ courseSlug }: CourseDetailProps) {

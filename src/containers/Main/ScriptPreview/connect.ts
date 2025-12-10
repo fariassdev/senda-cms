@@ -4,10 +4,8 @@ import { useQueryClient } from '@tanstack/react-query';
 import { useRouter } from 'next/navigation';
 import { useEffect, useMemo, useRef, useState } from 'react';
 import { toast } from 'sonner';
-
-import type { LessonStatus } from '@/components/StatusBadge';
 import { $api } from '@/lib/api';
-import type { Lesson, ScriptPart } from '@/types/models';
+import type { Lesson, LessonStatus, ScriptPart } from '@/types/models';
 
 import {
   AUDIO_GENERATION_ELIGIBLE_STATUS,

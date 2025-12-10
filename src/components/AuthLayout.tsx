@@ -3,7 +3,7 @@
 import { usePathname, useRouter } from 'next/navigation';
 import { useEffect } from 'react';
 
-import Navigation from '@/components/Navigation';
+import { Navigation } from '@/components/Navigation';
 import CourseList from '@/containers/Main/CourseList';
 import { useAuthRefresh } from '@/hooks/useAuthRefresh';
 import { useAuthStore } from '@/stores/authStore';
