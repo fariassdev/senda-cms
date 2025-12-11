@@ -33,10 +33,17 @@ export const FixedActionBar = ({
       <div className="bg-background/95 backdrop-blur-md rounded-lg shadow-md p-5 flex items-center justify-end gap-3">
         {!isEditing && (
           <>
-            <Button variant="outline" size="sm" onClick={onRegenerate}>
-              <RefreshCw className="h-4 w-4" />
-              Regenerate
-            </Button>
+            <Tooltip>
+              <TooltipTrigger asChild>
+                <Button variant="outline" size="sm" onClick={onRegenerate}>
+                  <RefreshCw className="h-4 w-4" />
+                  Regenerate
+                </Button>
+              </TooltipTrigger>
+              <TooltipContent>
+                <p>Hold Shift for quick regeneration without configuration</p>
+              </TooltipContent>
+            </Tooltip>
 
             <Tooltip>
               <TooltipTrigger asChild>

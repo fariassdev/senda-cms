@@ -1,6 +1,7 @@
 'use client';
 
 import { Loader2, Pencil } from 'lucide-react';
+import { useMemo } from 'react';
 
 import { LessonForm, type LessonFormData } from '@/components/LessonForm';
 import {
@@ -55,14 +56,24 @@ export default function LessonEdit({
     await onSubmit(data);
   };
 
-  // Convert lesson to defaultValues format
-  const defaultValues = {
-    title: lesson.title,
-    durationMinutes: lesson.durationMinutes,
-    corePractice: lesson.corePractice,
-    keyPoint: lesson.keyPoint,
-    tone: lesson.tone,
-  };
+  // Memoize defaultValues to prevent form reset on re-renders
+  // The form's useEffect resets when defaultValues reference changes
+  const defaultValues = useMemo(
+    () => ({
+      title: lesson.title,
+      durationMinutes: lesson.durationMinutes,
+      corePractice: lesson.corePractice,
+      keyPoint: lesson.keyPoint,
+      tone: lesson.tone,
+    }),
+    [
+      lesson.title,
+      lesson.durationMinutes,
+      lesson.corePractice,
+      lesson.keyPoint,
+      lesson.tone,
+    ],
+  );
 
   return (
     <>

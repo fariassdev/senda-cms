@@ -1,78 +1,90 @@
-# Sprint Status - Senda CMS
-# Generated: 2025-12-01
-# Source: docs/epics.md
+# generated: 2025-12-11
+# project: senda-cms
+# project_key: senda
+# tracking_system: file-system
+# story_location: docs/sprint-artifacts
 
 # STATUS DEFINITIONS:
-# - backlog: Story not yet drafted, in queue for creation
-# - drafted: Story document created, pending context assembly
-# - ready: Story ready for development (context generated or approved)
-# - in-progress: Development actively underway
-# - review: Code complete, under review
-# - done: Story fully completed and merged
+# ==================
+# Epic Status:
+#   - backlog: Epic exists in epic file but not contexted
+#   - contexted: Epic tech context created (required before drafting stories)
+#
+# Story Status:
+#   - backlog: Story only exists in epic file
+#   - drafted: Story file created in stories folder
+#   - ready-for-dev: Draft approved and story context created
+#   - in-progress: Developer actively working on implementation
+#   - review: Under SM review (via code-review workflow)
+#   - done: Story completed
+#
+# Retrospective Status:
+#   - optional: Can be completed but not required
+#   - completed: Retrospective has been done
+#
+# WORKFLOW NOTES:
+# ===============
+# - Epics should be 'contexted' before stories can be 'drafted'
+# - Stories can be worked in parallel if team capacity allows
+# - SM typically drafts next story after previous one is 'done' to incorporate learnings
+# - Dev moves story to 'review', SM reviews, then Dev moves to 'done'
 
-# =============================================================================
-# DEVELOPMENT STATUS
-# =============================================================================
-# Format: story-key: status
-# Story key pattern: {epic_num}-{story_num}-{story-slug}
+generated: 2025-12-11
+project: senda-cms
+project_key: senda
+tracking_system: file-system
+story_location: docs/sprint-artifacts
 
 development_status:
-  # Epic 1: Foundation & Authentication ✅ COMPLETED
-  # (All stories in Epic 1 were completed as part of initial project setup)
-  
-  # Epic 2: Course Discovery & Management ✅ COMPLETED
-  # (All stories in Epic 2 were completed as part of Phase 3-4)
-  
-  # Epic 3: Lesson Management ✅ COMPLETED
-  3-1-display-lesson-list: done
+  # Epic 1: Foundation & Authentication (Completed)
+  epic-1: done
+  # Stories inferred from Epic 1 summary in epics.md
+  1-1-foundation-auth: done
+  epic-1-retrospective: completed
+
+  # Epic 2: Course Discovery & Management (Completed)
+  epic-2: done
+  # Stories inferred from Epic 2 summary in epics.md
+  2-1-course-discovery: done
+  epic-2-retrospective: completed
+
+  # Epic 3: Lesson Management (Completed)
+  epic-3: done
+  3-1-display-lesson-list-in-course-detail: done
   3-2-create-new-lesson: done
   3-3-edit-existing-lesson: done
   3-4-delete-lesson: done
-  3-5-reorder-lessons-drag-drop: done
-  3-6-realtime-status-indicators: done
-  
-  # Epic 4: AI Script Generation 🎯 CURRENT
-  4-1-generate-script-button-status: done
+  3-5-reorder-lessons-with-drag-and-drop: done
+  3-6-real-time-status-indicators: done
+  epic-3-retrospective: completed
+
+  # Epic 4: AI Script Generation
+  epic-4: in-progress
+  4-1-generate-script-button-and-status: done
   4-2-script-generation-configuration: done
-  4-3-view-preview-generated-script: done
+  4-3-view-and-preview-generated-script: done
   4-4-edit-script-content: done
-  4-5-regenerate-script: backlog
+  4-5-regenerate-script: done
   4-6-batch-script-generation: backlog
-  
-  # Epic 5: Audio Generation & Playback ⏳ PENDING
-  5-1-generate-audio-button-status: backlog
+  epic-4-retrospective: optional
+
+  # Epic 5: Audio Generation & Playback
+  epic-5: backlog
+  5-1-generate-audio-button-and-status: backlog
   5-2-audio-configuration-modal: backlog
   5-3-audio-generation-progress: backlog
   5-4-integrated-audio-player: backlog
   5-5-download-audio-file: backlog
   5-6-regenerate-audio: backlog
   5-7-batch-audio-generation: backlog
-  
-  # Epic 6: Polish & Production Readiness ⏳ PENDING
-  6-1-skeleton-loaders-all-views: backlog
+  epic-5-retrospective: optional
+
+  # Epic 6: Polish & Production Readiness
+  epic-6: backlog
+  6-1-skeleton-loaders-for-all-views: backlog
   6-2-full-responsive-design: backlog
-  6-3-error-boundaries-graceful-degradation: backlog
+  6-3-error-boundaries-and-graceful-degradation: backlog
   6-4-accessibility-compliance-wcag-aa: backlog
   6-5-performance-optimization: backlog
   6-6-production-deployment: backlog
-
-# =============================================================================
-# SPRINT METRICS
-# =============================================================================
-current_sprint: 2
-sprint_start_date: 2025-12-01
-sprint_end_date: 2025-12-15
-
-current_epic: 4
-current_epic_title: "AI Script Generation"
-
-# Stories completed in current sprint
-sprint_completed: 4
-sprint_total: 6
-
-# Overall progress
-total_stories: 25
-stories_done: 10
-stories_in_progress: 0
-stories_drafted: 0
-stories_backlog: 15
+  epic-6-retrospective: optional

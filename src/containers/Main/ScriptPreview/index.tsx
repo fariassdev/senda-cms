@@ -3,6 +3,7 @@
 import { formatDistanceToNow } from 'date-fns';
 import { AlertCircle, ArrowLeft, FileQuestion, Loader2 } from 'lucide-react';
 
+import { ScriptGenerationModal } from '@/components/ScriptGenerationModal';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardHeader } from '@/components/ui/card';
 import {
@@ -14,6 +15,7 @@ import {
   DialogTitle,
 } from '@/components/ui/dialog';
 import { Skeleton } from '@/components/ui/skeleton';
+
 import { FixedActionBar } from './FixedActionBar';
 import { ScriptContent } from './ScriptContent';
 import { ScriptEditor } from './ScriptEditor';
@@ -37,7 +39,7 @@ export default function ScriptPreview(props: ScriptPreviewProps) {
     canGenerateAudio,
     handleBackToCourse,
     handleEditScript,
-    handleRegenerateScript,
+    handleRegenerateClick,
     handleGenerateAudio,
     handleRetry,
     // Edit mode
@@ -55,6 +57,13 @@ export default function ScriptPreview(props: ScriptPreviewProps) {
     setIsUnsavedModalOpen,
     textareaRef,
     handleInsertPause,
+    // Regeneration (Task 4)
+    isRegenerateModalOpen,
+    setIsRegenerateModalOpen,
+    handleConfirmRegenerate,
+    handleUpdateAndRegenerate,
+    isGenerating,
+    isUpdating,
   } = useConnect(props);
 
   // Loading state
@@ -164,13 +173,27 @@ export default function ScriptPreview(props: ScriptPreviewProps) {
         isEditing={isEditing}
         onEdit={handleEditScript}
         onGenerateAudio={handleGenerateAudio}
-        onRegenerate={handleRegenerateScript}
+        onRegenerate={handleRegenerateClick}
         canGenerateAudio={canGenerateAudio}
         hasUnsavedChanges={hasUnsavedChanges}
         saveStatus={saveStatus}
         onSave={handleSaveScript}
         onCancelEdit={handleCancelEdit}
       />
+
+      {/* Regenerate Script Modal (Task 4.1, 4.2, 4.3) */}
+      {lesson && (
+        <ScriptGenerationModal
+          open={isRegenerateModalOpen}
+          onOpenChange={setIsRegenerateModalOpen}
+          lesson={lesson}
+          onGenerate={handleConfirmRegenerate}
+          onUpdateAndGenerate={handleUpdateAndRegenerate}
+          isGenerating={isGenerating}
+          isUpdating={isUpdating}
+          isRegeneration
+        />
+      )}
     </div>
   );
 }

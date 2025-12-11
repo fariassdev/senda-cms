@@ -120,7 +120,6 @@ export function SortableLessonItem(props: SortableLessonItemProps) {
           </Tooltip>
           <GenerateScriptButton
             lesson={lesson}
-            courseSlug={courseSlug}
             onGenerate={generateScript}
             onUpdateAndGenerate={updateAndGenerateScript}
             isGenerating={isGenerating}

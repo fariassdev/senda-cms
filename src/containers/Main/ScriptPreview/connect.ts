@@ -4,6 +4,10 @@ import { useQueryClient } from '@tanstack/react-query';
 import { useRouter } from 'next/navigation';
 import { useEffect, useMemo, useRef, useState } from 'react';
 import { toast } from 'sonner';
+import useLessonActions, {
+  type LessonUpdateData,
+} from '@/hooks/useLessonActions';
+import useScriptGeneration from '@/hooks/useScriptGeneration';
 import { $api } from '@/lib/api';
 import type { Lesson, LessonStatus, ScriptPart } from '@/types/models';
 
@@ -34,6 +38,9 @@ export default function useConnect({
   const [hasUnsavedChanges, setHasUnsavedChanges] = useState(false);
   const [saveStatus, setSaveStatus] = useState<SaveState>('idle');
   const [isUnsavedModalOpen, setIsUnsavedModalOpen] = useState(false);
+
+  // Regeneration modal state (Task 1.2)
+  const [isRegenerateModalOpen, setIsRegenerateModalOpen] = useState(false);
 
   const handleInsertPause = (text: string) => {
     const textarea = textareaRef.current;
@@ -98,6 +105,18 @@ export default function useConnect({
   const canGenerateAudio = useMemo(() => {
     return lesson?.status === AUDIO_GENERATION_ELIGIBLE_STATUS;
   }, [lesson?.status]);
+
+  // Initialize useScriptGeneration hook for regeneration (Task 1.1)
+  const { generateScript, isGenerating } = useScriptGeneration({
+    courseSlug,
+    lessonId: Number(lessonId),
+  });
+
+  // Initialize useLessonActions for updating lesson before regeneration (Task 5.2)
+  const { updateLesson, isUpdating } = useLessonActions({
+    courseSlug,
+    lessonId: Number(lessonId),
+  });
 
   // Save script mutation
   const saveScriptMutation = $api.useMutation(
@@ -237,9 +256,29 @@ export default function useConnect({
     setHasUnsavedChanges(newContent !== originalContent);
   };
 
-  const handleRegenerateScript = () => {
-    // Placeholder for Story 4.5 - will open modal or trigger regeneration
-    // For now, navigate back to course where regeneration can be triggered
+  // Handle regeneration confirmation from modal (Task 1.5)
+  const handleConfirmRegenerate = () => {
+    generateScript();
+    setIsRegenerateModalOpen(false);
+    router.push(`/courses/${courseSlug}`);
+  };
+
+  // Handle regenerate click with Shift+Click detection (Task 1.3, 1.4)
+  const handleRegenerateClick = (e: React.MouseEvent) => {
+    if (e.shiftKey) {
+      // Quick regeneration - bypass modal (Task 1.4)
+      handleConfirmRegenerate();
+    } else {
+      // Normal click - open modal (Task 1.3)
+      setIsRegenerateModalOpen(true);
+    }
+  };
+
+  // Handle lesson update then regeneration (Task 5.2)
+  const handleUpdateAndRegenerate = async (data: LessonUpdateData) => {
+    await updateLesson(data);
+    generateScript();
+    setIsRegenerateModalOpen(false);
     router.push(`/courses/${courseSlug}`);
   };
 
@@ -263,7 +302,13 @@ export default function useConnect({
     canGenerateAudio,
     handleBackToCourse,
     handleEditScript,
-    handleRegenerateScript,
+    handleRegenerateClick,
+    handleConfirmRegenerate,
+    isRegenerateModalOpen,
+    setIsRegenerateModalOpen,
+    isGenerating,
+    isUpdating,
+    handleUpdateAndRegenerate,
     handleGenerateAudio,
     handleRetry,
     courseSlug,
