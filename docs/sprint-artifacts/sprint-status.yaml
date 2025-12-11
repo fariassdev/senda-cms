@@ -64,7 +64,7 @@ development_status:
   4-2-script-generation-configuration: done
   4-3-view-and-preview-generated-script: done
   4-4-edit-script-content: done
-  4-5-regenerate-script: review
+  4-5-regenerate-script: done
   4-6-batch-script-generation: backlog
   epic-4-retrospective: optional
 

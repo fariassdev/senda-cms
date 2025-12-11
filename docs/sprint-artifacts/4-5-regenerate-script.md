@@ -1,6 +1,6 @@
 # Story 4.5: Regenerate Script
 
-Status: in-progress
+Status: done
 
 ## Story
 
@@ -119,10 +119,10 @@ So that I can get a better result if the first generation wasn't ideal.
   - [x] 7.2 Implement as disabled dropdown with tooltip: "Version history coming soon"
   - [x] 7.3 Document future requirements in code comments
 
-- [ ] **Task 8: Testing and Validation** (AC: #1-10)
+- [x] **Task 8: Testing and Validation** (AC: #1-10)
   - [x] 8.1 Run `bun typecheck` - verify no type errors
   - [x] 8.2 Run `bun lint:fix` - verify no lint errors
-  - [ ] 8.3 Manual test: Open ScriptPreview, click Regenerate, verify modal opens
+  - [x] 8.3 Manual test: Open ScriptPreview, click Regenerate, verify modal opens
   - [x] 8.4 Manual test: Verify warning banner is visible in modal
   - [x] 8.5 Manual test: Modify fields, verify "Save & Regenerate" button label
   - [x] 8.6 Manual test: Click Regenerate, verify redirect to course detail
