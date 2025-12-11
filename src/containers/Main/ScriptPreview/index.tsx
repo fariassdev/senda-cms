@@ -3,6 +3,7 @@
 import { formatDistanceToNow } from 'date-fns';
 import { AlertCircle, ArrowLeft, FileQuestion, Loader2 } from 'lucide-react';
 
+import { ScriptGenerationModal } from '@/components/ScriptGenerationModal';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardHeader } from '@/components/ui/card';
 import {
@@ -14,8 +15,8 @@ import {
   DialogTitle,
 } from '@/components/ui/dialog';
 import { Skeleton } from '@/components/ui/skeleton';
+
 import { FixedActionBar } from './FixedActionBar';
-import { RegenerateScriptModal } from './RegenerateScriptModal';
 import { ScriptContent } from './ScriptContent';
 import { ScriptEditor } from './ScriptEditor';
 import { ScriptHeader } from './ScriptHeader';
@@ -63,7 +64,6 @@ export default function ScriptPreview(props: ScriptPreviewProps) {
     handleUpdateAndRegenerate,
     isGenerating,
     isUpdating,
-    courseSlug,
   } = useConnect(props);
 
   // Loading state
@@ -183,15 +183,15 @@ export default function ScriptPreview(props: ScriptPreviewProps) {
 
       {/* Regenerate Script Modal (Task 4.1, 4.2, 4.3) */}
       {lesson && (
-        <RegenerateScriptModal
+        <ScriptGenerationModal
           open={isRegenerateModalOpen}
           onOpenChange={setIsRegenerateModalOpen}
           lesson={lesson}
-          courseSlug={courseSlug}
           onGenerate={handleConfirmRegenerate}
           onUpdateAndGenerate={handleUpdateAndRegenerate}
           isGenerating={isGenerating}
           isUpdating={isUpdating}
+          isRegeneration
         />
       )}
     </div>

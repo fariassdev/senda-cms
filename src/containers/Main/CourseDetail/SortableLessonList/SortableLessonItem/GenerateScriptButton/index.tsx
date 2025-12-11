@@ -13,7 +13,6 @@ import type { GenerateScriptButtonProps } from './types';
 
 export function GenerateScriptButton({
   lesson,
-  courseSlug,
   onGenerate,
   onUpdateAndGenerate,
   isGenerating = false,
@@ -80,7 +79,6 @@ export function GenerateScriptButton({
         open={isModalOpen}
         onOpenChange={setIsModalOpen}
         lesson={lesson}
-        courseSlug={courseSlug}
         onGenerate={onGenerate}
         onUpdateAndGenerate={onUpdateAndGenerate}
         isGenerating={isGenerating}
