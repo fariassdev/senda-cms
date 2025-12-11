@@ -76,50 +76,50 @@ So that I can quickly create content for an entire course.
 
 ## Tasks / Subtasks
 
-- [ ] **Task 1: Create useBatchScriptGeneration Hook** (AC: #5, #6, #7, #8, #10)
-  - [ ] 1.1 Create `src/hooks/useBatchScriptGeneration.ts` following hook naming convention
-  - [ ] 1.2 Implement batch mutation using `$api.useMutation('post', '/api/courses/{slug}/generate-all-scripts')`
-  - [ ] 1.3 Track batch state: `lessonStatuses: Map<number, LessonBatchStatus>`, `completedCount`, `failedCount`, `totalCount`
-  - [ ] 1.4 Implement `generateBatch(lessonIds: number[], config?: { tone: string })` to call batch endpoint
-  - [ ] 1.5 Implement `retryFailed()` to call batch endpoint with only failed lesson IDs
-  - [ ] 1.6 Store batch state in React Query cache with key `['batch-generation', courseSlug]` and `staleTime: Infinity`
-  - [ ] 1.7 Return `{ generateBatch, retryFailed, batchState, isGeneratingBatch }`
+- [x] **Task 1: Create useBatchScriptGeneration Hook** (AC: #5, #6, #7, #8, #10)
+  - [x] 1.1 Create `src/hooks/useBatchScriptGeneration.ts` following hook naming convention
+  - [x] 1.2 Implement batch mutation using `$api.useMutation('post', '/api/courses/{slug}/generate-all-scripts')`
+  - [x] 1.3 Track batch state: `lessonStatuses: Map<number, LessonBatchStatus>`, `completedCount`, `failedCount`, `totalCount`
+  - [x] 1.4 Implement `generateBatch(lessonIds: number[], config?: { tone: string })` to call batch endpoint
+  - [x] 1.5 Implement `retryFailed()` to call batch endpoint with only failed lesson IDs
+  - [x] 1.6 Store batch state in React Query cache with key `['batch-generation', courseSlug]` and `staleTime: Infinity`
+  - [x] 1.7 Return `{ generateBatch, retryFailed, batchState, isGeneratingBatch }`
 
-- [ ] **Task 2: Create BatchGenerationModal Component** (AC: #3, #4, #5, #7, #8, #9)
-  - [ ] 2.1 Create `src/containers/Main/CourseDetail/BatchGenerationModal/index.tsx`
-  - [ ] 2.2 Create `connect.ts` with selected lessons state, tone config, and view state
-  - [ ] 2.3 Create `types.ts` with `BatchGenerationModalProps` interface
-  - [ ] 2.4 Create `constants.ts` with `BATCH_MESSAGES` and `MODAL_CONFIG` (see Dev Notes)
-  - [ ] 2.5 Implement selection view: lesson checkboxes + tone selector (follow ScriptGenerationModal pattern)
-  - [ ] 2.6 Implement progress view: per-lesson status + overall progress bar with Progress component
-  - [ ] 2.7 Implement complete view: summary + "Retry Failed" button (if failures exist)
-  - [ ] 2.8 View state toggle: `'selection' | 'progress' | 'complete'`
+- [x] **Task 2: Create BatchGenerationModal Component** (AC: #3, #4, #5, #7, #8, #9)
+  - [x] 2.1 Create `src/containers/Main/CourseDetail/BatchGenerationModal/index.tsx`
+  - [x] 2.2 Create `connect.ts` with selected lessons state, tone config, and view state
+  - [x] 2.3 Create `types.ts` with `BatchGenerationModalProps` interface
+  - [x] 2.4 Create `constants.ts` with `BATCH_MESSAGES` and `MODAL_CONFIG` (see Dev Notes)
+  - [x] 2.5 Implement selection view: lesson checkboxes + tone selector (follow ScriptGenerationModal pattern)
+  - [x] 2.6 Implement progress view: per-lesson status + overall progress bar with Progress component
+  - [x] 2.7 Implement complete view: summary + "Retry Failed" button (if failures exist)
+  - [x] 2.8 View state toggle: `'selection' | 'progress' | 'complete'`
 
-- [ ] **Task 3: Create GenerateAllScriptsButton Component** (AC: #1, #2)
-  - [ ] 3.1 Create `src/containers/Main/CourseDetail/GenerateAllScriptsButton/index.tsx`
-  - [ ] 3.2 Create `connect.ts` with eligible lesson count logic
-  - [ ] 3.3 Create `types.ts` with component props
-  - [ ] 3.4 Count eligible lessons: `lessons.filter(l => l.status === 'PENDING' || l.status === 'SCRIPT_FAILED')`
-  - [ ] 3.5 Show count badge: "Generate Scripts (5)"
-  - [ ] 3.6 Disable with tooltip when no eligible lessons
-  - [ ] 3.7 Style with cyan primary color and Sparkles icon
+- [x] **Task 3: Create GenerateAllScriptsButton Component** (AC: #1, #2)
+  - [x] 3.1 Create `src/containers/Main/CourseDetail/GenerateAllScriptsButton/index.tsx`
+  - [x] 3.2 Create `connect.ts` with eligible lesson count logic
+  - [x] 3.3 Create `types.ts` with component props
+  - [x] 3.4 Count eligible lessons: `lessons.filter(l => l.status === 'PENDING' || l.status === 'SCRIPT_FAILED')`
+  - [x] 3.5 Show count badge: "Generate Scripts (5)"
+  - [x] 3.6 Disable with tooltip when no eligible lessons
+  - [x] 3.7 Style with cyan primary color and Sparkles icon
 
-- [ ] **Task 4: Integrate into CourseDetail Page** (AC: #1, #6, #10)
-  - [ ] 4.1 Import BatchGenerationModal and GenerateAllScriptsButton in CourseDetail
-  - [ ] 4.2 Add modal state management in CourseDetail connect.ts
-  - [ ] 4.3 Position button in course header area (near lesson count or actions)
-  - [ ] 4.4 Render BatchGenerationModal with proper props
-  - [ ] 4.5 Add "View Progress" button in header area (next to GenerateAllScriptsButton) - visible only during active batch
+- [x] **Task 4: Integrate into CourseDetail Page** (AC: #1, #6, #10)
+  - [x] 4.1 Import BatchGenerationModal and GenerateAllScriptsButton in CourseDetail
+  - [x] 4.2 Add modal state management in CourseDetail connect.ts
+  - [x] 4.3 Position button in course header area (near lesson count or actions)
+  - [x] 4.4 Render BatchGenerationModal with proper props
+  - [x] 4.5 Add "View Progress" button in header area (next to GenerateAllScriptsButton) - visible only during active batch
 
-- [ ] **Task 5: Progress Persistence and Background State** (AC: #10)
-  - [ ] 5.1 Store batch generation state in React Query with dedicated key
-  - [ ] 5.2 Use `staleTime: Infinity` to persist batch state across navigation
-  - [ ] 5.3 Leverage existing polling (Story 3.6) to sync individual lesson statuses
-  - [ ] 5.4 Clear batch state when all generations complete successfully
+- [x] **Task 5: Progress Persistence and Background State** (AC: #10)
+  - [x] 5.1 Store batch generation state in React Query with dedicated key
+  - [x] 5.2 Use `staleTime: Infinity` to persist batch state across navigation
+  - [x] 5.3 Leverage existing polling (Story 3.6) to sync individual lesson statuses
+  - [x] 5.4 Clear batch state when all generations complete successfully
 
 - [ ] **Task 6: Testing and Validation** (AC: #1-10)
-  - [ ] 6.1 Run `bun typecheck` - verify no type errors
-  - [ ] 6.2 Run `bun lint:fix` - verify no lint errors
+  - [x] 6.1 Run `bun typecheck` - verify no type errors ✅ PASSED
+  - [x] 6.2 Run `bun lint:fix` - verify no lint errors ✅ PASSED (0 errors, 2 warnings)
   - [ ] 6.3 Manual test: Click "Generate All Scripts", verify modal with lesson list
   - [ ] 6.4 Manual test: Toggle lesson checkboxes, verify count updates
   - [ ] 6.5 Manual test: Start generation, verify progress view with individual statuses

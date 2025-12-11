@@ -4,10 +4,13 @@ import { useEffect, useMemo, useRef, useState } from 'react';
 import { useForm } from 'react-hook-form';
 import { toast } from 'sonner';
 
+import { useBatchScriptGeneration } from '@/hooks/useBatchScriptGeneration';
 import { useLessonReorder } from '@/hooks/useLessonReorder';
 import { $api } from '@/lib/api';
 import type { LessonStatus, Lesson } from '@/types/models';
 
+import { ELIGIBLE_STATUSES } from './BatchGenerationModal/constants';
+import type { BatchModalView } from './BatchGenerationModal/types';
 import {
   courseUpdateSchema,
   GENERATING_STATUSES,
@@ -24,6 +27,11 @@ export default function useConnect(courseSlug: string) {
   const [lessonToDelete, setLessonToDelete] = useState<Lesson | null>(null);
   const [isUnsavedChangesModalOpen, setIsUnsavedChangesModalOpen] =
     useState(false);
+  // Batch generation modal state
+  const [isBatchModalOpen, setIsBatchModalOpen] = useState(false);
+  const [batchModalInitialView, setBatchModalInitialView] =
+    useState<BatchModalView>('selection');
+
   const [pendingNavigationUrl, setPendingNavigationUrl] = useState<
     string | null
   >(null);
@@ -87,6 +95,10 @@ export default function useConnect(courseSlug: string) {
   });
 
   const lessons: Lesson[] | undefined = lessonsResponse?.lessons;
+
+  // Batch script generation hook
+  const { generateBatch, retryFailed, batchState, isGeneratingBatch } =
+    useBatchScriptGeneration(courseSlug, lessons);
 
   // Detect status changes and show toast notifications
   useEffect(() => {
@@ -353,5 +365,20 @@ export default function useConnect(courseSlug: string) {
     handleSaveAndNavigate,
     handleDiscardAndNavigate,
     handleCancelNavigation,
+    // Batch generation
+    isBatchModalOpen,
+    setIsBatchModalOpen,
+    batchModalInitialView,
+    setBatchModalInitialView,
+    generateBatch,
+    retryFailed,
+    batchState,
+    isGeneratingBatch,
+    eligibleLessonCount:
+      lessons?.filter((l) =>
+        ELIGIBLE_STATUSES.includes(
+          l.status as (typeof ELIGIBLE_STATUSES)[number],
+        ),
+      ).length ?? 0,
   };
 }

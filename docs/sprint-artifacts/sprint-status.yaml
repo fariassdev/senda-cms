@@ -65,7 +65,7 @@ development_status:
   4-3-view-and-preview-generated-script: done
   4-4-edit-script-content: done
   4-5-regenerate-script: done
-  4-6-batch-script-generation: ready-for-dev
+  4-6-batch-script-generation: in-progress
   epic-4-retrospective: optional
 
   # Epic 5: Audio Generation & Playback

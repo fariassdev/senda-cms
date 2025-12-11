@@ -45,6 +45,8 @@ import { Input } from '@/components/ui/input';
 import { Skeleton } from '@/components/ui/skeleton';
 import { Switch } from '@/components/ui/switch';
 import { Textarea } from '@/components/ui/textarea';
+import { BatchGenerationModal } from './BatchGenerationModal';
+import { GenerateAllScriptsButton } from './GenerateAllScriptsButton';
 import LessonCreate from './LessonCreate';
 import LessonDelete from './LessonDelete';
 import LessonEdit from './LessonEdit';
@@ -92,6 +94,17 @@ export default function CourseDetail({ courseSlug }: CourseDetailProps) {
     handleSaveAndNavigate,
     handleDiscardAndNavigate,
     handleCancelNavigation,
+    // Batch generation
+    isBatchModalOpen,
+    setIsBatchModalOpen,
+    batchModalInitialView,
+    setBatchModalInitialView,
+    generateBatch,
+    retryFailed,
+    batchState,
+    isGeneratingBatch,
+    eligibleLessonCount,
+    lessons,
   } = useConnect(courseSlug);
   if (isLoading) {
     return <CourseDetailSkeleton />;
@@ -277,6 +290,19 @@ export default function CourseDetail({ courseSlug }: CourseDetailProps) {
                         {isReordering ? 'Saving...' : 'Save Changes'}
                       </Button>
                     )}
+                    <GenerateAllScriptsButton
+                      eligibleCount={eligibleLessonCount}
+                      isGenerating={isGeneratingBatch}
+                      batchState={batchState}
+                      onClick={() => {
+                        setBatchModalInitialView('selection');
+                        setIsBatchModalOpen(true);
+                      }}
+                      onViewProgress={() => {
+                        setBatchModalInitialView('progress');
+                        setIsBatchModalOpen(true);
+                      }}
+                    />
                     <Button
                       type="button"
                       onClick={handleOpenLessonCreate}
@@ -407,6 +433,20 @@ export default function CourseDetail({ courseSlug }: CourseDetailProps) {
           open={isLessonDeleteOpen}
           onOpenChange={handleCloseLessonDelete}
           onSuccess={handleLessonDeleteSuccess}
+        />
+      )}
+
+      {/* Batch Generation Modal */}
+      {lessons && (
+        <BatchGenerationModal
+          open={isBatchModalOpen}
+          onOpenChange={setIsBatchModalOpen}
+          lessons={lessons}
+          onGenerate={generateBatch}
+          onRetryFailed={retryFailed}
+          batchState={batchState}
+          isGenerating={isGeneratingBatch}
+          initialView={batchModalInitialView}
         />
       )}
 
