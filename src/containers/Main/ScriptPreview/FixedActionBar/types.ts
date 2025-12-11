@@ -4,7 +4,7 @@ export interface FixedActionBarProps {
   isEditing: boolean;
   onEdit?: () => void;
   onGenerateAudio?: () => void;
-  onRegenerate?: () => void;
+  onRegenerate?: (e: React.MouseEvent) => void;
   canGenerateAudio?: boolean;
   hasUnsavedChanges?: boolean;
   saveStatus?: SaveState;

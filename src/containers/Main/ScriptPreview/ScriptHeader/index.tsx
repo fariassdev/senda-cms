@@ -1,9 +1,14 @@
 'use client';
 
-import { ArrowLeft, Pause, Target, Type } from 'lucide-react';
+import { ArrowLeft, History, Pause, Target, Type } from 'lucide-react';
 
 import { StatusBadge } from '@/components/StatusBadge';
 import { Button } from '@/components/ui/button';
+import {
+  Tooltip,
+  TooltipContent,
+  TooltipTrigger,
+} from '@/components/ui/tooltip';
 
 import useConnect from './connect';
 import { PAUSE_BUTTONS } from './constants';
@@ -40,6 +45,23 @@ export function ScriptHeader({
                 Updated {lastUpdated}
               </span>
             )}
+            {/* Version History Placeholder (Task 7) */}
+            <Tooltip>
+              <TooltipTrigger asChild>
+                <Button
+                  variant="ghost"
+                  size="sm"
+                  disabled
+                  className="text-muted-foreground"
+                >
+                  <History className="h-4 w-4" />
+                  <span className="hidden sm:inline">History</span>
+                </Button>
+              </TooltipTrigger>
+              <TooltipContent>
+                <p>Version history coming soon</p>
+              </TooltipContent>
+            </Tooltip>
           </div>
         </div>
 

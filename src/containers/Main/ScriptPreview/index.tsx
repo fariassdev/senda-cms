@@ -15,6 +15,7 @@ import {
 } from '@/components/ui/dialog';
 import { Skeleton } from '@/components/ui/skeleton';
 import { FixedActionBar } from './FixedActionBar';
+import { RegenerateScriptModal } from './RegenerateScriptModal';
 import { ScriptContent } from './ScriptContent';
 import { ScriptEditor } from './ScriptEditor';
 import { ScriptHeader } from './ScriptHeader';
@@ -37,7 +38,7 @@ export default function ScriptPreview(props: ScriptPreviewProps) {
     canGenerateAudio,
     handleBackToCourse,
     handleEditScript,
-    handleRegenerateScript,
+    handleRegenerateClick,
     handleGenerateAudio,
     handleRetry,
     // Edit mode
@@ -55,6 +56,14 @@ export default function ScriptPreview(props: ScriptPreviewProps) {
     setIsUnsavedModalOpen,
     textareaRef,
     handleInsertPause,
+    // Regeneration (Task 4)
+    isRegenerateModalOpen,
+    setIsRegenerateModalOpen,
+    handleConfirmRegenerate,
+    handleUpdateAndRegenerate,
+    isGenerating,
+    isUpdating,
+    courseSlug,
   } = useConnect(props);
 
   // Loading state
@@ -164,13 +173,27 @@ export default function ScriptPreview(props: ScriptPreviewProps) {
         isEditing={isEditing}
         onEdit={handleEditScript}
         onGenerateAudio={handleGenerateAudio}
-        onRegenerate={handleRegenerateScript}
+        onRegenerate={handleRegenerateClick}
         canGenerateAudio={canGenerateAudio}
         hasUnsavedChanges={hasUnsavedChanges}
         saveStatus={saveStatus}
         onSave={handleSaveScript}
         onCancelEdit={handleCancelEdit}
       />
+
+      {/* Regenerate Script Modal (Task 4.1, 4.2, 4.3) */}
+      {lesson && (
+        <RegenerateScriptModal
+          open={isRegenerateModalOpen}
+          onOpenChange={setIsRegenerateModalOpen}
+          lesson={lesson}
+          courseSlug={courseSlug}
+          onGenerate={handleConfirmRegenerate}
+          onUpdateAndGenerate={handleUpdateAndRegenerate}
+          isGenerating={isGenerating}
+          isUpdating={isUpdating}
+        />
+      )}
     </div>
   );
 }

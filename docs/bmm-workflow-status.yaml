@@ -96,7 +96,7 @@ workflow_status:
 
   - workflow: "create-epics-and-stories"
     phase: 2
-    status: "required"
+    status: "docs/epics.md"
     required: true
     agent: "pm"
     command: "*create-epics-and-stories"
@@ -120,7 +120,7 @@ workflow_status:
 
   - workflow: "implementation-readiness"
     phase: 2
-    status: "required"
+    status: "docs/implementation-readiness-report-2025-12-11.md"
     required: true
     agent: "architect"
     command: "*implementation-readiness"
