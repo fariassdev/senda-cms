@@ -22,17 +22,10 @@ import {
 } from '@/components/ui/dialog';
 import { Label } from '@/components/ui/label';
 import { Progress } from '@/components/ui/progress';
-import {
-  Select,
-  SelectContent,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
-} from '@/components/ui/select';
 import type { LessonBatchStatus } from '@/hooks/useBatchScriptGeneration';
 
 import useConnect from './connect';
-import { BATCH_MESSAGES, MODAL_CONFIG, TONE_OPTIONS } from './constants';
+import { BATCH_MESSAGES, MODAL_CONFIG } from './constants';
 import type { BatchGenerationModalProps } from './types';
 
 /**
@@ -108,8 +101,6 @@ export function BatchGenerationModal({
     selectedCount,
     eligibleCount,
     getSelectedLessonIds,
-    selectedTone,
-    setSelectedTone,
     eligibleLessons,
     allLessonsWithStatus,
     progressStats,
@@ -134,7 +125,7 @@ export function BatchGenerationModal({
 
   const handleGenerate = () => {
     const lessonIds = getSelectedLessonIds();
-    onGenerate(lessonIds, { tone: selectedTone });
+    onGenerate(lessonIds);
     setView('progress');
   };
 
@@ -224,23 +215,6 @@ export function BatchGenerationModal({
             </p>
           )}
         </div>
-      </div>
-
-      {/* Tone selector */}
-      <div className="space-y-2">
-        <Label htmlFor="tone-select">Tone (applied to all)</Label>
-        <Select value={selectedTone} onValueChange={setSelectedTone}>
-          <SelectTrigger id="tone-select" className="w-full">
-            <SelectValue placeholder="Select tone" />
-          </SelectTrigger>
-          <SelectContent>
-            {TONE_OPTIONS.map((option) => (
-              <SelectItem key={option.value} value={option.value}>
-                {option.label}
-              </SelectItem>
-            ))}
-          </SelectContent>
-        </Select>
       </div>
 
       <DialogFooter className="gap-3 sm:gap-2">

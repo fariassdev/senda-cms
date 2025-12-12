@@ -25,7 +25,7 @@ export const MODAL_CONFIG = {
   title: (count: number) => `Generate Scripts for ${count} Lessons`,
   titleProgress: 'Generating Scripts',
   titleComplete: 'Generation Complete',
-  description: 'Select lessons and configure generation options.',
+  description: 'Select which lessons to generate scripts for.',
   submitLabel: (count: number) => `Generate ${count} Scripts`,
   cancelLabel: 'Cancel',
   closeLabel: 'Close',
@@ -63,13 +63,3 @@ export const STATUS_CONFIG = {
     label: 'Failed',
   },
 } as const;
-
-/**
- * Default tone options for script generation
- */
-export const TONE_OPTIONS = [
-  { value: 'calming', label: 'Calming' },
-  { value: 'energizing', label: 'Energizing' },
-  { value: 'neutral', label: 'Neutral' },
-  { value: 'visualization', label: 'Visualization' },
-] as const;

@@ -25,9 +25,9 @@ So that I can quickly create content for an entire course.
    **Then** I see a confirmation modal with:
    - Title: "Generate Scripts for X Lessons"
    - List of lessons to be processed (checkboxes, all selected by default)
-   - Shared configuration options (tone selector, apply same settings to all)
    - Warning about processing time: "⏱️ This may take several minutes depending on the number of lessons"
    - "Generate" button and "Cancel" button
+   - Note: Tone configuration is defined per lesson, not in batch modal
 
 4. **Given** I see the batch generation modal
    **When** I toggle individual lesson checkboxes
@@ -78,19 +78,19 @@ So that I can quickly create content for an entire course.
 
 - [x] **Task 1: Create useBatchScriptGeneration Hook** (AC: #5, #6, #7, #8, #10)
   - [x] 1.1 Create `src/hooks/useBatchScriptGeneration.ts` following hook naming convention
-  - [x] 1.2 Implement batch mutation using `$api.useMutation('post', '/api/courses/{slug}/generate-all-scripts')`
+  - [x] 1.2 Implement batch mutation using `$api.useMutation('post', '/api/courses/{slug}/generate-batch-scripts')`
   - [x] 1.3 Track batch state: `lessonStatuses: Map<number, LessonBatchStatus>`, `completedCount`, `failedCount`, `totalCount`
-  - [x] 1.4 Implement `generateBatch(lessonIds: number[], config?: { tone: string })` to call batch endpoint
+  - [x] 1.4 Implement `generateBatch(lessonIds: number[])` to call batch endpoint (tone is defined per lesson)
   - [x] 1.5 Implement `retryFailed()` to call batch endpoint with only failed lesson IDs
   - [x] 1.6 Store batch state in React Query cache with key `['batch-generation', courseSlug]` and `staleTime: Infinity`
   - [x] 1.7 Return `{ generateBatch, retryFailed, batchState, isGeneratingBatch }`
 
 - [x] **Task 2: Create BatchGenerationModal Component** (AC: #3, #4, #5, #7, #8, #9)
   - [x] 2.1 Create `src/containers/Main/CourseDetail/BatchGenerationModal/index.tsx`
-  - [x] 2.2 Create `connect.ts` with selected lessons state, tone config, and view state
+  - [x] 2.2 Create `connect.ts` with selected lessons state and view state (tone removed - defined per lesson)
   - [x] 2.3 Create `types.ts` with `BatchGenerationModalProps` interface
-  - [x] 2.4 Create `constants.ts` with `BATCH_MESSAGES` and `MODAL_CONFIG` (see Dev Notes)
-  - [x] 2.5 Implement selection view: lesson checkboxes + tone selector (follow ScriptGenerationModal pattern)
+  - [x] 2.4 Create `constants.ts` with `BATCH_MESSAGES` and `MODAL_CONFIG`
+  - [x] 2.5 Implement selection view: lesson checkboxes (tone selector removed)
   - [x] 2.6 Implement progress view: per-lesson status + overall progress bar with Progress component
   - [x] 2.7 Implement complete view: summary + "Retry Failed" button (if failures exist)
   - [x] 2.8 View state toggle: `'selection' | 'progress' | 'complete'`

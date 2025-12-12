@@ -24,9 +24,6 @@ export default function useConnect(
   // Selected lesson IDs for generation
   const [selectedIds, setSelectedIds] = useState<Set<number>>(new Set());
 
-  // Selected tone for generation
-  const [selectedTone, setSelectedTone] = useState<string>('calming');
-
   // Get eligible lessons (PENDING or SCRIPT_FAILED)
   const eligibleLessons = useMemo<LessonSelectionItem[]>(() => {
     return lessons
@@ -170,10 +167,6 @@ export default function useConnect(
     selectedCount,
     eligibleCount,
     getSelectedLessonIds,
-
-    // Tone selection
-    selectedTone,
-    setSelectedTone,
 
     // Lesson data
     eligibleLessons,

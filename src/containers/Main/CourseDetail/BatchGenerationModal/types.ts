@@ -15,7 +15,7 @@ export interface BatchGenerationModalProps {
   /** List of all lessons in the course */
   lessons: Lesson[];
   /** Callback to start batch generation with selected lesson IDs */
-  onGenerate: (lessonIds: number[], config?: { tone: string }) => void;
+  onGenerate: (lessonIds: number[]) => void;
   /** Callback to retry failed lessons */
   onRetryFailed: () => void;
   /** Current batch state (undefined if no active batch) */

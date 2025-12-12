@@ -34,13 +34,6 @@ interface LessonsQueryData {
 }
 
 /**
- * Batch generation configuration
- */
-export interface BatchGenerationConfig {
-  tone?: string;
-}
-
-/**
  * Query key for batch generation state
  */
 const getBatchQueryKey = (courseSlug: string) =>
@@ -155,7 +148,7 @@ export function useBatchScriptGeneration(
    * Start batch generation for selected lessons
    */
   const generateBatch = useCallback(
-    async (lessonIds: number[], _config?: BatchGenerationConfig) => {
+    async (lessonIds: number[]) => {
       if (lessonIds.length === 0) return;
 
       // Initialize batch state with all lessons as 'generating'
