@@ -229,7 +229,6 @@ export default function useConnect({
       },
       body: {
         lesson: {
-          // @ts-expect-error - API type definition shows script as Record<string, never> but it actually accepts ScriptPart[]
           script: parsedScript,
         },
       },

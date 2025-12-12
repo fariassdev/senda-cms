@@ -348,7 +348,11 @@ export interface paths {
             path?: never;
             cookie?: never;
         };
-        get?: never;
+        /**
+         * Get Lesson
+         * @description Get a specific lesson for a course.
+         */
+        get: operations["get_lesson_api_courses__slug__lessons__id__get"];
         /**
          * Update Lesson
          * @description Update a lesson for a course.
@@ -405,7 +409,7 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
-    "/api/courses/{slug}/generate-all-scripts": {
+    "/api/courses/{slug}/generate-batch-scripts": {
         parameters: {
             query?: never;
             header?: never;
@@ -416,9 +420,15 @@ export interface paths {
         put?: never;
         /**
          * Generate Course Scripts
-         * @description Generate scripts for all ungenerated lessons in a course.
+         * @description Generate scripts for specific lessons in a course.
+         *
+         *     - If lesson_ids is not provided: generates for all eligible lessons
+         *     - If lesson_ids is []: generates nothing
+         *     - If lesson_ids is [1, 2, 3]: generates only for those specific lessons
+         *
+         *     Returns successful generations and any errors that occurred.
          */
-        post: operations["generate_course_scripts_api_courses__slug__generate_all_scripts_post"];
+        post: operations["generate_course_scripts_api_courses__slug__generate_batch_scripts_post"];
         delete?: never;
         options?: never;
         head?: never;
@@ -465,7 +475,7 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
-    "/api/courses/{slug}/generate-all-audios": {
+    "/api/courses/{slug}/generate-batch-audios": {
         parameters: {
             query?: never;
             header?: never;
@@ -476,9 +486,15 @@ export interface paths {
         put?: never;
         /**
          * Generate Course Audios
-         * @description Generate audio for all script-completed lessons in a course.
+         * @description Generate audio for specific lessons in a course.
+         *
+         *     - If lesson_ids is not provided: generates for all eligible lessons
+         *     - If lesson_ids is []: generates nothing
+         *     - If lesson_ids is [1, 2, 3]: generates only for those specific lessons
+         *
+         *     Returns successful generations and any errors that occurred.
          */
-        post: operations["generate_course_audios_api_courses__slug__generate_all_audios_post"];
+        post: operations["generate_course_audios_api_courses__slug__generate_batch_audios_post"];
         delete?: never;
         options?: never;
         head?: never;
@@ -634,10 +650,33 @@ export interface components {
         AuthenticatedUserResponse: {
             user: components["schemas"]["AuthenticatedUserData"];
         };
+        /** BatchAudioGenerationRequest */
+        BatchAudioGenerationRequest: {
+            /**
+             * Lesson Ids
+             * @description Optional list of lesson IDs to generate audio for. If not provided, generates for all eligible lessons. If empty list, generates nothing.
+             */
+            lesson_ids?: number[] | null;
+        };
+        /** BatchScriptGenerationRequest */
+        BatchScriptGenerationRequest: {
+            /**
+             * Lesson Ids
+             * @description Optional list of lesson IDs to generate scripts for. If not provided, generates for all eligible lessons. If empty list, generates nothing.
+             */
+            lesson_ids?: number[] | null;
+        };
         /**
          * CourseAudiosGenerationResponse
          * @description Response for bulk course audio generation.
          * @example {
+         *       "errors": [
+         *         {
+         *           "error_message": "TTS service unavailable",
+         *           "error_type": "AudioProviderException",
+         *           "lesson_id": 2
+         *         }
+         *       ],
          *       "generated_audios": [
          *         {
          *           "audio_url": "https://senda-ai.s3.amazonaws.com/audio/1_welcome_abc123.mp3",
@@ -658,7 +697,7 @@ export interface components {
             generated_audios: components["schemas"]["AudioGenerationResponse"][];
             /**
              * Total Lessons Processed
-             * @description Total number of lessons processed
+             * @description Total number of lessons that were requested for processing
              */
             total_lessons_processed: number;
             /**
@@ -666,6 +705,11 @@ export interface components {
              * @description Number of successful audio generations
              */
             successful_generations: number;
+            /**
+             * Errors
+             * @description List of errors for failed generations
+             */
+            errors?: components["schemas"]["GenerationErrorResponse"][];
         };
         /** CourseData */
         CourseData: {
@@ -776,6 +820,13 @@ export interface components {
          * CourseScriptsGenerationResponse
          * @description Response for bulk course script generation.
          * @example {
+         *       "errors": [
+         *         {
+         *           "error_message": "AI provider timeout",
+         *           "error_type": "ScriptGenerationException",
+         *           "lesson_id": 2
+         *         }
+         *       ],
          *       "generated_scripts": [
          *         {
          *           "generation_time_seconds": 2.45,
@@ -800,7 +851,7 @@ export interface components {
             generated_scripts: components["schemas"]["ScriptGenerationResponse"][];
             /**
              * Total Lessons Processed
-             * @description Total number of lessons processed
+             * @description Total number of lessons that were requested for processing
              */
             total_lessons_processed: number;
             /**
@@ -808,6 +859,11 @@ export interface components {
              * @description Number of successful script generations
              */
             successful_generations: number;
+            /**
+             * Errors
+             * @description List of errors for failed generations
+             */
+            errors?: components["schemas"]["GenerationErrorResponse"][];
         };
         /** CoursesFeedResponse */
         CoursesFeedResponse: {
@@ -866,6 +922,27 @@ export interface components {
          * @enum {string}
          */
         DifficultyLevel: "BEGINNER" | "INTERMEDIATE" | "ADVANCED";
+        /**
+         * GenerationErrorResponse
+         * @description Error details for a failed generation attempt.
+         */
+        GenerationErrorResponse: {
+            /**
+             * Lesson Id
+             * @description ID of the lesson that failed
+             */
+            lesson_id: number;
+            /**
+             * Error Type
+             * @description Type/class of the error
+             */
+            error_type: string;
+            /**
+             * Error Message
+             * @description Human-readable error message
+             */
+            error_message: string;
+        };
         /** HTTPValidationError */
         HTTPValidationError: {
             /** Detail */
@@ -1072,6 +1149,14 @@ export interface components {
              */
             status: string;
         };
+        /** ScriptPartDTO */
+        ScriptPartDTO: {
+            type: components["schemas"]["ScriptPartType"];
+            /** Content */
+            content?: string | null;
+            /** Duration */
+            duration?: number | null;
+        };
         /**
          * ScriptPartResponse
          * @description Individual script part in API response.
@@ -1141,7 +1226,7 @@ export interface components {
             /** Status */
             status?: string | null;
             /** Script */
-            script?: Record<string, never> | null;
+            script?: components["schemas"]["ScriptPartDTO"][] | null;
             /** Audio Url */
             audio_url?: string | null;
         };
@@ -1965,6 +2050,38 @@ export interface operations {
             };
         };
     };
+    get_lesson_api_courses__slug__lessons__id__get: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                slug: string;
+                id: number;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["LessonResponse"];
+                };
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
     update_lesson_api_courses__slug__lessons__id__put: {
         parameters: {
             query?: never;
@@ -2098,7 +2215,7 @@ export interface operations {
             };
         };
     };
-    generate_course_scripts_api_courses__slug__generate_all_scripts_post: {
+    generate_course_scripts_api_courses__slug__generate_batch_scripts_post: {
         parameters: {
             query?: never;
             header?: never;
@@ -2107,7 +2224,11 @@ export interface operations {
             };
             cookie?: never;
         };
-        requestBody?: never;
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["BatchScriptGenerationRequest"];
+            };
+        };
         responses: {
             /** @description Successful Response */
             200: {
@@ -2193,7 +2314,7 @@ export interface operations {
             };
         };
     };
-    generate_course_audios_api_courses__slug__generate_all_audios_post: {
+    generate_course_audios_api_courses__slug__generate_batch_audios_post: {
         parameters: {
             query?: never;
             header?: never;
@@ -2202,7 +2323,11 @@ export interface operations {
             };
             cookie?: never;
         };
-        requestBody?: never;
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["BatchAudioGenerationRequest"];
+            };
+        };
         responses: {
             /** @description Successful Response */
             200: {
