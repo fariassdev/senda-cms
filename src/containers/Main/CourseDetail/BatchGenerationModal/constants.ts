@@ -63,3 +63,18 @@ export const STATUS_CONFIG = {
     label: 'Failed',
   },
 } as const;
+
+/**
+ * Progress bar configuration for SimulatedProgressBar
+ */
+export const PROGRESS_CONFIG = {
+  /** Time in ms to simulate per lesson (20 seconds) */
+  SIMULATED_TIME_PER_LESSON_MS: 20000,
+  /** Progress update interval in ms */
+  UPDATE_INTERVAL_MS: 1000,
+  /** Labels for the progress bar */
+  LABELS: {
+    progress: 'Progress',
+    ariaLabel: 'Generation progress',
+  },
+} as const;

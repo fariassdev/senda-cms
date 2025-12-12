@@ -348,18 +348,28 @@ export function BatchGenerationModal({
       {progressStats.failed > 0 && (
         <div className="space-y-2">
           <p className="text-sm text-muted-foreground">Failed lessons:</p>
-          <div className="max-h-[200px] overflow-y-auto rounded-md border border-red-500/30 bg-red-500/5 p-2 space-y-1">
+          <div className="max-h-[200px] overflow-y-auto rounded-md border border-red-500/30 bg-red-500/5 p-2 space-y-2">
             {allLessonsWithStatus
               .filter((l) => l.batchStatus === 'failed')
               .map((lesson) => (
                 <div
                   key={lesson.id}
-                  className="flex items-center gap-2 p-1 text-sm text-red-500"
+                  className="flex flex-col gap-1 p-2 rounded bg-red-500/5"
                 >
-                  <XCircle className="h-4 w-4" aria-hidden="true" />
-                  <span>
-                    #{lesson.lessonNumber} {lesson.title}
-                  </span>
+                  <div className="flex items-center gap-2 text-sm text-red-500">
+                    <XCircle
+                      className="h-4 w-4 flex-shrink-0"
+                      aria-hidden="true"
+                    />
+                    <span className="font-medium">
+                      #{lesson.lessonNumber} {lesson.title}
+                    </span>
+                  </div>
+                  {lesson.error && (
+                    <p className="text-xs text-red-400 ml-6">
+                      {lesson.error.errorMessage}
+                    </p>
+                  )}
                 </div>
               ))}
           </div>

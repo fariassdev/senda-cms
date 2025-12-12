@@ -503,19 +503,40 @@ queryClient.removeQueries({ queryKey: BATCH_QUERY_KEY });
 
 ### Agent Model Used
 
-{{agent_model_name_version}}
+Gemini 2.5 Pro (Code Review Session)
 
 ### Debug Log References
 
 ### Completion Notes List
 
+- **Code Review Fix (2025-12-12):** Refactored `useBatchScriptGeneration.ts` to use `useQuery` with `staleTime: Infinity` and `gcTime: Infinity` for proper state persistence across navigation. Previous `useState` + manual cache sync pattern risked losing state after garbage collection.
+- **Code Review Fix (2025-12-12):** Moved hardcoded strings from `SimulatedProgressBar.tsx` to `constants.ts` (`PROGRESS_CONFIG`) for consistency and i18n readiness.
+
 ### File List
+
+**Created:**
+
+- `src/hooks/useBatchScriptGeneration.ts` - Batch generation state management hook
+- `src/containers/Main/CourseDetail/BatchGenerationModal/index.tsx` - Multi-view modal component
+- `src/containers/Main/CourseDetail/BatchGenerationModal/connect.ts` - Modal logic and state
+- `src/containers/Main/CourseDetail/BatchGenerationModal/types.ts` - TypeScript interfaces
+- `src/containers/Main/CourseDetail/BatchGenerationModal/constants.ts` - Messages, config, status icons
+- `src/containers/Main/CourseDetail/BatchGenerationModal/SimulatedProgressBar.tsx` - Isolated progress component
+- `src/containers/Main/CourseDetail/GenerateAllScriptsButton/index.tsx` - Trigger button with badge
+- `src/containers/Main/CourseDetail/GenerateAllScriptsButton/connect.ts` - Eligible lesson count logic
+- `src/containers/Main/CourseDetail/GenerateAllScriptsButton/types.ts` - Button props interface
+
+**Modified:**
+
+- `src/containers/Main/CourseDetail/index.tsx` - Integrated batch modal and button
+- `src/containers/Main/CourseDetail/connect.ts` - Added batch generation state and handlers
 
 ---
 
 ## Change Log
 
-| Date       | Author         | Change                                                                                                                                                                                                                                                  |
-| ---------- | -------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| 2025-12-11 | SM Agent (Bob) | Ultimate context engine analysis - story created with comprehensive developer guide                                                                                                                                                                     |
-| 2025-12-12 | SM Agent (Bob) | Validation review - applied 10 improvements: fixed AC#1 eligible status, clarified batch endpoint (slug not id), consolidated task structure, added Constants Reference, added State Persistence Pattern, condensed verbose examples for LLM efficiency |
+| Date       | Author             | Change                                                                                                                                                                                                                                                  |
+| ---------- | ------------------ | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| 2025-12-11 | SM Agent (Bob)     | Ultimate context engine analysis - story created with comprehensive developer guide                                                                                                                                                                     |
+| 2025-12-12 | SM Agent (Bob)     | Validation review - applied 10 improvements: fixed AC#1 eligible status, clarified batch endpoint (slug not id), consolidated task structure, added Constants Reference, added State Persistence Pattern, condensed verbose examples for LLM efficiency |
+| 2025-12-12 | Dev Agent (Amelia) | Code review fixes: Refactored hook to use useQuery with staleTime/gcTime:Infinity for state persistence (CRITICAL). Moved SimulatedProgressBar strings to constants (LOW). Updated File List documentation.                                             |

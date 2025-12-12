@@ -1,8 +1,9 @@
-import { useQueryClient } from '@tanstack/react-query';
-import { useCallback, useEffect, useState } from 'react';
+import { useQuery, useQueryClient } from '@tanstack/react-query';
+import { useCallback } from 'react';
 import { toast } from 'sonner';
 
 import { $api } from '@/lib/api';
+import type { components } from '@/types/api';
 import type { Lesson } from '@/types/models';
 
 /**
@@ -15,10 +16,19 @@ export type LessonBatchStatus =
   | 'failed';
 
 /**
+ * Error info for a failed lesson
+ */
+export interface LessonError {
+  errorType: string;
+  errorMessage: string;
+}
+
+/**
  * State structure for batch generation tracking
  */
 export interface BatchState {
   lessonStatuses: Record<number, LessonBatchStatus>;
+  lessonErrors: Record<number, LessonError>;
   totalCount: number;
   completedCount: number;
   failedCount: number;
@@ -34,6 +44,12 @@ interface LessonsQueryData {
 }
 
 /**
+ * API Response type for batch script generation
+ */
+type BatchScriptResponse =
+  components['schemas']['CourseScriptsGenerationResponse'];
+
+/**
  * Query key for batch generation state
  */
 const getBatchQueryKey = (courseSlug: string) =>
@@ -44,6 +60,7 @@ const getBatchQueryKey = (courseSlug: string) =>
  *
  * Manages batch generation state and calls the batch endpoint.
  * Progress simulation is handled by the modal component for performance.
+ * Uses useQuery with staleTime: Infinity for state persistence across navigation.
  *
  * @param courseSlug - The course slug to generate scripts for
  * @param lessons - Current lessons data for status synchronization
@@ -55,10 +72,17 @@ export function useBatchScriptGeneration(
   const queryClient = useQueryClient();
   const BATCH_QUERY_KEY = getBatchQueryKey(courseSlug);
 
-  // State for reactive updates
-  const [batchState, setBatchState] = useState<BatchState | undefined>(
-    undefined,
-  );
+  // Use useQuery with staleTime: Infinity for persistent batch state
+  // This ensures state survives navigation and won't be garbage collected
+  // We use enabled: false because we manage state via setQueryData, not fetching
+  const { data: batchState } = useQuery<BatchState | null>({
+    queryKey: BATCH_QUERY_KEY,
+    queryFn: () => null, // Never actually called due to enabled: false
+    staleTime: Infinity,
+    gcTime: Infinity,
+    enabled: false, // We only use this for cache storage, not fetching
+    initialData: null,
+  });
 
   // Batch mutation using the batch endpoint
   const batchMutation = $api.useMutation(
@@ -66,18 +90,9 @@ export function useBatchScriptGeneration(
     '/api/courses/{slug}/generate-batch-scripts',
   );
 
-  // Sync state from cache on mount
-  useEffect(() => {
-    const cachedState = queryClient.getQueryData<BatchState>(BATCH_QUERY_KEY);
-    if (cachedState) {
-      setBatchState(cachedState);
-    }
-  }, [queryClient, BATCH_QUERY_KEY]);
-
-  // Update both local state and cache
+  // Update batch state in React Query cache
   const updateBatchState = useCallback(
     (newState: BatchState | undefined) => {
-      setBatchState(newState);
       if (newState) {
         queryClient.setQueryData(BATCH_QUERY_KEY, newState);
       } else {
@@ -88,11 +103,61 @@ export function useBatchScriptGeneration(
   );
 
   /**
+   * Process batch response and update state with individual lesson results
+   */
+  const processBatchResponse = useCallback(
+    (
+      response: BatchScriptResponse,
+      lessonIds: number[],
+      startTime: number,
+    ): BatchState => {
+      const lessonStatuses: Record<number, LessonBatchStatus> = {};
+      const lessonErrors: Record<number, LessonError> = {};
+
+      // Mark successful lessons
+      for (const result of response.generated_scripts) {
+        lessonStatuses[result.lesson_id] = 'completed';
+      }
+
+      // Mark failed lessons with error details
+      if (response.errors) {
+        for (const error of response.errors) {
+          lessonStatuses[error.lesson_id] = 'failed';
+          lessonErrors[error.lesson_id] = {
+            errorType: error.error_type,
+            errorMessage: error.error_message,
+          };
+        }
+      }
+
+      // Mark any remaining lessons as pending (shouldn't happen, but safety)
+      for (const id of lessonIds) {
+        if (!(id in lessonStatuses)) {
+          lessonStatuses[id] = 'pending';
+        }
+      }
+
+      return {
+        lessonStatuses,
+        lessonErrors,
+        totalCount: lessonIds.length,
+        completedCount: response.successful_generations,
+        failedCount: response.errors?.length ?? 0,
+        isActive: false,
+        startTime,
+      };
+    },
+    [],
+  );
+
+  /**
    * Start batch generation for selected lessons
    */
   const generateBatch = useCallback(
     async (lessonIds: number[]) => {
       if (lessonIds.length === 0) return;
+
+      const startTime = Date.now();
 
       // Initialize batch state with all lessons as 'generating'
       const initialStatuses: Record<number, LessonBatchStatus> = {};
@@ -102,11 +167,12 @@ export function useBatchScriptGeneration(
 
       const initialState: BatchState = {
         lessonStatuses: initialStatuses,
+        lessonErrors: {},
         totalCount: lessonIds.length,
         completedCount: 0,
         failedCount: 0,
         isActive: true,
-        startTime: Date.now(),
+        startTime,
       };
 
       // Store state
@@ -132,26 +198,17 @@ export function useBatchScriptGeneration(
 
       try {
         // Call batch endpoint - this blocks until all are generated
-        await batchMutation.mutateAsync({
+        const response = await batchMutation.mutateAsync({
           params: { path: { slug: courseSlug } },
           body: { lesson_ids: lessonIds },
         });
 
-        // API returned successfully - mark all as completed
-        const completedStatuses: Record<number, LessonBatchStatus> = {};
-        for (const id of lessonIds) {
-          completedStatuses[id] = 'completed';
-        }
-
-        const completedState: BatchState = {
-          lessonStatuses: completedStatuses,
-          totalCount: lessonIds.length,
-          completedCount: lessonIds.length,
-          failedCount: 0,
-          isActive: false, // Mark as not active so modal shows complete view
-          startTime: initialState.startTime,
-        };
-
+        // Process the structured response
+        const completedState = processBatchResponse(
+          response,
+          lessonIds,
+          startTime,
+        );
         updateBatchState(completedState);
 
         // Invalidate lessons query to refresh data
@@ -159,21 +216,43 @@ export function useBatchScriptGeneration(
           queryKey: ['get', '/api/courses/{slug}/lessons'],
         });
 
-        toast.success(`✅ ${lessonIds.length} scripts generated successfully!`);
+        // Show appropriate toast based on results
+        if (completedState.failedCount === 0) {
+          toast.success(
+            `✅ ${completedState.completedCount} scripts generated successfully!`,
+          );
+        } else if (completedState.completedCount > 0) {
+          toast.warning(
+            `⚠️ ${completedState.completedCount} succeeded, ${completedState.failedCount} failed`,
+          );
+        } else {
+          toast.error(
+            `❌ All ${completedState.failedCount} generations failed`,
+          );
+        }
       } catch (error) {
-        // On error, mark all as failed
+        // On complete API failure, mark all as failed
         const failedStatuses: Record<number, LessonBatchStatus> = {};
+        const lessonErrors: Record<number, LessonError> = {};
+        const errorMessage =
+          error instanceof Error ? error.message : 'Unknown error';
+
         for (const id of lessonIds) {
           failedStatuses[id] = 'failed';
+          lessonErrors[id] = {
+            errorType: 'NetworkError',
+            errorMessage,
+          };
         }
 
         const failedState: BatchState = {
           lessonStatuses: failedStatuses,
+          lessonErrors,
           totalCount: lessonIds.length,
           completedCount: 0,
           failedCount: lessonIds.length,
           isActive: false,
-          startTime: initialState.startTime,
+          startTime,
         };
 
         updateBatchState(failedState);
@@ -182,7 +261,13 @@ export function useBatchScriptGeneration(
         console.error('Batch generation error:', error);
       }
     },
-    [courseSlug, queryClient, batchMutation, updateBatchState],
+    [
+      courseSlug,
+      queryClient,
+      batchMutation,
+      updateBatchState,
+      processBatchResponse,
+    ],
   );
 
   /**
@@ -197,7 +282,9 @@ export function useBatchScriptGeneration(
 
     if (failedIds.length === 0) return;
 
-    // Update failed lessons to 'generating' status
+    const startTime = Date.now();
+
+    // Update failed lessons to 'generating' status, keep successful ones
     const updatedStatuses = { ...batchState.lessonStatuses };
     for (const id of failedIds) {
       updatedStatuses[id] = 'generating';
@@ -206,8 +293,10 @@ export function useBatchScriptGeneration(
     const retryState: BatchState = {
       ...batchState,
       lessonStatuses: updatedStatuses,
+      lessonErrors: {}, // Clear previous errors
       failedCount: 0,
       isActive: true,
+      startTime,
     };
 
     updateBatchState(retryState);
@@ -231,27 +320,37 @@ export function useBatchScriptGeneration(
     toast.info(`Retrying ${failedIds.length} failed lessons...`);
 
     try {
-      await batchMutation.mutateAsync({
+      const response = await batchMutation.mutateAsync({
         params: { path: { slug: courseSlug } },
         body: { lesson_ids: failedIds },
       });
 
-      // Mark retried lessons as completed
-      const completedStatuses = { ...batchState.lessonStatuses };
+      // Process response for retry
+      const retryResult = processBatchResponse(response, failedIds, startTime);
+
+      // Merge retry results with previously successful lessons
+      const mergedStatuses = { ...batchState.lessonStatuses };
+      const mergedErrors = { ...retryResult.lessonErrors };
+
       for (const id of failedIds) {
-        completedStatuses[id] = 'completed';
+        mergedStatuses[id] = retryResult.lessonStatuses[id] ?? 'failed';
       }
 
-      const completedCount = Object.values(completedStatuses).filter(
+      const completedCount = Object.values(mergedStatuses).filter(
         (s) => s === 'completed',
+      ).length;
+      const failedCount = Object.values(mergedStatuses).filter(
+        (s) => s === 'failed',
       ).length;
 
       const completedState: BatchState = {
-        ...batchState,
-        lessonStatuses: completedStatuses,
+        lessonStatuses: mergedStatuses,
+        lessonErrors: mergedErrors,
+        totalCount: batchState.totalCount,
         completedCount,
-        failedCount: 0,
+        failedCount,
         isActive: false,
+        startTime: batchState.startTime,
       };
 
       updateBatchState(completedState);
@@ -260,12 +359,48 @@ export function useBatchScriptGeneration(
         queryKey: ['get', '/api/courses/{slug}/lessons'],
       });
 
-      toast.success(`✅ ${failedIds.length} scripts generated successfully!`);
+      if (retryResult.failedCount === 0) {
+        toast.success(
+          `✅ ${retryResult.completedCount} scripts generated successfully!`,
+        );
+      } else {
+        toast.warning(
+          `⚠️ ${retryResult.completedCount} succeeded, ${retryResult.failedCount} still failed`,
+        );
+      }
     } catch (error) {
+      // Keep the merged state with previous successes, mark retried as failed
+      const errorMessage =
+        error instanceof Error ? error.message : 'Unknown error';
+      const mergedErrors: Record<number, LessonError> = {};
+
+      for (const id of failedIds) {
+        mergedErrors[id] = {
+          errorType: 'NetworkError',
+          errorMessage,
+        };
+      }
+
+      const failedState: BatchState = {
+        ...retryState,
+        lessonErrors: mergedErrors,
+        failedCount: failedIds.length,
+        isActive: false,
+      };
+
+      updateBatchState(failedState);
+
       toast.error('Retry failed. Please try again.');
       console.error('Batch retry error:', error);
     }
-  }, [batchState, courseSlug, queryClient, batchMutation, updateBatchState]);
+  }, [
+    batchState,
+    courseSlug,
+    queryClient,
+    batchMutation,
+    updateBatchState,
+    processBatchResponse,
+  ]);
 
   /**
    * Clear batch state (after completion or manual dismissal)

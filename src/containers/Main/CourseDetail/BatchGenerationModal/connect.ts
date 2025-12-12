@@ -15,7 +15,7 @@ import type { BatchModalView, LessonSelectionItem } from './types';
  */
 export default function useConnect(
   lessons: Lesson[],
-  batchState?: BatchState,
+  batchState: BatchState | null,
   initialView: BatchModalView = 'selection',
 ) {
   // Current view state
@@ -59,6 +59,7 @@ export default function useConnect(
         lessonNumber: lesson.lessonNumber,
         isEligible: true,
         batchStatus: batchState.lessonStatuses[id],
+        error: batchState.lessonErrors?.[id],
       });
     }
 

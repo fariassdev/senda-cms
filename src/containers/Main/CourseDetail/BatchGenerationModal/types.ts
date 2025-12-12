@@ -1,6 +1,7 @@
 import type {
   LessonBatchStatus,
   BatchState,
+  LessonError,
 } from '@/hooks/useBatchScriptGeneration';
 import type { Lesson } from '@/types/models';
 
@@ -18,8 +19,8 @@ export interface BatchGenerationModalProps {
   onGenerate: (lessonIds: number[]) => void;
   /** Callback to retry failed lessons */
   onRetryFailed: () => void;
-  /** Current batch state (undefined if no active batch) */
-  batchState?: BatchState;
+  /** Current batch state (null if no active batch) */
+  batchState: BatchState | null;
   /** Whether batch generation is currently in progress (API call pending) */
   isGenerating: boolean;
   /** Initial view to show when modal opens */
@@ -40,4 +41,5 @@ export interface LessonSelectionItem {
   lessonNumber: number;
   isEligible: boolean;
   batchStatus?: LessonBatchStatus;
+  error?: LessonError;
 }

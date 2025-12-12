@@ -425,6 +425,8 @@ export interface paths {
          *     - If lesson_ids is not provided: generates for all eligible lessons
          *     - If lesson_ids is []: generates nothing
          *     - If lesson_ids is [1, 2, 3]: generates only for those specific lessons
+         *
+         *     Returns successful generations and any errors that occurred.
          */
         post: operations["generate_course_scripts_api_courses__slug__generate_batch_scripts_post"];
         delete?: never;
@@ -489,6 +491,8 @@ export interface paths {
          *     - If lesson_ids is not provided: generates for all eligible lessons
          *     - If lesson_ids is []: generates nothing
          *     - If lesson_ids is [1, 2, 3]: generates only for those specific lessons
+         *
+         *     Returns successful generations and any errors that occurred.
          */
         post: operations["generate_course_audios_api_courses__slug__generate_batch_audios_post"];
         delete?: never;
@@ -666,6 +670,13 @@ export interface components {
          * CourseAudiosGenerationResponse
          * @description Response for bulk course audio generation.
          * @example {
+         *       "errors": [
+         *         {
+         *           "error_message": "TTS service unavailable",
+         *           "error_type": "AudioProviderException",
+         *           "lesson_id": 2
+         *         }
+         *       ],
          *       "generated_audios": [
          *         {
          *           "audio_url": "https://senda-ai.s3.amazonaws.com/audio/1_welcome_abc123.mp3",
@@ -686,7 +697,7 @@ export interface components {
             generated_audios: components["schemas"]["AudioGenerationResponse"][];
             /**
              * Total Lessons Processed
-             * @description Total number of lessons processed
+             * @description Total number of lessons that were requested for processing
              */
             total_lessons_processed: number;
             /**
@@ -694,6 +705,11 @@ export interface components {
              * @description Number of successful audio generations
              */
             successful_generations: number;
+            /**
+             * Errors
+             * @description List of errors for failed generations
+             */
+            errors?: components["schemas"]["GenerationErrorResponse"][];
         };
         /** CourseData */
         CourseData: {
@@ -804,6 +820,13 @@ export interface components {
          * CourseScriptsGenerationResponse
          * @description Response for bulk course script generation.
          * @example {
+         *       "errors": [
+         *         {
+         *           "error_message": "AI provider timeout",
+         *           "error_type": "ScriptGenerationException",
+         *           "lesson_id": 2
+         *         }
+         *       ],
          *       "generated_scripts": [
          *         {
          *           "generation_time_seconds": 2.45,
@@ -828,7 +851,7 @@ export interface components {
             generated_scripts: components["schemas"]["ScriptGenerationResponse"][];
             /**
              * Total Lessons Processed
-             * @description Total number of lessons processed
+             * @description Total number of lessons that were requested for processing
              */
             total_lessons_processed: number;
             /**
@@ -836,6 +859,11 @@ export interface components {
              * @description Number of successful script generations
              */
             successful_generations: number;
+            /**
+             * Errors
+             * @description List of errors for failed generations
+             */
+            errors?: components["schemas"]["GenerationErrorResponse"][];
         };
         /** CoursesFeedResponse */
         CoursesFeedResponse: {
@@ -894,6 +922,27 @@ export interface components {
          * @enum {string}
          */
         DifficultyLevel: "BEGINNER" | "INTERMEDIATE" | "ADVANCED";
+        /**
+         * GenerationErrorResponse
+         * @description Error details for a failed generation attempt.
+         */
+        GenerationErrorResponse: {
+            /**
+             * Lesson Id
+             * @description ID of the lesson that failed
+             */
+            lesson_id: number;
+            /**
+             * Error Type
+             * @description Type/class of the error
+             */
+            error_type: string;
+            /**
+             * Error Message
+             * @description Human-readable error message
+             */
+            error_message: string;
+        };
         /** HTTPValidationError */
         HTTPValidationError: {
             /** Detail */

@@ -4,15 +4,7 @@ import { useEffect, useRef, useState } from 'react';
 
 import { Progress } from '@/components/ui/progress';
 
-/**
- * Time in ms to simulate per lesson (20 seconds)
- */
-const SIMULATED_TIME_PER_LESSON_MS = 20000;
-
-/**
- * Progress update interval in ms (longer interval = smoother animations)
- */
-const PROGRESS_UPDATE_INTERVAL_MS = 1000;
+import { PROGRESS_CONFIG } from './constants';
 
 interface SimulatedProgressBarProps {
   /** Number of lessons being processed */
@@ -43,7 +35,8 @@ export function SimulatedProgressBar({
   const intervalRef = useRef<NodeJS.Timeout | null>(null);
 
   // Calculate expected duration
-  const expectedDuration = lessonCount * SIMULATED_TIME_PER_LESSON_MS;
+  const expectedDuration =
+    lessonCount * PROGRESS_CONFIG.SIMULATED_TIME_PER_LESSON_MS;
 
   // Start/stop simulation based on generation state
   useEffect(() => {
@@ -60,7 +53,7 @@ export function SimulatedProgressBar({
           Math.round((elapsed / expectedDuration) * 100),
         );
         setProgress(newProgress);
-      }, PROGRESS_UPDATE_INTERVAL_MS);
+      }, PROGRESS_CONFIG.UPDATE_INTERVAL_MS);
 
       return () => {
         if (intervalRef.current) {
@@ -90,13 +83,13 @@ export function SimulatedProgressBar({
   return (
     <div className="space-y-2">
       <div className="flex justify-between text-sm text-muted-foreground">
-        <span>Progress</span>
+        <span>{PROGRESS_CONFIG.LABELS.progress}</span>
         <span>{progress}%</span>
       </div>
       <Progress
         value={progress}
         className="h-2 transition-all duration-1000 ease-linear"
-        aria-label="Generation progress"
+        aria-label={PROGRESS_CONFIG.LABELS.ariaLabel}
       />
     </div>
   );
