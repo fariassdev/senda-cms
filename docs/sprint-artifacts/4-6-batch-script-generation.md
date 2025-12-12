@@ -149,19 +149,18 @@ This story creates a new batch generation feature integrated with existing scrip
 
 ### API Integration
 
-**Batch Script Generation Endpoint (CONFIRMED):**
+**Batch Script Generation Endpoint (UPDATED):**
 
 ```typescript
 // Use the batch endpoint - backend handles orchestration
-$api.useMutation('post', '/api/courses/{slug}/generate-all-scripts');
+$api.useMutation('post', '/api/courses/{slug}/generate-batch-scripts');
 
 // Request body:
 interface BatchGenerateRequest {
-  lesson_ids: number[];
-  config?: { tone: string };
+  lesson_ids?: number[]; // Optional: if empty array = no generation, if undefined = all eligible
 }
 
-// Response: The backend starts generation for all lessons.
+// Response: The backend starts generation for specified lessons.
 // Individual lesson statuses update via polling (Story 3.6).
 ```
 

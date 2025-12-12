@@ -65,7 +65,7 @@ export function useBatchScriptGeneration(
   // Batch mutation using the batch endpoint
   const batchMutation = $api.useMutation(
     'post',
-    '/api/courses/{slug}/generate-all-scripts',
+    '/api/courses/{slug}/generate-batch-scripts',
   );
 
   // Get fresh batch state from cache
@@ -195,11 +195,10 @@ export function useBatchScriptGeneration(
       toast.info(`Batch generation started for ${lessonIds.length} lessons...`);
 
       try {
-        // Call batch endpoint - backend orchestrates all generations
+        // Call batch endpoint with specific lesson IDs
         await batchMutation.mutateAsync({
           params: { path: { slug: courseSlug } },
-          // Note: The backend endpoint generates all ungenerated lessons
-          // Individual lesson IDs are tracked client-side
+          body: { lesson_ids: lessonIds },
         });
 
         // Invalidate lessons query to trigger polling
@@ -270,8 +269,10 @@ export function useBatchScriptGeneration(
     toast.info(`Retrying ${failedIds.length} failed lessons...`);
 
     try {
+      // Call batch endpoint with only the failed lesson IDs
       await batchMutation.mutateAsync({
         params: { path: { slug: courseSlug } },
+        body: { lesson_ids: failedIds },
       });
 
       await queryClient.invalidateQueries({
