@@ -38,10 +38,11 @@ So that I can quickly create content for an entire course.
 5. **Given** I have lessons selected and click "Generate"
    **When** the batch generation starts
    **Then** the modal changes to a progress view showing:
-   - Overall progress: "Generating: 2/5 complete"
-   - Individual lesson status indicators (pending → generating → completed/failed)
-   - Each lesson row shows: lesson title, status icon (spinner/check/X), status text
+   - Simulated progress bar (~20 seconds per lesson, since API is synchronous)
+   - Individual lesson status indicators showing "Generating..." animations
+   - Each lesson row shows: lesson title, spinner icon, status text
    - "Close" button (allows viewing course page while generation continues)
+   - Note: Progress is simulated because the API blocks until all scripts are generated
 
 6. **Given** batch generation is in progress
    **When** I close the progress modal

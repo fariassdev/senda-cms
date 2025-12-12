@@ -114,8 +114,9 @@ export default function useConnect(
     const generating = statuses.filter((s) => s === 'generating').length;
     const pending = statuses.filter((s) => s === 'pending').length;
     const total = statuses.length;
-    const done = completed + failed;
-    const percentage = total > 0 ? Math.round((done / total) * 100) : 0;
+
+    // Batch is complete when isActive is false (API returned)
+    const isComplete = !batchState.isActive && total > 0;
 
     return {
       total,
@@ -123,8 +124,7 @@ export default function useConnect(
       failed,
       pending,
       generating,
-      percentage,
-      isComplete: done === total && total > 0,
+      isComplete,
     };
   }, [batchState]);
 

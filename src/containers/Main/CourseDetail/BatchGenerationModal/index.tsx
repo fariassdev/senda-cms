@@ -21,9 +21,9 @@ import {
   DialogTitle,
 } from '@/components/ui/dialog';
 import { Label } from '@/components/ui/label';
-import { Progress } from '@/components/ui/progress';
 import type { LessonBatchStatus } from '@/hooks/useBatchScriptGeneration';
 
+import { SimulatedProgressBar } from './SimulatedProgressBar';
 import useConnect from './connect';
 import { BATCH_MESSAGES, MODAL_CONFIG } from './constants';
 import type { BatchGenerationModalProps } from './types';
@@ -264,18 +264,12 @@ export function BatchGenerationModal({
         {progressStats.completed} of {progressStats.total} scripts generated
       </div>
 
-      {/* Overall progress bar */}
-      <div className="space-y-2">
-        <div className="flex justify-between text-sm text-muted-foreground">
-          <span>Progress</span>
-          <span>{progressStats.percentage}%</span>
-        </div>
-        <Progress
-          value={progressStats.percentage}
-          className="h-2"
-          aria-label="Generation progress"
-        />
-      </div>
+      {/* Overall progress bar - isolated component for performance */}
+      <SimulatedProgressBar
+        lessonCount={progressStats.total}
+        isGenerating={batchState?.isActive ?? false}
+        isComplete={progressStats.isComplete}
+      />
 
       {/* Per-lesson status list */}
       <div

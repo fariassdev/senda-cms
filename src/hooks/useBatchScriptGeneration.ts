@@ -1,5 +1,5 @@
 import { useQueryClient } from '@tanstack/react-query';
-import { useCallback, useEffect } from 'react';
+import { useCallback, useEffect, useState } from 'react';
 import { toast } from 'sonner';
 
 import { $api } from '@/lib/api';
@@ -42,18 +42,23 @@ const getBatchQueryKey = (courseSlug: string) =>
 /**
  * Hook for batch script generation
  *
- * Manages batch generation state, calls the batch endpoint, and syncs
- * individual lesson statuses via existing polling (Story 3.6).
+ * Manages batch generation state and calls the batch endpoint.
+ * Progress simulation is handled by the modal component for performance.
  *
  * @param courseSlug - The course slug to generate scripts for
  * @param lessons - Current lessons data for status synchronization
  */
 export function useBatchScriptGeneration(
   courseSlug: string,
-  lessons: Lesson[] | undefined,
+  _lessons: Lesson[] | undefined,
 ) {
   const queryClient = useQueryClient();
   const BATCH_QUERY_KEY = getBatchQueryKey(courseSlug);
+
+  // State for reactive updates
+  const [batchState, setBatchState] = useState<BatchState | undefined>(
+    undefined,
+  );
 
   // Batch mutation using the batch endpoint
   const batchMutation = $api.useMutation(
@@ -61,88 +66,26 @@ export function useBatchScriptGeneration(
     '/api/courses/{slug}/generate-batch-scripts',
   );
 
-  // Get fresh batch state from cache
-  const getBatchState = useCallback((): BatchState | undefined => {
-    return queryClient.getQueryData<BatchState>(BATCH_QUERY_KEY);
+  // Sync state from cache on mount
+  useEffect(() => {
+    const cachedState = queryClient.getQueryData<BatchState>(BATCH_QUERY_KEY);
+    if (cachedState) {
+      setBatchState(cachedState);
+    }
   }, [queryClient, BATCH_QUERY_KEY]);
 
-  // Sync batch statuses with lesson statuses from polling
-  useEffect(() => {
-    if (!lessons) return;
-
-    const currentBatchState = getBatchState();
-    if (!currentBatchState?.isActive) return;
-
-    let hasChanges = false;
-    const updatedStatuses = { ...currentBatchState.lessonStatuses };
-    let completedCount = 0;
-    let failedCount = 0;
-
-    // Sync each lesson's status
-    for (const lessonId of Object.keys(updatedStatuses)) {
-      const id = Number(lessonId);
-      const lesson = lessons.find((l) => l.id === id);
-      if (!lesson) continue;
-
-      const currentBatchStatus = updatedStatuses[id];
-
-      // Map lesson status to batch status
-      let newBatchStatus: LessonBatchStatus;
-      if (
-        lesson.status === 'SCRIPT_COMPLETED' ||
-        lesson.status === 'AUDIO_GENERATING' ||
-        lesson.status === 'AUDIO_COMPLETED'
-      ) {
-        newBatchStatus = 'completed';
-        completedCount++;
-      } else if (lesson.status === 'SCRIPT_FAILED') {
-        newBatchStatus = 'failed';
-        failedCount++;
-      } else if (lesson.status === 'SCRIPT_GENERATING') {
-        newBatchStatus = 'generating';
+  // Update both local state and cache
+  const updateBatchState = useCallback(
+    (newState: BatchState | undefined) => {
+      setBatchState(newState);
+      if (newState) {
+        queryClient.setQueryData(BATCH_QUERY_KEY, newState);
       } else {
-        newBatchStatus = currentBatchStatus || 'pending';
-        if (newBatchStatus === 'completed') completedCount++;
-        if (newBatchStatus === 'failed') failedCount++;
+        queryClient.removeQueries({ queryKey: BATCH_QUERY_KEY });
       }
-
-      if (updatedStatuses[id] !== newBatchStatus) {
-        updatedStatuses[id] = newBatchStatus;
-        hasChanges = true;
-      }
-    }
-
-    // Update cache if statuses changed
-    if (hasChanges) {
-      const allDone = Object.values(updatedStatuses).every(
-        (status) => status === 'completed' || status === 'failed',
-      );
-
-      const newState: BatchState = {
-        ...currentBatchState,
-        lessonStatuses: updatedStatuses,
-        completedCount,
-        failedCount,
-        isActive: !allDone,
-      };
-
-      queryClient.setQueryData(BATCH_QUERY_KEY, newState);
-
-      // Show completion toast when batch finishes
-      if (allDone && currentBatchState.isActive) {
-        const successCount = completedCount;
-        const failCount = failedCount;
-
-        if (failCount === 0) {
-          toast.success(`✅ ${successCount} scripts generated successfully`);
-        } else {
-          toast.info(
-            `Batch complete: ${successCount} succeeded, ${failCount} failed`,
-          );
-        }
-      }
-    }
-  }, [lessons, getBatchState, queryClient, BATCH_QUERY_KEY]);
+    },
+    [queryClient, BATCH_QUERY_KEY],
+  );
 
   /**
    * Start batch generation for selected lessons
@@ -166,8 +109,8 @@ export function useBatchScriptGeneration(
         startTime: Date.now(),
       };
 
-      // Store state in React Query cache with staleTime: Infinity for persistence
-      queryClient.setQueryData(BATCH_QUERY_KEY, initialState);
+      // Store state
+      updateBatchState(initialState);
 
       // Optimistically update lessons to SCRIPT_GENERATING
       queryClient.setQueriesData<LessonsQueryData>(
@@ -188,60 +131,86 @@ export function useBatchScriptGeneration(
       toast.info(`Batch generation started for ${lessonIds.length} lessons...`);
 
       try {
-        // Call batch endpoint with specific lesson IDs
+        // Call batch endpoint - this blocks until all are generated
         await batchMutation.mutateAsync({
           params: { path: { slug: courseSlug } },
           body: { lesson_ids: lessonIds },
         });
 
-        // Invalidate lessons query to trigger polling
+        // API returned successfully - mark all as completed
+        const completedStatuses: Record<number, LessonBatchStatus> = {};
+        for (const id of lessonIds) {
+          completedStatuses[id] = 'completed';
+        }
+
+        const completedState: BatchState = {
+          lessonStatuses: completedStatuses,
+          totalCount: lessonIds.length,
+          completedCount: lessonIds.length,
+          failedCount: 0,
+          isActive: false, // Mark as not active so modal shows complete view
+          startTime: initialState.startTime,
+        };
+
+        updateBatchState(completedState);
+
+        // Invalidate lessons query to refresh data
         await queryClient.invalidateQueries({
           queryKey: ['get', '/api/courses/{slug}/lessons'],
         });
+
+        toast.success(`✅ ${lessonIds.length} scripts generated successfully!`);
       } catch (error) {
         // On error, mark all as failed
+        const failedStatuses: Record<number, LessonBatchStatus> = {};
+        for (const id of lessonIds) {
+          failedStatuses[id] = 'failed';
+        }
+
         const failedState: BatchState = {
-          ...initialState,
-          lessonStatuses: Object.fromEntries(
-            lessonIds.map((id) => [id, 'failed' as LessonBatchStatus]),
-          ),
+          lessonStatuses: failedStatuses,
+          totalCount: lessonIds.length,
+          completedCount: 0,
           failedCount: lessonIds.length,
           isActive: false,
+          startTime: initialState.startTime,
         };
-        queryClient.setQueryData(BATCH_QUERY_KEY, failedState);
+
+        updateBatchState(failedState);
 
         toast.error('Batch generation failed. Please try again.');
         console.error('Batch generation error:', error);
       }
     },
-    [courseSlug, queryClient, BATCH_QUERY_KEY, batchMutation],
+    [courseSlug, queryClient, batchMutation, updateBatchState],
   );
 
   /**
    * Retry only the failed lessons from the previous batch
    */
   const retryFailed = useCallback(async () => {
-    const currentState = getBatchState();
-    if (!currentState) return;
+    if (!batchState) return;
 
-    const failedIds = Object.entries(currentState.lessonStatuses)
+    const failedIds = Object.entries(batchState.lessonStatuses)
       .filter(([, status]) => status === 'failed')
       .map(([id]) => Number(id));
 
     if (failedIds.length === 0) return;
 
     // Update failed lessons to 'generating' status
-    const updatedStatuses = { ...currentState.lessonStatuses };
+    const updatedStatuses = { ...batchState.lessonStatuses };
     for (const id of failedIds) {
       updatedStatuses[id] = 'generating';
     }
 
-    queryClient.setQueryData<BatchState>(BATCH_QUERY_KEY, {
-      ...currentState,
+    const retryState: BatchState = {
+      ...batchState,
       lessonStatuses: updatedStatuses,
       failedCount: 0,
       isActive: true,
-    });
+    };
+
+    updateBatchState(retryState);
 
     // Optimistically update lessons to SCRIPT_GENERATING
     queryClient.setQueriesData<LessonsQueryData>(
@@ -262,33 +231,54 @@ export function useBatchScriptGeneration(
     toast.info(`Retrying ${failedIds.length} failed lessons...`);
 
     try {
-      // Call batch endpoint with only the failed lesson IDs
       await batchMutation.mutateAsync({
         params: { path: { slug: courseSlug } },
         body: { lesson_ids: failedIds },
       });
 
+      // Mark retried lessons as completed
+      const completedStatuses = { ...batchState.lessonStatuses };
+      for (const id of failedIds) {
+        completedStatuses[id] = 'completed';
+      }
+
+      const completedCount = Object.values(completedStatuses).filter(
+        (s) => s === 'completed',
+      ).length;
+
+      const completedState: BatchState = {
+        ...batchState,
+        lessonStatuses: completedStatuses,
+        completedCount,
+        failedCount: 0,
+        isActive: false,
+      };
+
+      updateBatchState(completedState);
+
       await queryClient.invalidateQueries({
         queryKey: ['get', '/api/courses/{slug}/lessons'],
       });
+
+      toast.success(`✅ ${failedIds.length} scripts generated successfully!`);
     } catch (error) {
       toast.error('Retry failed. Please try again.');
       console.error('Batch retry error:', error);
     }
-  }, [getBatchState, courseSlug, queryClient, BATCH_QUERY_KEY, batchMutation]);
+  }, [batchState, courseSlug, queryClient, batchMutation, updateBatchState]);
 
   /**
    * Clear batch state (after completion or manual dismissal)
    */
   const clearBatchState = useCallback(() => {
-    queryClient.removeQueries({ queryKey: BATCH_QUERY_KEY });
-  }, [queryClient, BATCH_QUERY_KEY]);
+    updateBatchState(undefined);
+  }, [updateBatchState]);
 
   return {
     generateBatch,
     retryFailed,
     clearBatchState,
-    batchState: getBatchState(),
+    batchState,
     isGeneratingBatch: batchMutation.isPending,
   };
 }
