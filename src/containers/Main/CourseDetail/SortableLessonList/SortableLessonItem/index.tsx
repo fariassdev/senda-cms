@@ -11,6 +11,7 @@ import {
   TooltipContent,
   TooltipTrigger,
 } from '@/components/ui/tooltip';
+import { GenerateAudioButton } from '@/containers/Main/CourseDetail/SortableLessonList/SortableLessonItem/GenerateAudioButton';
 import { GenerateScriptButton } from '@/containers/Main/CourseDetail/SortableLessonList/SortableLessonItem/GenerateScriptButton';
 
 import useConnect from './connect';
@@ -29,6 +30,8 @@ export function SortableLessonItem(props: SortableLessonItemProps) {
     isUpdating,
     hasViewableScript,
     formatTimestamp,
+    generateAudio,
+    isGeneratingAudio,
   } = useConnect(props);
 
   const { lesson, courseSlug, disabled = false, onEdit, onDelete } = props;
@@ -124,6 +127,11 @@ export function SortableLessonItem(props: SortableLessonItemProps) {
             onUpdateAndGenerate={updateAndGenerateScript}
             isGenerating={isGenerating}
             isUpdating={isUpdating}
+          />
+          <GenerateAudioButton
+            lesson={lesson}
+            onGenerate={generateAudio}
+            isGenerating={isGeneratingAudio}
           />
           <Button
             type="button"
