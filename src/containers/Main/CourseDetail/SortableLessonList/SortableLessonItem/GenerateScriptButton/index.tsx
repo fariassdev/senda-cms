@@ -3,8 +3,8 @@
 import { Loader2, Sparkles } from 'lucide-react';
 import { useCallback } from 'react';
 
+import { ScriptGenerationModal } from '@/components/ScriptGenerationModal';
 import { Button } from '@/components/ui/button';
-import { ScriptConfigModal } from '@/containers/Main/CourseDetail/SortableLessonList/ScriptConfigModal';
 import { cn } from '@/lib/utils';
 
 import type { LessonStatus } from '@/types/models';
@@ -75,7 +75,7 @@ export function GenerateScriptButton({
         <span className="hidden sm:inline">{buttonState.label}</span>
       </Button>
 
-      <ScriptConfigModal
+      <ScriptGenerationModal
         open={isModalOpen}
         onOpenChange={setIsModalOpen}
         lesson={lesson}
