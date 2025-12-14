@@ -467,6 +467,8 @@ export interface paths {
         /**
          * Generate Lesson Audio
          * @description Generate audio for a specific lesson.
+         *
+         *     Optionally accepts audio configuration (voice, speed).
          */
         post: operations["generate_lesson_audio_api_courses__slug__lessons__id__generate_audio_post"];
         delete?: never;
@@ -491,6 +493,8 @@ export interface paths {
          *     - If lesson_ids is not provided: generates for all eligible lessons
          *     - If lesson_ids is []: generates nothing
          *     - If lesson_ids is [1, 2, 3]: generates only for those specific lessons
+         *
+         *     Optionally accepts audio configuration (voice, speed) applied to all lessons.
          *
          *     Returns successful generations and any errors that occurred.
          */
@@ -571,6 +575,23 @@ export interface components {
             name: string | null;
             /** Role */
             role: string;
+        };
+        /**
+         * AudioConfigRequest
+         * @description Audio configuration options for TTS generation.
+         */
+        AudioConfigRequest: {
+            /**
+             * Voice
+             * @description Voice to use for TTS (e.g., 'af_nicole', 'af_bella'). If not provided, uses the default voice.
+             */
+            voice?: string | null;
+            /**
+             * Speed
+             * @description Speech rate multiplier (0.5 to 2.0, default 1.0).
+             * @default 1
+             */
+            speed: number;
         };
         /**
          * AudioGenerationResponse
@@ -657,6 +678,8 @@ export interface components {
              * @description Optional list of lesson IDs to generate audio for. If not provided, generates for all eligible lessons. If empty list, generates nothing.
              */
             lesson_ids?: number[] | null;
+            /** @description Optional audio configuration (voice, speed). */
+            audio_config?: components["schemas"]["AudioConfigRequest"] | null;
         };
         /** BatchScriptGenerationRequest */
         BatchScriptGenerationRequest: {
@@ -1189,6 +1212,14 @@ export interface components {
          * @enum {string}
          */
         ScriptPartType: "speak" | "pause";
+        /**
+         * SingleAudioGenerationRequest
+         * @description Request body for single lesson audio generation.
+         */
+        SingleAudioGenerationRequest: {
+            /** @description Optional audio configuration (voice, speed). */
+            audio_config?: components["schemas"]["AudioConfigRequest"] | null;
+        };
         /** TagsResponse */
         TagsResponse: {
             /** Tags */
@@ -2292,7 +2323,11 @@ export interface operations {
             };
             cookie?: never;
         };
-        requestBody?: never;
+        requestBody?: {
+            content: {
+                "application/json": components["schemas"]["SingleAudioGenerationRequest"] | null;
+            };
+        };
         responses: {
             /** @description Successful Response */
             200: {
