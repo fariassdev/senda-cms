@@ -5,7 +5,7 @@ import { describe, it, expect, beforeEach, vi, type Mock } from 'vitest';
 
 import { $api } from '@/lib/api';
 import type { Lesson } from '@/types/models';
-import { useLessonReorder } from '.';
+import useLessonReorder from '.';
 
 // Mocks
 vi.mock('@tanstack/react-query', () => ({

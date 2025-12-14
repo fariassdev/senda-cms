@@ -4,6 +4,8 @@ import type { components } from '@/types/api';
 export type Course = components['schemas']['CourseData'];
 export type CourseGenerationData =
   components['schemas']['CourseGenerationData'];
+export type CourseGenerationRequest =
+  components['schemas']['CourseGenerationRequest'];
 export type CreateCourseData = components['schemas']['CreateCourseData'];
 export type UpdateCourseData = components['schemas']['UpdateCourseData'];
 
@@ -28,6 +30,8 @@ export type ScriptGenerationResponse =
   components['schemas']['ScriptGenerationResponse'];
 export type AudioGenerationResponse =
   components['schemas']['AudioGenerationResponse'];
+export type BatchScriptResponse =
+  components['schemas']['CourseScriptsGenerationResponse'];
 
 // User types
 export type User = components['schemas']['AuthenticatedUserData'];

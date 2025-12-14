@@ -2,11 +2,11 @@ import { useQueryClient } from '@tanstack/react-query';
 import { useCallback } from 'react';
 
 import { $api } from '@/lib/api';
-import type { components } from '@/types/api';
-
-type CreateCourseData = components['schemas']['CreateCourseData'];
-type UpdateCourseData = components['schemas']['UpdateCourseData'];
-type CourseGenerationRequest = components['schemas']['CourseGenerationRequest'];
+import type {
+  CourseGenerationRequest,
+  CreateCourseData,
+  UpdateCourseData,
+} from '@/types/models';
 
 const useCourseActions = () => {
   const queryClient = useQueryClient();
@@ -63,7 +63,7 @@ const useCourseActions = () => {
       });
       return response?.course;
     },
-    [createCourseMutation]
+    [createCourseMutation],
   );
 
   const updateCourse = useCallback(
@@ -76,7 +76,7 @@ const useCourseActions = () => {
       });
       return response?.course;
     },
-    [updateCourseMutation]
+    [updateCourseMutation],
   );
 
   const deleteCourse = useCallback(
@@ -87,7 +87,7 @@ const useCourseActions = () => {
         },
       });
     },
-    [deleteCourseMutation]
+    [deleteCourseMutation],
   );
 
   const generateCourse = useCallback(
@@ -97,7 +97,7 @@ const useCourseActions = () => {
       });
       return response?.course;
     },
-    [generateCourseMutation]
+    [generateCourseMutation],
   );
 
   return {

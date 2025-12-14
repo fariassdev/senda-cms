@@ -7,7 +7,7 @@ import { useEffect } from 'react';
 
 import { useAuthStore } from '@/stores/authStore';
 
-export function useAuthRefresh() {
+const useAuthRefresh = () => {
   const router = useRouter();
 
   useEffect(() => {
@@ -22,4 +22,7 @@ export function useAuthRefresh() {
 
     return unsubscribe;
   }, [router]);
-}
+};
+
+export default useAuthRefresh;
+export type UseAuthRefresh = ReturnType<typeof useAuthRefresh>;

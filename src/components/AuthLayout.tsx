@@ -5,7 +5,7 @@ import { useEffect } from 'react';
 
 import { Navigation } from '@/components/Navigation';
 import CourseList from '@/containers/Main/CourseList';
-import { useAuthRefresh } from '@/hooks/useAuthRefresh';
+import useAuthRefresh from '@/hooks/useAuthRefresh';
 import { useAuthStore } from '@/stores/authStore';
 
 interface AuthLayoutProps {

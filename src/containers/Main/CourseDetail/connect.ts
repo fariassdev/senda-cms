@@ -4,8 +4,8 @@ import { useEffect, useMemo, useRef, useState } from 'react';
 import { useForm } from 'react-hook-form';
 import { toast } from 'sonner';
 
-import { useBatchScriptGeneration } from '@/hooks/useBatchScriptGeneration';
-import { useLessonReorder } from '@/hooks/useLessonReorder';
+import useBatchScriptGeneration from '@/hooks/useBatchScriptGeneration';
+import useLessonReorder from '@/hooks/useLessonReorder';
 import { $api } from '@/lib/api';
 import type { LessonStatus, Lesson } from '@/types/models';
 
@@ -98,7 +98,7 @@ export default function useConnect(courseSlug: string) {
 
   // Batch script generation hook
   const { generateBatch, retryFailed, batchState, isGeneratingBatch } =
-    useBatchScriptGeneration(courseSlug, lessons);
+    useBatchScriptGeneration(courseSlug);
 
   // Detect status changes and show toast notifications
   useEffect(() => {

@@ -16,13 +16,13 @@ interface LessonsQueryData {
 /**
  * Hook for script generation mutation logic
  */
-export function useScriptGeneration({
+const useScriptGeneration = ({
   courseSlug,
   lessonId,
 }: {
   courseSlug: string;
   lessonId: number;
-}) {
+}) => {
   const queryClient = useQueryClient();
   // Store previous data for rollback on error
   const previousDataRef = useRef<LessonsQueryData | undefined>(undefined);
@@ -98,6 +98,7 @@ export function useScriptGeneration({
     generateScript,
     isGenerating: generateMutation.isPending,
   };
-}
+};
 
 export default useScriptGeneration;
+export type UseScriptGeneration = ReturnType<typeof useScriptGeneration>;

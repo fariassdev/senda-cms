@@ -1,5 +1,4 @@
 import type { Lesson } from '@/types/models';
-import type { ReorderParams } from './types';
 
 /**
  * Reorder lessons based on new ordered IDs
@@ -22,7 +21,7 @@ export function reorderLessonsInCache(
 /**
  * Build request body from reordered lessons
  */
-export function buildReorderRequest(orderedIds: number[]): ReorderParams {
+export function buildReorderRequest(orderedIds: number[]) {
   return {
     lessons: orderedIds.map((id, index) => ({
       lesson_id: id,

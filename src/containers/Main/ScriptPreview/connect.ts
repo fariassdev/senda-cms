@@ -4,12 +4,15 @@ import { useQueryClient } from '@tanstack/react-query';
 import { useRouter } from 'next/navigation';
 import { useEffect, useMemo, useRef, useState } from 'react';
 import { toast } from 'sonner';
-import useLessonActions, {
-  type LessonUpdateData,
-} from '@/hooks/useLessonActions';
+import useLessonActions from '@/hooks/useLessonActions';
 import useScriptGeneration from '@/hooks/useScriptGeneration';
 import { $api } from '@/lib/api';
-import type { Lesson, LessonStatus, ScriptPart } from '@/types/models';
+import type {
+  Lesson,
+  LessonStatus,
+  ScriptPart,
+  UpdateLessonData,
+} from '@/types/models';
 
 import {
   AUDIO_GENERATION_ELIGIBLE_STATUS,
@@ -274,7 +277,7 @@ export default function useConnect({
   };
 
   // Handle lesson update then regeneration (Task 5.2)
-  const handleUpdateAndRegenerate = async (data: LessonUpdateData) => {
+  const handleUpdateAndRegenerate = async (data: UpdateLessonData) => {
     await updateLesson(data);
     generateScript();
     setIsRegenerateModalOpen(false);

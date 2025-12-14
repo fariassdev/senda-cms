@@ -4,8 +4,8 @@ import { CSS } from '@dnd-kit/utilities';
 import type { CSSProperties } from 'react';
 
 import type { LessonFormData } from '@/components/LessonForm';
-import { useLessonActions } from '@/hooks/useLessonActions';
-import { useScriptGeneration } from '@/hooks/useScriptGeneration';
+import useLessonActions from '@/hooks/useLessonActions';
+import useScriptGeneration from '@/hooks/useScriptGeneration';
 import { formatTimestamp } from '@/lib/utils';
 import type { LessonStatus } from '@/types/models';
 import type { SortableLessonItemProps } from './types';

@@ -11,16 +11,15 @@ import {
   getOriginalOrder,
   reorderLessonsInCache,
 } from './logic';
-import type {
-  LessonReorderContext,
-  LessonReorderState,
-  UseLessonReorderOptions,
-} from './types';
+import type { LessonReorderContext, LessonReorderState } from './types';
 
-export function useLessonReorder({
+const useLessonReorder = ({
   courseSlug,
   onSuccess,
-}: UseLessonReorderOptions) {
+}: {
+  courseSlug: string;
+  onSuccess?: () => void;
+}) => {
   const queryClient = useQueryClient();
   const [pendingOrder, setPendingOrder] = useState<number[] | null>(null);
 
@@ -177,4 +176,7 @@ export function useLessonReorder({
     resetPendingOrder,
     isReordering: reorderMutation.isPending,
   };
-}
+};
+
+export default useLessonReorder;
+export type UseLessonReorder = ReturnType<typeof useLessonReorder>;

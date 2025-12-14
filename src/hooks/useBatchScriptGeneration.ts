@@ -3,8 +3,7 @@ import { useCallback } from 'react';
 import { toast } from 'sonner';
 
 import { $api } from '@/lib/api';
-import type { components } from '@/types/api';
-import type { Lesson } from '@/types/models';
+import type { BatchScriptResponse, Lesson } from '@/types/models';
 
 /**
  * Status for each lesson in a batch generation operation
@@ -46,8 +45,6 @@ interface LessonsQueryData {
 /**
  * API Response type for batch script generation
  */
-type BatchScriptResponse =
-  components['schemas']['CourseScriptsGenerationResponse'];
 
 /**
  * Query key for batch generation state
@@ -63,12 +60,8 @@ const getBatchQueryKey = (courseSlug: string) =>
  * Uses useQuery with staleTime: Infinity for state persistence across navigation.
  *
  * @param courseSlug - The course slug to generate scripts for
- * @param lessons - Current lessons data for status synchronization
  */
-export function useBatchScriptGeneration(
-  courseSlug: string,
-  _lessons: Lesson[] | undefined,
-) {
+const useBatchScriptGeneration = (courseSlug: string) => {
   const queryClient = useQueryClient();
   const BATCH_QUERY_KEY = getBatchQueryKey(courseSlug);
 
@@ -416,6 +409,9 @@ export function useBatchScriptGeneration(
     batchState,
     isGeneratingBatch: batchMutation.isPending,
   };
-}
+};
 
 export default useBatchScriptGeneration;
+export type UseBatchScriptGeneration = ReturnType<
+  typeof useBatchScriptGeneration
+>;

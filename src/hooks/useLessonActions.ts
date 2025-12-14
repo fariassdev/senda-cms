@@ -2,36 +2,22 @@ import { useQueryClient } from '@tanstack/react-query';
 import { toast } from 'sonner';
 
 import { $api } from '@/lib/api';
-
-export interface UseLessonActionsProps {
-  courseSlug: string;
-  lessonId: number;
-}
-
-export interface LessonUpdateData {
-  title: string;
-  corePractice: string;
-  keyPoint: string;
-  tone: string;
-  durationMinutes: number;
-}
+import type { UpdateLessonData } from '@/types/models';
 
 interface ApiError {
   detail?: Array<{ loc: (string | number)[]; msg: string; type: string }>;
 }
 
-export interface UseLessonActionsReturn {
-  updateLesson: (data: LessonUpdateData) => Promise<void>;
-  isUpdating: boolean;
-}
-
 /**
  * Hook for lesson mutation actions (update, and future: delete, duplicate, etc.)
  */
-export function useLessonActions({
+const useLessonActions = ({
   courseSlug,
   lessonId,
-}: UseLessonActionsProps): UseLessonActionsReturn {
+}: {
+  courseSlug: string;
+  lessonId: number;
+}) => {
   const queryClient = useQueryClient();
 
   const updateMutation = $api.useMutation(
@@ -53,7 +39,7 @@ export function useLessonActions({
     },
   );
 
-  const updateLesson = async (data: LessonUpdateData): Promise<void> => {
+  const updateLesson = async (data: UpdateLessonData) => {
     toast.info('Saving lesson changes...');
 
     await updateMutation.mutateAsync({
@@ -66,10 +52,10 @@ export function useLessonActions({
       body: {
         lesson: {
           title: data.title,
-          core_practice: data.corePractice,
-          key_point: data.keyPoint,
+          core_practice: data.core_practice,
+          key_point: data.key_point,
           tone: data.tone,
-          duration_minutes: data.durationMinutes,
+          duration_minutes: data.duration_minutes,
         },
       },
     });
@@ -81,6 +67,7 @@ export function useLessonActions({
     updateLesson,
     isUpdating: updateMutation.isPending,
   };
-}
+};
 
 export default useLessonActions;
+export type UseLessonActions = ReturnType<typeof useLessonActions>;
