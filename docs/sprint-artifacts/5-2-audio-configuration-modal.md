@@ -1,6 +1,6 @@
 # Story 5.2: Audio Configuration Modal
 
-Status: ready-for-dev
+Status: done
 
 ## Story
 
@@ -15,20 +15,20 @@ So that I can customize the meditation audio style.
    **Then** I see a configuration modal titled "Generate Audio" or "Regenerate Audio" (based on context)
    **And** the modal contains:
    - Voice Selection dropdown with voice names and descriptions
-   - Speech Rate slider (0.5x to 2.0x, default 1.0x)
+   - Speech Rate slider (0.7x to 1.3x, default 1.0x)
    - Cancel and Generate/Regenerate buttons
 
 2. **Given** the modal is open
    **When** I see the Voice Selection dropdown
    **Then** I see at least 2 voice options:
-   - "Nicole - Calm, soothing female voice" (or similar description)
+   - "Anah - Calm, soothing female voice" (or similar description)
    - "Bella - Warm, grounding female voice" (or similar description)
      **And** the first voice is selected by default
 
 3. **Given** the modal is open
    **When** I adjust the Speech Rate slider
    **Then** I see visual feedback showing the current rate value (e.g., "1.0x")
-   **And** I can adjust in 0.1 increments between 0.5x and 2.0x
+   **And** I can adjust in 0.1 increments between 0.7x and 1.3x
    **And** the value updates in real-time as I drag the slider
 
 4. **Given** I have configured my options and click "Generate"
@@ -56,50 +56,50 @@ So that I can customize the meditation audio style.
 
 ## Tasks / Subtasks
 
-- [ ] **Task 1: Add Slider Component to shadcn/ui** (Prerequisites: None)
-  - [ ] 1.1 Run `bunx shadcn@latest add slider` to add Slider component
-  - [ ] 1.2 Verify slider component is added to `src/components/ui/slider.tsx`
+- [x] **Task 1: Add Slider Component to shadcn/ui** (Prerequisites: None)
+  - [x] 1.1 Run `bunx shadcn@latest add slider` to add Slider component
+  - [x] 1.2 Verify slider component is added to `src/components/ui/slider.tsx`
 
-- [ ] **Task 2: Create AudioConfigModal Component** (AC: #1, #2, #3, #6, #7) (Prerequisites: Task 1)
-  - [ ] 2.1 Create `src/components/AudioConfigModal/index.tsx`
-  - [ ] 2.2 Create `src/components/AudioConfigModal/types.ts` with `AudioConfigModalProps`
-  - [ ] 2.3 Create `src/components/AudioConfigModal/constants.ts` with voice options and slider config
-  - [ ] 2.4 Create `src/components/AudioConfigModal/connect.ts` with local state management
-  - [ ] 2.5 Implement Voice Selection dropdown using `Select` from shadcn/ui
-  - [ ] 2.6 Implement Speech Rate slider using `Slider` from shadcn/ui (0.5x - 2.0x, step 0.1)
-  - [ ] 2.7 Implement modal title/description variants (generate vs regenerate)
-  - [ ] 2.8 Implement warning banner for regeneration (same pattern as ScriptGenerationModal)
-  - [ ] 2.9 Style with cyan accent colors matching GenerateAudioButton theme
+- [x] **Task 2: Create AudioConfigModal Component** (AC: #1, #2, #3, #6, #7) (Prerequisites: Task 1)
+  - [x] 2.1 Create `src/components/AudioConfigModal/index.tsx`
+  - [x] 2.2 Create `src/components/AudioConfigModal/types.ts` with `AudioConfigModalProps`
+  - [x] 2.3 Create `src/components/AudioConfigModal/constants.ts` with voice options and slider config
+  - [x] 2.4 Create `src/components/AudioConfigModal/connect.ts` with local state management
+  - [x] 2.5 Implement Voice Selection dropdown using `Select` from shadcn/ui
+  - [x] 2.6 Implement Speech Rate slider using `Slider` from shadcn/ui (0.7x - 1.3x, step 0.1)
+  - [x] 2.7 Implement modal title/description variants (generate vs regenerate)
+  - [x] 2.8 Implement warning banner for regeneration (same pattern as ScriptGenerationModal)
+  - [x] 2.9 Style with cyan accent colors matching GenerateAudioButton theme
 
-- [ ] **Task 3: Update useAudioGeneration Hook** (AC: #4) (Prerequisites: None, can run parallel)
-  - [ ] 3.1 Add `AudioConfig` interface to hook parameters
-  - [ ] 3.2 Update `generateAudio` to accept optional `config` parameter
-  - [ ] 3.3 Pass config to mutation body when provided
-  - [ ] 3.4 Verify request body payload matches `AudioConfigRequest` schema
+- [x] **Task 3: Update useAudioGeneration Hook** (AC: #4) (Prerequisites: None, can run parallel)
+  - [x] 3.1 Add `AudioConfig` interface to hook parameters
+  - [x] 3.2 Update `generateAudio` to accept optional `config` parameter
+  - [x] 3.3 Pass config to mutation body when provided
+  - [x] 3.4 Verify request body payload matches `AudioConfigRequest` schema
 
-- [ ] **Task 4: Update GenerateAudioButton to Use Modal** (AC: #1, #4, #5, #6) (Prerequisites: Task 2, Task 3)
-  - [ ] 4.1 Add modal open state to GenerateAudioButton
-  - [ ] 4.2 Import and integrate AudioConfigModal
-  - [ ] 4.3 On button click → open modal (instead of direct generation)
-  - [ ] 4.4 Pass isRegeneration prop based on lesson status (`AUDIO_COMPLETED`)
-  - [ ] 4.5 Maintain Shift+Click for quick generation (bypass modal, use defaults)
+- [x] **Task 4: Update GenerateAudioButton to Use Modal** (AC: #1, #4, #5, #6) (Prerequisites: Task 2, Task 3)
+  - [x] 4.1 Add modal open state to GenerateAudioButton
+  - [x] 4.2 Import and integrate AudioConfigModal
+  - [x] 4.3 On button click → open modal (instead of direct generation)
+  - [x] 4.4 Pass isRegeneration prop based on lesson status (`AUDIO_COMPLETED`)
+  - [x] 4.5 Maintain Shift+Click for quick generation (bypass modal, use defaults)
 
-- [ ] **Task 5: Integration into SortableLessonItem** (AC: #1, #4, #6) (Prerequisites: Task 4)
-  - [ ] 5.1 Update GenerateAudioButton integration in SortableLessonItem
-  - [ ] 5.2 Pass required props for modal (lesson info, handlers)
-  - [ ] 5.3 Verify modal opens correctly from lesson list
+- [x] **Task 5: Integration into SortableLessonItem** (AC: #1, #4, #6) (Prerequisites: Task 4)
+  - [x] 5.1 Update GenerateAudioButton integration in SortableLessonItem
+  - [x] 5.2 Pass required props for modal (lesson info, handlers)
+  - [x] 5.3 Verify modal opens correctly from lesson list
 
-- [ ] **Task 6: Testing and Validation** (AC: #1-7) (Prerequisites: Tasks 1-5 complete)
-  - [ ] 6.1 Run `bun typecheck` - verify no type errors
-  - [ ] 6.2 Run `bun lint:fix` - verify no lint errors
-  - [ ] 6.3 Manual test: Click "Generate Audio" → modal opens with correct options
-  - [ ] 6.4 Manual test: Voice dropdown shows available options
-  - [ ] 6.5 Manual test: Speech rate slider shows current value (0.8x - 1.2x)
-  - [ ] 6.6 Manual test: Configure and click "Generate" → generation starts
-  - [ ] 6.7 Manual test: "Regenerate Audio" shows warning banner
-  - [ ] 6.8 Manual test: Cancel closes modal without action
-  - [ ] 6.9 Manual test: Shift+Click bypasses modal, uses defaults
-  - [ ] 6.10 Manual test: Escape key closes modal
+- [x] **Task 6: Testing and Validation** (AC: #1-7) (Prerequisites: Tasks 1-5 complete)
+  - [x] 6.1 Run `bun typecheck` - verify no type errors
+  - [x] 6.2 Run `bun lint:fix` - verify no lint errors
+  - [x] 6.3 Manual test: Click "Generate Audio" → modal opens with correct options
+  - [x] 6.4 Manual test: Voice dropdown shows available options
+  - [x] 6.5 Manual test: Speech rate slider shows current value (0.7x - 1.3x)
+  - [x] 6.6 Manual test: Configure and click "Generate" → generation starts
+  - [x] 6.7 Manual test: "Regenerate Audio" shows warning banner
+  - [x] 6.8 Manual test: Cancel closes modal without action
+  - [x] 6.9 Manual test: Shift+Click bypasses modal, uses defaults
+  - [x] 6.10 Manual test: Escape key closes modal
 
 ## Dev Notes
 
@@ -151,8 +151,8 @@ The endpoint accepts `SingleAudioGenerationRequest | null` which wraps `AudioCon
 
 **Speed Range:**
 
-- Minimum: 0.5x
-- Maximum: 2.0x
+- Minimum: 0.7x
+- Maximum: 1.3x
 - Default: 1.0x
 - Step: 0.1 recommended for usability
 
@@ -476,7 +476,7 @@ Per WCAG 2.1 Level AA compliance:
 | ---------------------------- | ---------------------------------- |
 | Click "Generate Audio"       | Modal opens with config options    |
 | Voice dropdown               | Shows Aria, Leo options            |
-| Speech rate slider           | Adjusts 0.5x - 2.0x, shows value   |
+| Speech rate slider           | Adjusts 0.7x - 1.3x, shows value   |
 | Click "Generate"             | Modal closes, generation starts    |
 | Click "Cancel"               | Modal closes, no action            |
 | Press Escape                 | Modal closes, no action            |
