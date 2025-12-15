@@ -13,6 +13,7 @@ import {
 } from '@/components/ui/tooltip';
 import { GenerateAudioButton } from '@/containers/Main/CourseDetail/SortableLessonList/SortableLessonItem/GenerateAudioButton';
 import { GenerateScriptButton } from '@/containers/Main/CourseDetail/SortableLessonList/SortableLessonItem/GenerateScriptButton';
+import { PlayButton } from '@/containers/Main/CourseDetail/SortableLessonList/SortableLessonItem/PlayButton';
 
 import useConnect from './connect';
 import type { LessonDragOverlayProps, SortableLessonItemProps } from './types';
@@ -121,6 +122,7 @@ export function SortableLessonItem(props: SortableLessonItemProps) {
               {hasViewableScript ? 'View Script' : 'Generate script first'}
             </TooltipContent>
           </Tooltip>
+          <PlayButton lesson={lesson} />
           <GenerateScriptButton
             lesson={lesson}
             onGenerate={generateScript}

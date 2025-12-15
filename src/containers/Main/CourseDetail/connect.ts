@@ -1,5 +1,6 @@
 import { zodResolver } from '@hookform/resolvers/zod';
 import { useQueryClient } from '@tanstack/react-query';
+import { useRouter } from 'next/navigation';
 import { useEffect, useMemo, useRef, useState } from 'react';
 import { useForm } from 'react-hook-form';
 import { toast } from 'sonner';
@@ -20,6 +21,7 @@ import {
 
 export default function useConnect(courseSlug: string) {
   const queryClient = useQueryClient();
+  const router = useRouter();
   const [isLessonCreateOpen, setIsLessonCreateOpen] = useState(false);
   const [isLessonEditOpen, setIsLessonEditOpen] = useState(false);
   const [isLessonDeleteOpen, setIsLessonDeleteOpen] = useState(false);
@@ -293,19 +295,19 @@ export default function useConnect(courseSlug: string) {
       setPendingNavigationUrl(url);
       setIsUnsavedChangesModalOpen(true);
     } else {
-      // Navigate directly if no unsaved changes
-      window.location.href = url;
+      // Navigate directly if no unsaved changes - use router.push for soft navigation
+      router.push(url);
     }
   };
 
   const handleSaveAndNavigate = async () => {
     saveReorder();
     setIsUnsavedChangesModalOpen(false);
-    // Navigate after save - the mutation will complete and then navigate
+    // Navigate after save - use router.push for soft navigation
     if (pendingNavigationUrl) {
       // Small delay to allow toast to show
       setTimeout(() => {
-        window.location.href = pendingNavigationUrl;
+        router.push(pendingNavigationUrl);
       }, 500);
     }
     setPendingNavigationUrl(null);
@@ -315,7 +317,7 @@ export default function useConnect(courseSlug: string) {
     discardReorder();
     setIsUnsavedChangesModalOpen(false);
     if (pendingNavigationUrl) {
-      window.location.href = pendingNavigationUrl;
+      router.push(pendingNavigationUrl);
     }
     setPendingNavigationUrl(null);
   };
