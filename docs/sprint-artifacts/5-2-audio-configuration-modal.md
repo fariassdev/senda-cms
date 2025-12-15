@@ -101,6 +101,15 @@ So that I can customize the meditation audio style.
   - [x] 6.9 Manual test: Shift+Click bypasses modal, uses defaults
   - [x] 6.10 Manual test: Escape key closes modal
 
+- [x] **Task 7: ScriptPreview Page Integration** (AC: #1, #4, #5, #6) (Prerequisites: Task 2, Task 3)
+  - [x] 7.1 Update `ScriptPreview/FixedActionBar/types.ts` with audio modal props
+  - [x] 7.2 Update `ScriptPreview/FixedActionBar/index.tsx` with modal integration and Shift+Click logic
+  - [x] 7.3 Update `ScriptPreview/connect.ts` to add `useAudioGeneration` hook and `isAudioRegeneration` helper
+  - [x] 7.4 Update `ScriptPreview/index.tsx` to pass new props to FixedActionBar
+  - [x] 7.5 Dynamic button label: "Generate Audio" vs "Regenerate Audio" based on lesson status
+  - [x] 7.6 Shift+Click for quick generation (bypass modal)
+  - [x] 7.7 Run `bun typecheck` and `bun lint:fix` - verify no errors
+
 ## Dev Notes
 
 ### Architecture Patterns and Constraints

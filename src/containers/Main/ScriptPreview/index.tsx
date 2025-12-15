@@ -42,6 +42,9 @@ export default function ScriptPreview(props: ScriptPreviewProps) {
     handleRegenerateClick,
     handleGenerateAudio,
     handleRetry,
+    // Audio generation (Story 5.2)
+    isGeneratingAudio,
+    isAudioRegeneration,
     // Edit mode
     isEditing,
     editedContent,
@@ -175,6 +178,9 @@ export default function ScriptPreview(props: ScriptPreviewProps) {
         onGenerateAudio={handleGenerateAudio}
         onRegenerate={handleRegenerateClick}
         canGenerateAudio={canGenerateAudio}
+        isGeneratingAudio={isGeneratingAudio}
+        isAudioRegeneration={isAudioRegeneration}
+        lessonTitle={lesson?.title || ''}
         hasUnsavedChanges={hasUnsavedChanges}
         saveStatus={saveStatus}
         onSave={handleSaveScript}
