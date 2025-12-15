@@ -72,7 +72,7 @@ development_status:
   epic-5: in-progress
   5-1-generate-audio-button-and-status: done
   5-2-audio-configuration-modal: done
-  5-3-integrated-audio-player: in-progress
+  5-3-integrated-audio-player: done
   5-4-download-audio-file: backlog
   epic-5-retrospective: optional
 

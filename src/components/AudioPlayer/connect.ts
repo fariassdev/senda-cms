@@ -5,7 +5,12 @@ import {
   useAudioPlayer,
 } from '@/contexts/AudioPlayerContext';
 
-import { KEYBOARD_SHORTCUTS, SEEK_AMOUNT, VOLUME_STEP } from './constants';
+import {
+  KEYBOARD_SHORTCUTS,
+  PLAYER_HEIGHT,
+  SEEK_AMOUNT,
+  VOLUME_STEP,
+} from './constants';
 import type { UseAudioPlayerConnectResult } from './types';
 
 /**
@@ -58,12 +63,12 @@ const useConnect = (): UseAudioPlayerConnectResult => {
   const formattedCurrentTime = formatTime(progress);
   const formattedDuration = formatTime(duration);
 
-  // Determine container height based on state
+  // Determine container height based on state (using constants)
   const containerHeight = playbackError
     ? 'auto'
     : isMinimized
-      ? '60px'
-      : '120px';
+      ? `${PLAYER_HEIGHT.minimized}px`
+      : `${PLAYER_HEIGHT.expanded}px`;
 
   // Aria label for the player region
   const ariaLabel = playbackError
@@ -116,13 +121,14 @@ const useConnect = (): UseAudioPlayerConnectResult => {
     [togglePlay, seek, progress, duration, toggleMute, setVolume, volume],
   );
 
-  // Attach keyboard listener when player is active
+  // Attach keyboard listener when player is active and functional
   useEffect(() => {
-    if (!currentLesson) return;
+    // Don't attach listener if no lesson or player is in error state
+    if (!currentLesson || playbackError) return;
 
     window.addEventListener('keydown', handleKeyDown);
     return () => window.removeEventListener('keydown', handleKeyDown);
-  }, [currentLesson, handleKeyDown]);
+  }, [currentLesson, playbackError, handleKeyDown]);
 
   // Handle progress bar change
   const handleProgressChange = useCallback(
