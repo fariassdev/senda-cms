@@ -21,8 +21,8 @@ So that I can customize the meditation audio style.
 2. **Given** the modal is open
    **When** I see the Voice Selection dropdown
    **Then** I see at least 2 voice options:
-   - "Aria - Calm, soothing female voice" (or similar description)
-   - "Leo - Warm, grounding male voice" (or similar description)
+   - "Nicole - Calm, soothing female voice" (or similar description)
+   - "Bella - Warm, grounding female voice" (or similar description)
      **And** the first voice is selected by default
 
 3. **Given** the modal is open
@@ -75,7 +75,7 @@ So that I can customize the meditation audio style.
   - [ ] 3.1 Add `AudioConfig` interface to hook parameters
   - [ ] 3.2 Update `generateAudio` to accept optional `config` parameter
   - [ ] 3.3 Pass config to mutation body when provided
-  - [ ] 3.4 **NOTE:** Current API does not accept body; prepare for future API update
+  - [ ] 3.4 Verify request body payload matches `AudioConfigRequest` schema
 
 - [ ] **Task 4: Update GenerateAudioButton to Use Modal** (AC: #1, #4, #5, #6) (Prerequisites: Task 2, Task 3)
   - [ ] 4.1 Add modal open state to GenerateAudioButton
@@ -222,8 +222,16 @@ export interface AudioConfigModalProps {
 ```typescript
 // src/components/AudioConfigModal/constants.ts
 export const VOICE_OPTIONS = [
-  { value: 'aria', label: 'Aria', description: 'Calm, soothing female voice' },
-  { value: 'leo', label: 'Leo', description: 'Warm, grounding male voice' },
+  {
+    value: 'af_nicole',
+    label: 'Anah',
+    description: 'Calm, soothing female voice',
+  },
+  {
+    value: 'af_bella',
+    label: 'Bella',
+    description: 'Warm, grounding female voice',
+  },
 ] as const;
 
 export const SPEECH_RATE_CONFIG = {
@@ -281,13 +289,14 @@ const useAudioGeneration = ({
           id: lessonId,
         },
       },
-      body: {
-        content: {
-          'application/json': config ? { audio_config: config } : null,
+    generateMutation.mutate({
+      params: {
+        path: {
+          slug: courseSlug,
+          id: lessonId,
         },
-      } as unknown as {
-        content: { 'application/json': SingleAudioGenerationRequest | null };
-      }, // Cast needed until generated types match perfectly if they don't already
+      },
+      body: config ? { audio_config: config } : {},
     });
   };
 
