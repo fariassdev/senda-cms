@@ -13,10 +13,13 @@ export const SCRIPT_AVAILABLE_STATUSES: LessonStatus[] = [
 
 /**
  * Status that allows generating audio
- * Only SCRIPT_COMPLETED can trigger audio generation
+ * SCRIPT_COMPLETED: Initial audio generation
+ * AUDIO_COMPLETED: Regenerate audio (replace existing)
  */
-export const AUDIO_GENERATION_ELIGIBLE_STATUS: LessonStatus =
-  'SCRIPT_COMPLETED';
+export const AUDIO_GENERATION_ELIGIBLE_STATUSES: LessonStatus[] = [
+  'SCRIPT_COMPLETED',
+  'AUDIO_COMPLETED',
+];
 
 /**
  * Words per minute for meditation pace (slower than normal reading)

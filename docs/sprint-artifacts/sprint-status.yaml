@@ -71,7 +71,7 @@ development_status:
   # Epic 5: Audio Generation & Playback
   epic-5: in-progress
   5-1-generate-audio-button-and-status: done
-  5-2-audio-configuration-modal: backlog
+  5-2-audio-configuration-modal: done
   5-3-audio-generation-progress: backlog
   5-4-integrated-audio-player: backlog
   5-5-download-audio-file: backlog

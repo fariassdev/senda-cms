@@ -4,6 +4,9 @@ import { useQueryClient } from '@tanstack/react-query';
 import { useRouter } from 'next/navigation';
 import { useEffect, useMemo, useRef, useState } from 'react';
 import { toast } from 'sonner';
+import useAudioGeneration, {
+  type AudioConfigRequest,
+} from '@/hooks/useAudioGeneration';
 import useLessonActions from '@/hooks/useLessonActions';
 import useScriptGeneration from '@/hooks/useScriptGeneration';
 import { $api } from '@/lib/api';
@@ -15,7 +18,7 @@ import type {
 } from '@/types/models';
 
 import {
-  AUDIO_GENERATION_ELIGIBLE_STATUS,
+  AUDIO_GENERATION_ELIGIBLE_STATUSES,
   calculateScriptMetrics,
   calculateMetricsFromText,
   parseScriptText,
@@ -106,7 +109,10 @@ export default function useConnect({
 
   // Check if audio generation is eligible
   const canGenerateAudio = useMemo(() => {
-    return lesson?.status === AUDIO_GENERATION_ELIGIBLE_STATUS;
+    if (!lesson?.status) return false;
+    return AUDIO_GENERATION_ELIGIBLE_STATUSES.includes(
+      lesson.status as LessonStatus,
+    );
   }, [lesson?.status]);
 
   // Initialize useScriptGeneration hook for regeneration (Task 1.1)
@@ -120,6 +126,19 @@ export default function useConnect({
     courseSlug,
     lessonId: Number(lessonId),
   });
+
+  // Audio generation hook (Story 5.2)
+  const { generateAudio, isGenerating: isGeneratingAudio } = useAudioGeneration(
+    {
+      courseSlug,
+      lessonId: Number(lessonId),
+    },
+  );
+
+  // Check if lesson is in audio regeneration mode (already has audio)
+  const isAudioRegeneration = useMemo(() => {
+    return lesson?.status === 'AUDIO_COMPLETED';
+  }, [lesson?.status]);
 
   // Save script mutation
   const saveScriptMutation = $api.useMutation(
@@ -284,10 +303,8 @@ export default function useConnect({
     router.push(`/courses/${courseSlug}`);
   };
 
-  const handleGenerateAudio = () => {
-    // Placeholder for Story 5.x - audio generation
-    // For now, this is a no-op when enabled
-    console.log('Generate audio clicked for lesson:', lessonId);
+  const handleGenerateAudio = (config?: AudioConfigRequest) => {
+    generateAudio(config);
   };
 
   const handleRetry = () => {
@@ -312,6 +329,8 @@ export default function useConnect({
     isUpdating,
     handleUpdateAndRegenerate,
     handleGenerateAudio,
+    isGeneratingAudio,
+    isAudioRegeneration,
     handleRetry,
     courseSlug,
     textareaRef,

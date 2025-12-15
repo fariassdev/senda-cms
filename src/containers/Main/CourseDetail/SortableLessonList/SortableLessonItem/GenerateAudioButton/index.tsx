@@ -3,6 +3,10 @@
 import { Loader2, Volume2 } from 'lucide-react';
 import { useCallback } from 'react';
 
+import {
+  AudioConfigModal,
+  type AudioConfig,
+} from '@/components/AudioConfigModal';
 import { Button } from '@/components/ui/button';
 import {
   Tooltip,
@@ -21,19 +25,33 @@ export function GenerateAudioButton({
   isGenerating = false,
   className,
 }: GenerateAudioButtonProps) {
-  const { getButtonState } = useConnect();
+  const { getButtonState, isRegeneration, isModalOpen, setIsModalOpen } =
+    useConnect();
 
   const status = lesson.status as LessonStatus;
   const buttonState = getButtonState(status, isGenerating);
 
   const handleClick = useCallback(
     (e: React.MouseEvent) => {
-      // Shift+Click for quick generation (same pattern as GenerateScriptButton)
-      if (e.shiftKey || !buttonState.disabled) {
+      if (buttonState.disabled) return;
+
+      // Shift+Click for quick generation (bypass modal, use defaults)
+      if (e.shiftKey) {
         onGenerate();
+      } else {
+        // Normal click opens modal for configuration
+        setIsModalOpen(true);
       }
     },
-    [onGenerate, buttonState.disabled],
+    [onGenerate, buttonState.disabled, setIsModalOpen],
+  );
+
+  const handleGenerateFromModal = useCallback(
+    (config: AudioConfig) => {
+      // Convert modal config to API format
+      onGenerate({ voice: config.voice, speed: config.speed });
+    },
+    [onGenerate],
   );
 
   const button = (
@@ -73,16 +91,28 @@ export function GenerateAudioButton({
   );
 
   // Wrap with tooltip if there's a tooltip message
-  if (buttonState.tooltip) {
-    return (
-      <Tooltip>
-        <TooltipTrigger asChild>
-          <span>{button}</span>
-        </TooltipTrigger>
-        <TooltipContent>{buttonState.tooltip}</TooltipContent>
-      </Tooltip>
-    );
-  }
+  const buttonWithTooltip = buttonState.tooltip ? (
+    <Tooltip>
+      <TooltipTrigger asChild>
+        <span>{button}</span>
+      </TooltipTrigger>
+      <TooltipContent>{buttonState.tooltip}</TooltipContent>
+    </Tooltip>
+  ) : (
+    button
+  );
 
-  return button;
+  return (
+    <>
+      {buttonWithTooltip}
+      <AudioConfigModal
+        open={isModalOpen}
+        onOpenChange={setIsModalOpen}
+        lessonTitle={lesson.title}
+        onGenerate={handleGenerateFromModal}
+        isGenerating={isGenerating}
+        isRegeneration={isRegeneration(status)}
+      />
+    </>
+  );
 }

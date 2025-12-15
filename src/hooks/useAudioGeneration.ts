@@ -2,7 +2,14 @@ import { useQueryClient } from '@tanstack/react-query';
 import { toast } from 'sonner';
 
 import { $api } from '@/lib/api';
+import type { components } from '@/types/api';
 import type { Lesson } from '@/types/models';
+
+/**
+ * Audio configuration for generation request
+ * Matches AudioConfigRequest schema from API
+ */
+export type AudioConfigRequest = components['schemas']['AudioConfigRequest'];
 
 interface ApiError {
   detail?: Array<{ loc: (string | number)[]; msg: string; type: string }>;
@@ -75,7 +82,11 @@ const useAudioGeneration = ({
     },
   );
 
-  const generateAudio = () => {
+  /**
+   * Trigger audio generation with optional configuration
+   * @param config - Optional voice and speed settings
+   */
+  const generateAudio = (config?: AudioConfigRequest) => {
     generateMutation.mutate({
       params: {
         path: {
@@ -83,6 +94,7 @@ const useAudioGeneration = ({
           id: lessonId,
         },
       },
+      body: config ? { audio_config: config } : undefined,
     });
   };
 

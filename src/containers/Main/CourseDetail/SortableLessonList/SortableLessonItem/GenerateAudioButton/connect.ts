@@ -1,6 +1,18 @@
+import { useState } from 'react';
+
 import type { LessonStatus } from '@/types/models';
 
 export default function useConnect() {
+  const [isModalOpen, setIsModalOpen] = useState(false);
+
+  /**
+   * Determines if the lesson is in a regeneration context
+   * (already has audio that would be replaced)
+   */
+  function isRegeneration(status: LessonStatus): boolean {
+    return status === 'AUDIO_COMPLETED';
+  }
+
   /**
    * Determines button state based on lesson status for audio generation
    * Status mapping:
@@ -78,5 +90,8 @@ export default function useConnect() {
 
   return {
     getButtonState,
+    isRegeneration,
+    isModalOpen,
+    setIsModalOpen,
   };
 }
