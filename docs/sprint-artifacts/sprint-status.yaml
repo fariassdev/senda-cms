@@ -72,11 +72,8 @@ development_status:
   epic-5: in-progress
   5-1-generate-audio-button-and-status: done
   5-2-audio-configuration-modal: done
-  5-3-audio-generation-progress: backlog
-  5-4-integrated-audio-player: backlog
-  5-5-download-audio-file: backlog
-  5-6-regenerate-audio: backlog
-  5-7-batch-audio-generation: backlog
+  5-3-integrated-audio-player: backlog
+  5-4-download-audio-file: backlog
   epic-5-retrospective: optional
 
   # Epic 6: Polish & Production Readiness
@@ -88,3 +85,10 @@ development_status:
   6-5-performance-optimization: backlog
   6-6-production-deployment: backlog
   epic-6-retrospective: optional
+
+  # Epic 7: Post-MVP Features
+  epic-7: backlog
+  7-1-audio-generation-progress: backlog
+  7-2-regenerate-audio: backlog
+  7-3-batch-audio-generation: backlog
+  epic-7-retrospective: optional
