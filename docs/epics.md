@@ -707,15 +707,6 @@ This document provides the complete epic and story breakdown for Senda CMS, deco
   - "Leo - Warm, grounding male voice"
   - (etc. from available TTS voices)
 - Speech Rate: Slider 0.8x to 1.2x (default 1.0x)
-- Pitch: Slider -10% to +10% (default 0%)
-- Background Music: Dropdown
-  - "None"
-  - "Peaceful Garden"
-  - "Ocean Waves"
-  - (etc.)
-- Music Volume: Slider 0-100% (default 30%)
-
-**And** I see a "Preview" button that plays a 10-second sample with current settings
 
 **When** I click "Generate"
 **Then** generation starts with my configuration
@@ -730,9 +721,7 @@ This document provides the complete epic and story breakdown for Senda CMS, deco
 
 - Create `AudioConfigModal` component
 - Mutation body includes all config options
-- Preview calls separate endpoint: `POST /api/audio/preview`
-- Store last-used config in localStorage
-- Use `Slider` from shadcn/ui for rate/pitch/volume
+- Use `Slider` from shadcn/ui for speech rate
 
 ---
 
@@ -746,9 +735,9 @@ This document provides the complete epic and story breakdown for Senda CMS, deco
 
 **Given** audio generation is in progress
 **When** I view the lesson
-**Then** I see progress indicator with percentage
+**Then** I see a simulated progress bar (visual feedback only)
 
-**And** the progress updates via polling every 5 seconds
+**And** the status updates to COMPLETED via polling when finished
 
 **When** generation completes (100%)
 **Then** status changes to COMPLETED
@@ -764,7 +753,7 @@ This document provides the complete epic and story breakdown for Senda CMS, deco
 
 **Technical Notes:**
 
-- Backend returns `progress: number` (0-100) in lesson response
+- Backend does NOT return progress; use `SimulatedProgressBar` pattern (approx 20s)
 - Display progress bar in lesson row
 - Use same polling mechanism as script generation
 
