@@ -4,6 +4,7 @@ import { CSS } from '@dnd-kit/utilities';
 import type { CSSProperties } from 'react';
 
 import type { LessonFormData } from '@/components/LessonForm';
+import useAudioGeneration from '@/hooks/useAudioGeneration';
 import useLessonActions from '@/hooks/useLessonActions';
 import useScriptGeneration from '@/hooks/useScriptGeneration';
 import { formatTimestamp } from '@/lib/utils';
@@ -38,6 +39,14 @@ export default function useConnect({
     courseSlug,
     lessonId: lesson.id,
   });
+
+  // Audio generation
+  const { generateAudio, isGenerating: isGeneratingAudio } = useAudioGeneration(
+    {
+      courseSlug,
+      lessonId: lesson.id,
+    },
+  );
 
   // Compose: update lesson then generate script
   const updateAndGenerateScript = async (data: LessonFormData) => {
@@ -75,5 +84,7 @@ export default function useConnect({
     isUpdating,
     hasViewableScript,
     formatTimestamp,
+    generateAudio,
+    isGeneratingAudio,
   };
 }

@@ -59,7 +59,7 @@ development_status:
   epic-3-retrospective: completed
 
   # Epic 4: AI Script Generation
-  epic-4: in-progress
+  epic-4: done
   4-1-generate-script-button-and-status: done
   4-2-script-generation-configuration: done
   4-3-view-and-preview-generated-script: done
@@ -69,8 +69,8 @@ development_status:
   epic-4-retrospective: optional
 
   # Epic 5: Audio Generation & Playback
-  epic-5: backlog
-  5-1-generate-audio-button-and-status: backlog
+  epic-5: in-progress
+  5-1-generate-audio-button-and-status: done
   5-2-audio-configuration-modal: backlog
   5-3-audio-generation-progress: backlog
   5-4-integrated-audio-player: backlog
