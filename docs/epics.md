@@ -778,7 +778,7 @@ This document provides the complete epic and story breakdown for Senda CMS, deco
 
 **Given** a lesson has completed audio
 **When** I click the "Download" button/icon
-**Then** the audio file downloads with filename: `{course-slug}_{lesson-number}_{lesson-title}.mp3`
+**Then** the audio file downloads with filename: `{lesson-number}_{lesson-title}.mp3`
 
 **And** download starts immediately (no page navigation)
 
@@ -790,8 +790,7 @@ This document provides the complete epic and story breakdown for Senda CMS, deco
 **Technical Notes:**
 
 - Use `<a download>` with audio_url
-- If audio_url is S3 signed URL, may need proxy endpoint
-- Add download tracking (optional analytics)
+- Place the button in the audio player
 
 ---
 
