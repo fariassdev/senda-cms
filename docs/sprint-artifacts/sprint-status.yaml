@@ -73,7 +73,7 @@ development_status:
   5-1-generate-audio-button-and-status: done
   5-2-audio-configuration-modal: done
   5-3-integrated-audio-player: done
-  5-4-download-audio-file: backlog
+  5-4-download-audio-file: review
   epic-5-retrospective: optional
 
   # Epic 6: Polish & Production Readiness

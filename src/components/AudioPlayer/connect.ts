@@ -1,9 +1,11 @@
-import { useCallback, useEffect } from 'react';
+import { useCallback, useEffect, useState } from 'react';
+import { toast } from 'sonner';
 
 import {
   type PlaybackSpeed,
   useAudioPlayer,
 } from '@/contexts/AudioPlayerContext';
+import { sanitizeFilename } from '@/lib/utils';
 
 import {
   KEYBOARD_SHORTCUTS,
@@ -57,6 +59,9 @@ const useConnect = (): UseAudioPlayerConnectResult => {
     closePlayer,
     retryPlayback,
   } = useAudioPlayer();
+
+  // Local state for download
+  const [isDownloading, setIsDownloading] = useState(false);
 
   // Calculate derived values
   const progressPercent = duration > 0 ? (progress / duration) * 100 : 0;
@@ -155,6 +160,50 @@ const useConnect = (): UseAudioPlayerConnectResult => {
     [setSpeed],
   );
 
+  // Handle download of the current audio file
+  const handleDownload = useCallback(async () => {
+    if (!currentLesson?.audioUrl) return;
+
+    setIsDownloading(true);
+
+    try {
+      // Fetch the audio file as a blob
+      const response = await fetch(currentLesson.audioUrl);
+
+      if (!response.ok) {
+        throw new Error(`HTTP error! status: ${response.status}`);
+      }
+
+      const blob = await response.blob();
+
+      // Generate filename: [order]_[title].mp3
+      const orderPadded = String(currentLesson.lessonNumber).padStart(2, '0');
+      const sanitizedTitle = sanitizeFilename(currentLesson.title);
+      const filename = `${orderPadded}_${sanitizedTitle}.mp3`;
+
+      // Create a temporary URL for the blob
+      const blobUrl = URL.createObjectURL(blob);
+
+      // Create a temporary anchor element to trigger download
+      const anchor = document.createElement('a');
+      anchor.href = blobUrl;
+      anchor.download = filename;
+
+      // Append to body, click, and remove
+      document.body.appendChild(anchor);
+      anchor.click();
+      document.body.removeChild(anchor);
+
+      // Revoke the blob URL to free memory
+      URL.revokeObjectURL(blobUrl);
+    } catch (error) {
+      console.error('Download error:', error);
+      toast.error('Download failed. Please try again.');
+    } finally {
+      setIsDownloading(false);
+    }
+  }, [currentLesson]);
+
   return {
     // State
     isPlaying,
@@ -174,6 +223,7 @@ const useConnect = (): UseAudioPlayerConnectResult => {
     formattedDuration,
     containerHeight,
     ariaLabel,
+    isDownloading,
 
     // Controls
     togglePlay,
@@ -189,6 +239,7 @@ const useConnect = (): UseAudioPlayerConnectResult => {
     handleProgressChange,
     handleVolumeChange,
     handleSpeedChange,
+    handleDownload,
   };
 };
 

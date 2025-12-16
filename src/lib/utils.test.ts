@@ -1,5 +1,5 @@
 import { vi, describe, it, expect, beforeEach, afterEach } from 'vitest';
-import { formatTimestamp } from './utils';
+import { formatTimestamp, sanitizeFilename } from './utils';
 
 describe('formatTimestamp', () => {
   // Use Vitest's fake timers for consistent test results
@@ -54,5 +54,55 @@ describe('formatTimestamp', () => {
       const result = formatTimestamp(veryOldDate);
       expect(result).toBe('Jan 15, 2024');
     });
+  });
+});
+
+describe('sanitizeFilename', () => {
+  it('replaces spaces with underscores', () => {
+    expect(sanitizeFilename('Hello World')).toBe('Hello_World');
+  });
+
+  it('replaces special characters with underscores', () => {
+    expect(sanitizeFilename('file@name#test!')).toBe('file_name_test');
+  });
+
+  it('preserves hyphens and underscores', () => {
+    expect(sanitizeFilename('file-name_test')).toBe('file-name_test');
+  });
+
+  it('preserves alphanumeric characters', () => {
+    expect(sanitizeFilename('File123Test')).toBe('File123Test');
+  });
+
+  it('collapses multiple consecutive underscores into one', () => {
+    expect(sanitizeFilename('hello   world')).toBe('hello_world');
+    expect(sanitizeFilename('test___file')).toBe('test_file');
+  });
+
+  it('trims leading and trailing underscores', () => {
+    expect(sanitizeFilename('  test  ')).toBe('test');
+    expect(sanitizeFilename('__test__')).toBe('test');
+  });
+
+  it('handles complex real-world lesson titles', () => {
+    expect(sanitizeFilename('Lesson #1: Introduction')).toBe(
+      'Lesson_1_Introduction',
+    );
+    expect(sanitizeFilename("What's Mindfulness?")).toBe('What_s_Mindfulness');
+    expect(sanitizeFilename('Week 1 - Day 3 (Morning)')).toBe(
+      'Week_1_-_Day_3_Morning',
+    );
+  });
+
+  it('handles accented characters by replacing them', () => {
+    expect(sanitizeFilename('Méditation du matin')).toBe('M_ditation_du_matin');
+  });
+
+  it('returns empty string for input with only special characters', () => {
+    expect(sanitizeFilename('!@#$%')).toBe('');
+  });
+
+  it('handles empty string input', () => {
+    expect(sanitizeFilename('')).toBe('');
   });
 });

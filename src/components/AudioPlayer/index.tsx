@@ -2,6 +2,7 @@
 
 import {
   AlertCircle,
+  Download,
   Loader2,
   Maximize2,
   Minimize2,
@@ -51,6 +52,7 @@ export function AudioPlayer() {
     formattedDuration,
     containerHeight,
     ariaLabel,
+    isDownloading,
     togglePlay,
     toggleMute,
     toggleMinimized,
@@ -59,6 +61,7 @@ export function AudioPlayer() {
     handleProgressChange,
     handleVolumeChange,
     handleSpeedChange,
+    handleDownload,
   } = useConnect();
 
   // Don't render if no lesson is loaded
@@ -296,6 +299,22 @@ export function AudioPlayer() {
                 ))}
               </SelectContent>
             </Select>
+
+            {/* Download Button */}
+            <Button
+              variant="ghost"
+              size="icon"
+              onClick={handleDownload}
+              disabled={isDownloading}
+              className="h-8 w-8"
+              aria-label="Download audio"
+            >
+              {isDownloading ? (
+                <Loader2 className="h-4 w-4 animate-spin" />
+              ) : (
+                <Download className="h-4 w-4" />
+              )}
+            </Button>
 
             {/* Minimize Button */}
             <Button
