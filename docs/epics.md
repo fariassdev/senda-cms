@@ -56,7 +56,8 @@ This document provides the complete epic and story breakdown for Senda CMS, deco
 | FR2  | Epic 2 ✅ | Course creation with AI prompt     |
 | FR3  | Epic 3 🎯 | Stories 3.1-3.6                    |
 | FR4  | Epic 4    | Stories 4.1-4.6                    |
-| FR5  | Epic 5    | Stories 5.1-5.7                    |
+| FR5  | Epic 5    | Stories 5.1, 5.2, 5.3, 5.4         |
+| FR5  | Epic 7    | Stories 7.1-7.3                    |
 | FR6  | Epic 2 ✅ | Sidebar navigation                 |
 | FR7  | Epics 2-6 | Feedback patterns across all epics |
 | FR8  | Epic 1 ✅ | Login form, JWT auth               |
@@ -725,41 +726,7 @@ This document provides the complete epic and story breakdown for Senda CMS, deco
 
 ---
 
-### Story 5.3: Audio Generation Progress
-
-**As a** Content Manager,
-**I want** to see audio generation progress,
-**So that** I know how long until my audio is ready.
-
-**Acceptance Criteria:**
-
-**Given** audio generation is in progress
-**When** I view the lesson
-**Then** I see a simulated progress bar (visual feedback only)
-
-**And** the status updates to COMPLETED via polling when finished
-
-**When** generation completes (100%)
-**Then** status changes to COMPLETED
-**And** toast: "Audio ready for [lesson title]"
-**And** play button appears
-
-**When** generation fails
-**Then** status changes to AUDIO_FAILED
-**And** toast error: "Audio generation failed"
-**And** retry button appears
-
-**Prerequisites:** Story 5.1, Story 3.6
-
-**Technical Notes:**
-
-- Backend does NOT return progress; use `SimulatedProgressBar` pattern (approx 20s)
-- Display progress bar in lesson row
-- Use same polling mechanism as script generation
-
----
-
-### Story 5.4: Integrated Audio Player
+### Story 5.3: Integrated Audio Player
 
 **As a** Content Manager,
 **I want** to play generated audio directly in the app,
@@ -789,7 +756,7 @@ This document provides the complete epic and story breakdown for Senda CMS, deco
 
 **And** I can minimize player and navigate while audio plays
 
-**Prerequisites:** Story 5.3
+**Prerequisites:** Story 5.1, Story 3.6
 
 **Technical Notes:**
 
@@ -801,7 +768,7 @@ This document provides the complete epic and story breakdown for Senda CMS, deco
 
 ---
 
-### Story 5.5: Download Audio File
+### Story 5.4: Download Audio File
 
 **As a** Content Manager,
 **I want** to download the generated audio,
@@ -825,75 +792,6 @@ This document provides the complete epic and story breakdown for Senda CMS, deco
 - Use `<a download>` with audio_url
 - If audio_url is S3 signed URL, may need proxy endpoint
 - Add download tracking (optional analytics)
-
----
-
-### Story 5.6: Regenerate Audio
-
-**As a** Content Manager,
-**I want** to regenerate audio with different settings,
-**So that** I can improve the audio quality or change the voice.
-
-**Acceptance Criteria:**
-
-**Given** a lesson has existing audio (status COMPLETED)
-**When** I click "Regenerate Audio"
-**Then** configuration modal appears (same as Story 5.2)
-**And** warning: "This will replace the current audio file."
-
-**When** I confirm
-**Then** new generation starts
-**And** previous audio URL remains accessible until new one completes
-
-**When** regeneration completes
-**Then** new audio replaces old
-**And** player updates to new audio
-
-**Prerequisites:** Story 5.2, Story 5.4
-
-**Technical Notes:**
-
-- Same mutation as 5.1 with different config
-- Backend handles old file cleanup
-- Consider keeping last 2 versions for rollback (future)
-
----
-
-### Story 5.7: Batch Audio Generation
-
-**As a** Content Manager,
-**I want** to generate audio for all lessons with completed scripts,
-**So that** I can quickly complete an entire course.
-
-**Acceptance Criteria:**
-
-**Given** I am on course detail page
-**When** I have multiple lessons with SCRIPT_COMPLETED status
-**Then** I see "Generate All Audio" button in header
-
-**When** I click "Generate All Audio"
-**Then** confirmation modal shows:
-
-- Number of lessons to process
-- Shared audio configuration (applied to all)
-- Estimated processing time
-- Warning about server load
-
-**When** I confirm
-**Then** all eligible lessons start generating
-**And** progress summary: "Generating audio: 3/8 complete"
-
-**Given** some fail
-**Then** summary shows: "6 succeeded, 2 failed"
-**And** failed lessons have individual retry buttons
-
-**Prerequisites:** Story 5.1, Story 5.2
-
-**Technical Notes:**
-
-- Mutation: `$api.useMutation('post', '/api/courses/{id}/generate-all-audios')`
-- Progress modal with per-lesson status
-- Rate limit awareness (don't overwhelm TTS service)
 
 ---
 
@@ -1157,21 +1055,135 @@ This document provides the complete epic and story breakdown for Senda CMS, deco
 
 ---
 
+## Epic 7: Post-MVP Features
+
+**Goal:** Future enhancements and features deferred from the MVP to keep scope focused.
+
+**Status:** 🔮 Future
+
+**FRs Covered:** FR5 (Enhancements)
+
+---
+
+### Story 7.1: Audio Generation Progress
+
+**As a** Content Manager,
+**I want** to see audio generation progress,
+**So that** I know how long until my audio is ready.
+
+**Acceptance Criteria:**
+
+**Given** audio generation is in progress
+**When** I view the lesson
+**Then** I see a simulated progress bar (visual feedback only)
+
+**And** the status updates to COMPLETED via polling when finished
+
+**When** generation completes (100%)
+**Then** status changes to COMPLETED
+**And** toast: "Audio ready for [lesson title]"
+**And** play button appears
+
+**When** generation fails
+**Then** status changes to AUDIO_FAILED
+**And** toast error: "Audio generation failed"
+**And** retry button appears
+
+**Prerequisites:** Story 5.1, Story 3.6
+
+**Technical Notes:**
+
+- Backend does NOT return progress; use `SimulatedProgressBar` pattern (approx 20s)
+- Display progress bar in lesson row
+- Use same polling mechanism as script generation
+
+---
+
+### Story 7.2: Regenerate Audio
+
+**As a** Content Manager,
+**I want** to regenerate audio with different settings,
+**So that** I can improve the audio quality or change the voice.
+
+**Acceptance Criteria:**
+
+**Given** a lesson has existing audio (status COMPLETED)
+**When** I click "Regenerate Audio"
+**Then** configuration modal appears (same as Story 5.2)
+**And** warning: "This will replace the current audio file."
+
+**When** I confirm
+**Then** new generation starts
+**And** previous audio URL remains accessible until new one completes
+
+**When** regeneration completes
+**Then** new audio replaces old
+**And** player updates to new audio
+
+**Prerequisites:** Story 5.2, Story 5.4
+
+**Technical Notes:**
+
+- Same mutation as 5.1 with different config
+- Backend handles old file cleanup
+- Consider keeping last 2 versions for rollback (future)
+
+---
+
+### Story 7.3: Batch Audio Generation
+
+**As a** Content Manager,
+**I want** to generate audio for all lessons with completed scripts,
+**So that** I can quickly complete an entire course.
+
+**Acceptance Criteria:**
+
+**Given** I am on course detail page
+**When** I have multiple lessons with SCRIPT_COMPLETED status
+**Then** I see "Generate All Audio" button in header
+
+**When** I click "Generate All Audio"
+**Then** confirmation modal shows:
+
+- Number of lessons to process
+- Shared audio configuration (applied to all)
+- Estimated processing time
+- Warning about server load
+
+**When** I confirm
+**Then** all eligible lessons start generating
+**And** progress summary: "Generating audio: 3/8 complete"
+
+**Given** some fail
+**Then** summary shows: "6 succeeded, 2 failed"
+**And** failed lessons have individual retry buttons
+
+**Prerequisites:** Story 5.1, Story 5.2
+
+**Technical Notes:**
+
+- Mutation: `$api.useMutation('post', '/api/courses/{id}/generate-all-audios')`
+- Progress modal with per-lesson status
+- Rate limit awareness (don't overwhelm TTS service)
+
+---
+
 ## FR Coverage Matrix
 
-| FR   | Description         | Epic      | Stories                           | Status      |
-| ---- | ------------------- | --------- | --------------------------------- | ----------- |
-| FR1  | Course Listing      | Epic 2    | ✅                                | Complete    |
-| FR2  | Course Creation     | Epic 2    | ✅                                | Complete    |
-| FR3  | Lesson Organization | Epic 3    | 3.1, 3.2, 3.3, 3.4, 3.5, 3.6      | 🎯 Current  |
-| FR4  | Script Generation   | Epic 4    | 4.1, 4.2, 4.3, 4.4, 4.5, 4.6      | Pending     |
-| FR5  | Audio Generation    | Epic 5    | 5.1, 5.2, 5.3, 5.4, 5.5, 5.6, 5.7 | Pending     |
-| FR6  | Navigation          | Epic 2    | ✅                                | Complete    |
-| FR7  | Feedback System     | Epics 2-6 | Distributed                       | In Progress |
-| FR8  | User Authentication | Epic 1    | ✅                                | Complete    |
-| FR9  | Session Management  | Epic 1    | ✅                                | Complete    |
-| FR10 | Access Control      | Epic 1    | ✅                                | Complete    |
-| FR11 | Security Features   | Epic 1    | ✅                                | Complete    |
+| FR   | Description          | Epic      | Stories                      | Status      |
+| ---- | -------------------- | --------- | ---------------------------- | ----------- |
+| FR1  | Course Listing       | Epic 2    | ✅                           | Complete    |
+| FR2  | Course Creation      | Epic 2    | ✅                           | Complete    |
+| FR3  | Lesson Organization  | Epic 3    | 3.1, 3.2, 3.3, 3.4, 3.5, 3.6 | 🎯 Current  |
+| FR4  | Script Generation    | Epic 4    | 4.1, 4.2, 4.3, 4.4, 4.5, 4.6 | Pending     |
+| FR5  | Audio Generation     | Epic 5    | 5.1, 5.2, 5.4, 5.5           | Pending     |
+| FR5  | Audio Gen (Advanced) | Epic 7    | 7.1, 7.2, 7.3                | Backlog     |
+| FR6  | Navigation           | Epic 2    | ✅                           | Complete    |
+| FR7  | Feedback System      | Epics 2-6 | Distributed                  | In Progress |
+| FR8  | User Authentication  | Epic 1    | ✅                           | Complete    |
+| FR9  | Session Management   | Epic 1    | ✅                           | Complete    |
+| FR10 | Access Control       | Epic 1    | ✅                           | Complete    |
+| FR11 | Security Features    | Epic 1    | ✅                           | Complete    |
 
 ---
 
@@ -1183,8 +1195,9 @@ This document provides the complete epic and story breakdown for Senda CMS, deco
 | Epic 2: Course Discovery & Management | 6+ (completed) | ✅ Complete |
 | Epic 3: Lesson Management             | 6 stories      | 🎯 Current  |
 | Epic 4: AI Script Generation          | 6 stories      | ⏳ Pending  |
-| Epic 5: Audio Generation & Playback   | 7 stories      | ⏳ Pending  |
+| Epic 5: Audio Generation & Playback   | 4 stories      | ⏳ Pending  |
 | Epic 6: Polish & Production Readiness | 6 stories      | ⏳ Pending  |
+| Epic 7: Post-MVP Features             | 3 stories      | 🔮 Backlog  |
 | **Total Remaining**                   | **25 stories** |             |
 
 ---
