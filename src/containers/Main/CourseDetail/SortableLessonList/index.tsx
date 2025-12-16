@@ -82,7 +82,10 @@ export function SortableLessonList({
               <TableHead scope="col">Duration</TableHead>
               <TableHead scope="col">Status</TableHead>
               <TableHead scope="col">Updated</TableHead>
-              <TableHead scope="col">
+              <TableHead scope="col" className="w-[1%] whitespace-nowrap">
+                <span className="sr-only">Preview</span>
+              </TableHead>
+              <TableHead scope="col" className="w-[1%] whitespace-nowrap">
                 <span className="sr-only">Actions</span>
               </TableHead>
             </TableRow>
@@ -134,6 +137,7 @@ function LessonListSkeleton() {
         <Skeleton className="h-4 w-24" />
         <Skeleton className="h-4 w-20" />
         <Skeleton className="h-4 w-16" />
+        <Skeleton className="h-4 w-16" />
       </div>
       {/* Table rows skeleton */}
       {Array.from({ length: 4 }).map((_, i) => (
@@ -143,6 +147,10 @@ function LessonListSkeleton() {
           <Skeleton className="h-5 w-16" />
           <Skeleton className="h-6 w-28 rounded-full" />
           <Skeleton className="h-5 w-24" />
+          <div className="flex gap-1">
+            <Skeleton className="h-8 w-8" />
+            <Skeleton className="h-8 w-8" />
+          </div>
           <div className="flex gap-1">
             <Skeleton className="h-8 w-8" />
             <Skeleton className="h-8 w-8" />

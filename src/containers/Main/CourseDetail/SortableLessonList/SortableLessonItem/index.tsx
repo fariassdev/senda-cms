@@ -88,7 +88,7 @@ export function SortableLessonItem(props: SortableLessonItemProps) {
       </TableCell>
 
       {/* Actions */}
-      <TableCell className="text-right">
+      <TableCell className="text-right pr-2">
         <div className="flex items-center justify-end gap-1">
           <Tooltip>
             <TooltipTrigger asChild>
@@ -123,6 +123,12 @@ export function SortableLessonItem(props: SortableLessonItemProps) {
             </TooltipContent>
           </Tooltip>
           <PlayButton lesson={lesson} />
+        </div>
+      </TableCell>
+
+      {/* Actions */}
+      <TableCell className="text-right pl-0">
+        <div className="flex items-center justify-end gap-1">
           <GenerateScriptButton
             lesson={lesson}
             onGenerate={generateScript}

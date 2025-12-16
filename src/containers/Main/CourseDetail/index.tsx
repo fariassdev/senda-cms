@@ -119,7 +119,7 @@ export default function CourseDetail({ courseSlug }: CourseDetailProps) {
   }
 
   return (
-    <div className="space-y-6">
+    <div className="space-y-6 px-6">
       {/* Header with back button */}
       <div className="space-y-4">
         <Button
@@ -142,10 +142,11 @@ export default function CourseDetail({ courseSlug }: CourseDetailProps) {
       </div>
 
       {/* Course Edit Form */}
-      <div className="grid gap-6 lg:grid-cols-4">
-        <div className="lg:col-span-3">
-          <Form {...form}>
-            <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-6">
+      <Form {...form}>
+        <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-6">
+          {/* Course Information + Sidebar Grid */}
+          <div className="grid gap-6 lg:grid-cols-4">
+            <div className="lg:col-span-3">
               {/* Course Details */}
               <Card>
                 <CardHeader>
@@ -155,40 +156,90 @@ export default function CourseDetail({ courseSlug }: CourseDetailProps) {
                   </CardDescription>
                 </CardHeader>
                 <CardContent className="space-y-4">
-                  {/* Active Status Switch */}
+                  {/* Mobile-only: Course Image and Tags integrated */}
+                  <div className="lg:hidden space-y-4">
+                    {/* Course Image Section */}
+                    <div className="space-y-2">
+                      <div className="flex items-center space-x-2 text-sm font-medium">
+                        <ImageIcon className="h-4 w-4" />
+                        <span>Course Image</span>
+                      </div>
+                      {course.imagePlaceholderUrl ? (
+                        <div className="aspect-video bg-muted rounded-lg flex items-center justify-center">
+                          <Image
+                            src={course.imagePlaceholderUrl}
+                            alt="Course"
+                            width={400}
+                            height={225}
+                            className="max-w-full max-h-full object-contain rounded-lg"
+                          />
+                        </div>
+                      ) : (
+                        <div className="aspect-video bg-muted rounded-lg flex items-center justify-center">
+                          <div className="text-center">
+                            <ImageIcon className="h-12 w-12 text-muted-foreground mx-auto mb-2" />
+                            <p className="text-sm text-muted-foreground">
+                              No image uploaded
+                            </p>
+                          </div>
+                        </div>
+                      )}
+                    </div>
+
+                    {/* Tags Section */}
+                    <div className="space-y-2">
+                      <div className="flex items-center space-x-2 text-sm font-medium">
+                        <TagIcon className="h-4 w-4" />
+                        <span>Tags</span>
+                      </div>
+                      <div className="flex flex-wrap gap-2">
+                        {course.tagList && course.tagList.length > 0 ? (
+                          course.tagList.map((tag) => (
+                            <Badge key={tag} variant="secondary">
+                              {tag}
+                            </Badge>
+                          ))
+                        ) : (
+                          <p className="text-sm text-muted-foreground">
+                            No tags assigned
+                          </p>
+                        )}
+                      </div>
+                    </div>
+
+                    <div className="border-t pt-4" />
+                  </div>
+
+                  {/* Active Status Switch - Inline style */}
                   <FormField
                     control={form.control}
                     name="active"
                     render={({ field }) => (
-                      <FormItem className="rounded-lg border p-4">
-                        <div className="flex flex-col space-y-3">
-                          <div className="flex items-center space-x-2">
-                            <FormControl>
-                              <Switch
-                                checked={field.value}
-                                onCheckedChange={field.onChange}
-                              />
-                            </FormControl>
-                            <FormLabel className="text-base">
-                              Course Active
-                            </FormLabel>
-                            <Badge
-                              variant={field.value ? 'default' : 'secondary'}
-                              className={
-                                field.value
-                                  ? 'bg-green-500 hover:bg-green-600'
-                                  : 'bg-gray-500'
-                              }
-                            >
-                              {field.value ? 'Active' : 'Inactive'}
-                            </Badge>
-                          </div>
-                          <FormDescription>
-                            {field.value
-                              ? 'This course is visible and available to users'
-                              : 'This course is hidden and not available to users'}
-                          </FormDescription>
+                      <FormItem>
+                        <div className="flex items-center gap-3">
+                          <FormLabel>Course Active</FormLabel>
+                          <FormControl>
+                            <Switch
+                              checked={field.value}
+                              onCheckedChange={field.onChange}
+                            />
+                          </FormControl>
+                          <Badge
+                            variant={field.value ? 'default' : 'secondary'}
+                            className={
+                              field.value
+                                ? 'bg-green-500 hover:bg-green-600'
+                                : 'bg-gray-500'
+                            }
+                          >
+                            {field.value ? 'Active' : 'Inactive'}
+                          </Badge>
                         </div>
+                        <FormDescription>
+                          {field.value
+                            ? 'This course is visible and available to users'
+                            : 'This course is hidden and not available to users'}
+                        </FormDescription>
                       </FormItem>
                     )}
                   />
@@ -262,152 +313,154 @@ export default function CourseDetail({ courseSlug }: CourseDetailProps) {
                       </div>
                     )}
                   </div>
-                </CardContent>
-              </Card>
 
-              {/* Lessons Section */}
-              <Card>
-                <CardHeader className="flex flex-row items-center justify-between space-y-0">
-                  <div className="space-y-1.5">
-                    <CardTitle className="flex items-center space-x-2">
-                      <BookOpenIcon className="h-5 w-5" />
-                      <span>Lessons</span>
-                    </CardTitle>
-                    <CardDescription>
-                      Manage individual meditation lessons for this course
-                    </CardDescription>
-                  </div>
-                  <div className="flex items-center gap-2">
-                    {reorderState.hasUnsavedChanges && (
-                      <Button
-                        type="button"
-                        variant="outline"
-                        onClick={saveReorder}
-                        disabled={isReordering}
-                        className="border-cyan-600 text-cyan-600 hover:bg-cyan-50 hover:text-cyan-700"
-                      >
-                        <Save className="mr-2 h-4 w-4" />
-                        {isReordering ? 'Saving...' : 'Save Changes'}
-                      </Button>
-                    )}
-                    <GenerateAllScriptsButton
-                      eligibleCount={eligibleLessonCount}
-                      isGenerating={isGeneratingBatch}
-                      batchState={batchState}
-                      onClick={() => {
-                        setBatchModalInitialView('selection');
-                        setIsBatchModalOpen(true);
-                      }}
-                      onViewProgress={() => {
-                        setBatchModalInitialView('progress');
-                        setIsBatchModalOpen(true);
-                      }}
-                    />
-                    <Button
-                      type="button"
-                      onClick={handleOpenLessonCreate}
-                      className="bg-cyan-600 hover:bg-cyan-700"
-                    >
-                      <Plus className="mr-2 h-4 w-4" />
-                      Add Lesson
+                  {/* Submit Button */}
+                  <div className="flex justify-end pt-4 border-t">
+                    <Button type="submit" disabled={isUpdating}>
+                      {isUpdating ? 'Updating...' : 'Update Course'}
                     </Button>
                   </div>
+                </CardContent>
+              </Card>
+            </div>
+
+            {/* Right Sidebar - Course Image and Tags (Desktop only) */}
+            <div className="hidden lg:block lg:col-span-1 space-y-6">
+              {/* Course Image Card */}
+              <Card>
+                <CardHeader>
+                  <CardTitle className="flex items-center space-x-2">
+                    <ImageIcon className="h-5 w-5" />
+                    <span>Course Image</span>
+                  </CardTitle>
                 </CardHeader>
                 <CardContent>
-                  <SortableLessonList
-                    lessons={reorderState.displayLessons}
-                    courseSlug={courseSlug}
-                    isLoading={isLessonsLoading}
-                    isError={isLessonsError}
-                    onRetry={refetchLessons}
-                    onAddLesson={handleOpenLessonCreate}
-                    onEditLesson={handleEditLesson}
-                    onDeleteLesson={handleDeleteLesson}
-                    onReorder={handleLocalReorder}
-                    isReordering={isReordering}
-                  />
+                  {course.imagePlaceholderUrl ? (
+                    <div className="aspect-video bg-muted rounded-lg flex items-center justify-center">
+                      <Image
+                        src={course.imagePlaceholderUrl}
+                        alt="Course"
+                        width={400}
+                        height={225}
+                        className="max-w-full max-h-full object-contain rounded-lg"
+                      />
+                    </div>
+                  ) : (
+                    <div className="aspect-video bg-muted rounded-lg flex items-center justify-center">
+                      <div className="text-center">
+                        <ImageIcon className="h-12 w-12 text-muted-foreground mx-auto mb-2" />
+                        <p className="text-sm text-muted-foreground">
+                          No image uploaded
+                        </p>
+                      </div>
+                    </div>
+                  )}
+                  <p className="text-xs text-muted-foreground mt-2">
+                    Image upload functionality coming soon
+                  </p>
                 </CardContent>
               </Card>
 
-              {/* Submit Button */}
-              <div className="flex justify-end">
-                <Button type="submit" disabled={isUpdating}>
-                  {isUpdating ? 'Updating...' : 'Update Course'}
-                </Button>
-              </div>
-            </form>
-          </Form>
-        </div>
-
-        {/* Right Sidebar - Course Image and Tags */}
-        <div className="lg:col-span-1 space-y-6">
-          {/* Course Image Card */}
-          <Card className="sticky top-6">
-            <CardHeader>
-              <CardTitle className="flex items-center space-x-2">
-                <ImageIcon className="h-5 w-5" />
-                <span>Course Image</span>
-              </CardTitle>
-            </CardHeader>
-            <CardContent>
-              {course.imagePlaceholderUrl ? (
-                <div className="aspect-video bg-muted rounded-lg flex items-center justify-center">
-                  <Image
-                    src={course.imagePlaceholderUrl}
-                    alt="Course"
-                    width={400}
-                    height={225}
-                    className="max-w-full max-h-full object-contain rounded-lg"
-                  />
-                </div>
-              ) : (
-                <div className="aspect-video bg-muted rounded-lg flex items-center justify-center">
-                  <div className="text-center">
-                    <ImageIcon className="h-12 w-12 text-muted-foreground mx-auto mb-2" />
-                    <p className="text-sm text-muted-foreground">
-                      No image uploaded
-                    </p>
+              {/* Tags Card - Read-only for now */}
+              <Card>
+                <CardHeader>
+                  <CardTitle className="flex items-center space-x-2">
+                    <TagIcon className="h-5 w-5" />
+                    <span>Tags</span>
+                  </CardTitle>
+                  <CardDescription>
+                    Course categories and topics
+                  </CardDescription>
+                </CardHeader>
+                <CardContent className="space-y-4">
+                  <div className="flex flex-wrap gap-2">
+                    {course.tagList && course.tagList.length > 0 ? (
+                      course.tagList.map((tag) => (
+                        <Badge key={tag} variant="secondary">
+                          {tag}
+                        </Badge>
+                      ))
+                    ) : (
+                      <p className="text-sm text-muted-foreground">
+                        No tags assigned
+                      </p>
+                    )}
                   </div>
-                </div>
-              )}
-              <p className="text-xs text-muted-foreground mt-2">
-                Image upload functionality coming soon
-              </p>
-            </CardContent>
-          </Card>
-
-          {/* Tags Card - Read-only for now */}
-          <Card>
-            <CardHeader>
-              <CardTitle className="flex items-center space-x-2">
-                <TagIcon className="h-5 w-5" />
-                <span>Tags</span>
-              </CardTitle>
-              <CardDescription>Course categories and topics</CardDescription>
-            </CardHeader>
-            <CardContent className="space-y-4">
-              <div className="flex flex-wrap gap-2">
-                {course.tagList && course.tagList.length > 0 ? (
-                  course.tagList.map((tag) => (
-                    <Badge key={tag} variant="secondary">
-                      {tag}
-                    </Badge>
-                  ))
-                ) : (
-                  <p className="text-sm text-muted-foreground">
-                    No tags assigned
+                  <p className="text-xs text-muted-foreground">
+                    Tag management coming soon
                   </p>
-                )}
-              </div>
-              <p className="text-xs text-muted-foreground">
-                Tag management coming soon
-              </p>
-            </CardContent>
-          </Card>
-        </div>
-      </div>
+                </CardContent>
+              </Card>
+            </div>
+          </div>
+        </form>
+      </Form>
 
-      {/* Lesson Modals - Outside the form grid to prevent submit interference */}
+      {/* Lessons Section - Full width, outside of form */}
+      <Card>
+        <CardHeader className="flex flex-row items-center justify-between space-y-0">
+          <div className="space-y-1.5">
+            <CardTitle className="flex items-center space-x-2">
+              <BookOpenIcon className="h-5 w-5" />
+              <span>Lessons</span>
+            </CardTitle>
+            <CardDescription>
+              Manage individual meditation lessons for this course
+            </CardDescription>
+          </div>
+          <div className="flex items-center gap-2">
+            {reorderState.hasUnsavedChanges && (
+              <Button
+                type="button"
+                variant="outline"
+                onClick={saveReorder}
+                disabled={isReordering}
+                className="border-cyan-600 text-cyan-600 hover:bg-cyan-50 hover:text-cyan-700"
+              >
+                <Save className="mr-2 h-4 w-4" />
+                {isReordering ? 'Saving...' : 'Save Changes'}
+              </Button>
+            )}
+            <GenerateAllScriptsButton
+              eligibleCount={eligibleLessonCount}
+              isGenerating={isGeneratingBatch}
+              batchState={batchState}
+              onClick={() => {
+                setBatchModalInitialView('selection');
+                setIsBatchModalOpen(true);
+              }}
+              onViewProgress={() => {
+                setBatchModalInitialView('progress');
+                setIsBatchModalOpen(true);
+              }}
+            />
+            <Button
+              type="button"
+              onClick={handleOpenLessonCreate}
+              className="bg-cyan-600 hover:bg-cyan-700"
+            >
+              <Plus className="mr-2 h-4 w-4" />
+              Add Lesson
+            </Button>
+          </div>
+        </CardHeader>
+        <CardContent>
+          <SortableLessonList
+            lessons={reorderState.displayLessons}
+            courseSlug={courseSlug}
+            isLoading={isLessonsLoading}
+            isError={isLessonsError}
+            onRetry={refetchLessons}
+            onAddLesson={handleOpenLessonCreate}
+            onEditLesson={handleEditLesson}
+            onDeleteLesson={handleDeleteLesson}
+            onReorder={handleLocalReorder}
+            isReordering={isReordering}
+          />
+        </CardContent>
+      </Card>
+
+      {/* Lesson Modals */}
       <LessonCreate
         courseSlug={courseSlug}
         nextLessonNumber={nextLessonNumber}
@@ -490,7 +543,7 @@ export default function CourseDetail({ courseSlug }: CourseDetailProps) {
 
 function CourseDetailSkeleton() {
   return (
-    <div className="space-y-6">
+    <div className="space-y-6 px-6">
       {/* Header with back button */}
       <div className="space-y-4">
         <Skeleton className="h-10 w-32" />
@@ -604,7 +657,7 @@ function CourseDetailError({
       : 'An unexpected error occurred while loading the course.';
 
   return (
-    <div className="space-y-6">
+    <div className="space-y-6 px-6">
       <div className="space-y-2">
         <h1 className="text-3xl font-bold tracking-tight">Course Details</h1>
         <p className="text-muted-foreground">
@@ -628,7 +681,7 @@ function CourseDetailError({
 
 function CourseNotFound() {
   return (
-    <div className="space-y-6">
+    <div className="space-y-6 px-6">
       <div className="space-y-2">
         <h1 className="text-3xl font-bold tracking-tight">Course Not Found</h1>
         <p className="text-muted-foreground">
