@@ -805,42 +805,7 @@ This document provides the complete epic and story breakdown for Senda CMS, deco
 
 ---
 
-### Story 6.1: Skeleton Loaders for All Views
-
-**As a** user,
-**I want** to see loading skeletons while content loads,
-**So that** I have visual feedback and the page doesn't jump around.
-
-**Acceptance Criteria:**
-
-**Given** I navigate to any page with async data
-**When** the data is loading
-**Then** I see skeleton placeholders matching the content layout:
-
-- Course list: Card-shaped skeletons in grid
-- Course detail: Header skeleton + lesson list skeletons
-- Script viewer: Text block skeletons
-- Audio player: Player control skeletons
-
-**And** skeletons have subtle pulse animation
-
-**When** data loads
-**Then** skeletons fade out and real content fades in
-
-**And** there is no layout shift (CLS < 0.1)
-
-**Prerequisites:** Epics 2-5 complete
-
-**Technical Notes:**
-
-- Use `Skeleton` from shadcn/ui
-- Create skeleton variants for each component type
-- Match exact dimensions to prevent layout shift
-- Use `Suspense` boundaries where appropriate
-
----
-
-### Story 6.2: Full Responsive Design
+### Story 6.1: Full Responsive Design
 
 **As a** user on tablet or mobile,
 **I want** the CMS to work well on my device,
@@ -882,136 +847,7 @@ This document provides the complete epic and story breakdown for Senda CMS, deco
 
 ---
 
-### Story 6.3: Error Boundaries and Graceful Degradation
-
-**As a** user,
-**I want** errors to be handled gracefully,
-**So that** one error doesn't break the entire application.
-
-**Acceptance Criteria:**
-
-**Given** a component throws an error
-**When** I'm viewing that section
-**Then** only that section shows an error state:
-
-- Friendly error message
-- "Try again" button
-- Option to "Report issue" (logs to console for now)
-
-**And** the rest of the app remains functional
-
-**Given** the API is completely unavailable
-**Then** I see a full-page error state:
-
-- "Unable to connect to server"
-- Automatic retry every 30 seconds
-- Manual "Retry now" button
-
-**Given** my session expires
-**Then** I see a modal: "Session expired. Please log in again."
-**And** I'm redirected to login after clicking OK
-
-**Prerequisites:** Epics 1-5 complete
-
-**Technical Notes:**
-
-- Create `ErrorBoundary` component using React error boundary pattern
-- Wrap each major section (sidebar, main content, modals)
-- Log errors to console (future: Sentry integration)
-- Use `error.tsx` and `global-error.tsx` in Next.js App Router
-
----
-
-### Story 6.4: Accessibility Compliance (WCAG AA)
-
-**As a** user with disabilities,
-**I want** the CMS to be fully accessible,
-**So that** I can use it with assistive technologies.
-
-**Acceptance Criteria:**
-
-**Given** I navigate with keyboard only
-**Then** I can:
-
-- Tab through all interactive elements in logical order
-- See visible focus indicators (cyan ring)
-- Activate buttons with Enter/Space
-- Navigate menus with arrow keys
-- Close modals with Escape
-
-**Given** I use a screen reader
-**Then** I hear:
-
-- Page titles announced on navigation
-- Button labels and states ("Generate Script button, disabled")
-- Form labels and error messages
-- Status changes ("Script generation complete")
-- Progress updates ("Loading, 50% complete")
-
-**And** all images have alt text
-**And** color is never the only indicator (icons + text for status)
-**And** contrast ratio is 4.5:1 minimum for text
-
-**When** I run Lighthouse accessibility audit
-**Then** score is 90+ on all pages
-
-**Prerequisites:** Epics 2-5 complete
-
-**Technical Notes:**
-
-- Use semantic HTML (button, nav, main, etc.)
-- Add `aria-label` to icon-only buttons
-- Use `aria-live` for dynamic content updates
-- Test with NVDA (Windows) or VoiceOver (Mac)
-- Run axe DevTools browser extension
-
----
-
-### Story 6.5: Performance Optimization
-
-**As a** user,
-**I want** the app to load and respond quickly,
-**So that** I can work efficiently without waiting.
-
-**Acceptance Criteria:**
-
-**Given** I load the course list page
-**Then** LCP (Largest Contentful Paint) is < 2.5 seconds
-
-**Given** I interact with any button or input
-**Then** FID (First Input Delay) is < 100ms
-
-**Given** content loads on any page
-**Then** CLS (Cumulative Layout Shift) is < 0.1
-
-**And** bundle size is optimized:
-
-- Code splitting for heavy components (editor, audio player)
-- Lazy loading for images
-- Tree-shaking for unused code
-
-**And** API responses are cached:
-
-- Course list: 5 min stale time
-- Single course: 2 min stale time
-- Fresh data on mutations
-
-**When** I run Lighthouse performance audit
-**Then** score is 85+ on all pages
-
-**Prerequisites:** Epics 2-5 complete
-
-**Technical Notes:**
-
-- Use Next.js dynamic imports: `const Editor = dynamic(() => import('./Editor'))`
-- Use `next/image` for optimized images
-- Verify React Query cache settings
-- Analyze bundle with `@next/bundle-analyzer`
-- Remove unused dependencies
-
----
-
-### Story 6.6: Production Deployment
+### Story 6.2: Production Deployment
 
 **As a** project owner,
 **I want** the CMS deployed to production,
@@ -1043,7 +879,7 @@ This document provides the complete epic and story breakdown for Senda CMS, deco
 **Then** team is notified (Vercel email/Slack)
 **And** previous version remains active
 
-**Prerequisites:** Stories 6.1-6.5 complete
+**Prerequisites:** Story 6.1 complete
 
 **Technical Notes:**
 
@@ -1165,6 +1001,170 @@ This document provides the complete epic and story breakdown for Senda CMS, deco
 - Mutation: `$api.useMutation('post', '/api/courses/{id}/generate-all-audios')`
 - Progress modal with per-lesson status
 - Rate limit awareness (don't overwhelm TTS service)
+
+---
+
+### Story 7.4: Skeleton Loaders for All Views
+
+**As a** user,
+**I want** to see loading skeletons while content loads,
+**So that** I have visual feedback and the page doesn't jump around.
+
+**Acceptance Criteria:**
+
+**Given** I navigate to any page with async data
+**When** the data is loading
+**Then** I see skeleton placeholders matching the content layout:
+
+- Course list: Card-shaped skeletons in grid
+- Course detail: Header skeleton + lesson list skeletons
+- Script viewer: Text block skeletons
+- Audio player: Player control skeletons
+
+**And** skeletons have subtle pulse animation
+
+**When** data loads
+**Then** skeletons fade out and real content fades in
+
+**And** there is no layout shift (CLS < 0.1)
+
+**Prerequisites:** Epics 2-5 complete
+
+**Technical Notes:**
+
+- Use `Skeleton` from shadcn/ui
+- Create skeleton variants for each component type
+- Match exact dimensions to prevent layout shift
+- Use `Suspense` boundaries where appropriate
+
+---
+
+### Story 7.5: Error Boundaries and Graceful Degradation
+
+**As a** user,
+**I want** errors to be handled gracefully,
+**So that** one error doesn't break the entire application.
+
+**Acceptance Criteria:**
+
+**Given** a component throws an error
+**When** I'm viewing that section
+**Then** only that section shows an error state:
+
+- Friendly error message
+- "Try again" button
+- Option to "Report issue" (logs to console for now)
+
+**And** the rest of the app remains functional
+
+**Given** the API is completely unavailable
+**Then** I see a full-page error state:
+
+- "Unable to connect to server"
+- Automatic retry every 30 seconds
+- Manual "Retry now" button
+
+**Given** my session expires
+**Then** I see a modal: "Session expired. Please log in again."
+**And** I'm redirected to login after clicking OK
+
+**Prerequisites:** Epics 1-5 complete
+
+**Technical Notes:**
+
+- Create `ErrorBoundary` component using React error boundary pattern
+- Wrap each major section (sidebar, main content, modals)
+- Log errors to console (future: Sentry integration)
+- Use `error.tsx` and `global-error.tsx` in Next.js App Router
+
+---
+
+### Story 7.6: Performance Optimization
+
+**As a** user,
+**I want** the app to load and respond quickly,
+**So that** I can work efficiently without waiting.
+
+**Acceptance Criteria:**
+
+**Given** I load the course list page
+**Then** LCP (Largest Contentful Paint) is < 2.5 seconds
+
+**Given** I interact with any button or input
+**Then** FID (First Input Delay) is < 100ms
+
+**Given** content loads on any page
+**Then** CLS (Cumulative Layout Shift) is < 0.1
+
+**And** bundle size is optimized:
+
+- Code splitting for heavy components (editor, audio player)
+- Lazy loading for images
+- Tree-shaking for unused code
+
+**And** API responses are cached:
+
+- Course list: 5 min stale time
+- Single course: 2 min stale time
+- Fresh data on mutations
+
+**When** I run Lighthouse performance audit
+**Then** score is 85+ on all pages
+
+**Prerequisites:** Epics 2-5 complete
+
+**Technical Notes:**
+
+- Use Next.js dynamic imports: `const Editor = dynamic(() => import('./Editor'))`
+- Use `next/image` for optimized images
+- Verify React Query cache settings
+- Analyze bundle with `@next/bundle-analyzer`
+- Remove unused dependencies
+
+---
+
+### Story 7.7: Accessibility Compliance (WCAG AA)
+
+**As a** user with disabilities,
+**I want** the CMS to be fully accessible,
+**So that** I can use it with assistive technologies.
+
+**Acceptance Criteria:**
+
+**Given** I navigate with keyboard only
+**Then** I can:
+
+- Tab through all interactive elements in logical order
+- See visible focus indicators (cyan ring)
+- Activate buttons with Enter/Space
+- Navigate menus with arrow keys
+- Close modals with Escape
+
+**Given** I use a screen reader
+**Then** I hear:
+
+- Page titles announced on navigation
+- Button labels and states ("Generate Script button, disabled")
+- Form labels and error messages
+- Status changes ("Script generation complete")
+- Progress updates ("Loading, 50% complete")
+
+**And** all images have alt text
+**And** color is never the only indicator (icons + text for status)
+**And** contrast ratio is 4.5:1 minimum for text
+
+**When** I run Lighthouse accessibility audit
+**Then** score is 90+ on all pages
+
+**Prerequisites:** Epics 2-5 complete
+
+**Technical Notes:**
+
+- Use semantic HTML (button, nav, main, etc.)
+- Add `aria-label` to icon-only buttons
+- Use `aria-live` for dynamic content updates
+- Test with NVDA (Windows) or VoiceOver (Mac)
+- Run axe DevTools browser extension
 
 ---
 
