@@ -69,12 +69,12 @@ development_status:
   epic-4-retrospective: optional
 
   # Epic 5: Audio Generation & Playback
-  epic-5: in-progress
+  epic-5: done
   5-1-generate-audio-button-and-status: done
   5-2-audio-configuration-modal: done
   5-3-integrated-audio-player: done
-  5-4-download-audio-file: review
-  epic-5-retrospective: optional
+  5-4-download-audio-file: done
+  epic-5-retrospective: completed
 
   # Epic 6: Polish & Production Readiness
   epic-6: backlog
