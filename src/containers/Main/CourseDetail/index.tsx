@@ -156,60 +156,6 @@ export default function CourseDetail({ courseSlug }: CourseDetailProps) {
                   </CardDescription>
                 </CardHeader>
                 <CardContent className="space-y-4">
-                  {/* Mobile-only: Course Image and Tags integrated */}
-                  <div className="lg:hidden space-y-4">
-                    {/* Course Image Section */}
-                    <div className="space-y-2">
-                      <div className="flex items-center space-x-2 text-sm font-medium">
-                        <ImageIcon className="h-4 w-4" />
-                        <span>Course Image</span>
-                      </div>
-                      {course.imagePlaceholderUrl ? (
-                        <div className="aspect-video bg-muted rounded-lg flex items-center justify-center">
-                          <Image
-                            src={course.imagePlaceholderUrl}
-                            alt="Course"
-                            width={400}
-                            height={225}
-                            className="max-w-full max-h-full object-contain rounded-lg"
-                          />
-                        </div>
-                      ) : (
-                        <div className="aspect-video bg-muted rounded-lg flex items-center justify-center">
-                          <div className="text-center">
-                            <ImageIcon className="h-12 w-12 text-muted-foreground mx-auto mb-2" />
-                            <p className="text-sm text-muted-foreground">
-                              No image uploaded
-                            </p>
-                          </div>
-                        </div>
-                      )}
-                    </div>
-
-                    {/* Tags Section */}
-                    <div className="space-y-2">
-                      <div className="flex items-center space-x-2 text-sm font-medium">
-                        <TagIcon className="h-4 w-4" />
-                        <span>Tags</span>
-                      </div>
-                      <div className="flex flex-wrap gap-2">
-                        {course.tagList && course.tagList.length > 0 ? (
-                          course.tagList.map((tag) => (
-                            <Badge key={tag} variant="secondary">
-                              {tag}
-                            </Badge>
-                          ))
-                        ) : (
-                          <p className="text-sm text-muted-foreground">
-                            No tags assigned
-                          </p>
-                        )}
-                      </div>
-                    </div>
-
-                    <div className="border-t pt-4" />
-                  </div>
-
                   {/* Active Status Switch - Inline style */}
                   <FormField
                     control={form.control}
@@ -243,6 +189,34 @@ export default function CourseDetail({ courseSlug }: CourseDetailProps) {
                       </FormItem>
                     )}
                   />
+
+                  {/* Mobile-only: Course Image - After switch */}
+                  <div className="lg:hidden space-y-2">
+                    <div className="flex items-center space-x-2 text-sm font-medium">
+                      <ImageIcon className="h-4 w-4" />
+                      <span>Course Image</span>
+                    </div>
+                    {course.imagePlaceholderUrl ? (
+                      <div className="aspect-video bg-muted rounded-lg flex items-center justify-center">
+                        <Image
+                          src={course.imagePlaceholderUrl}
+                          alt="Course"
+                          width={400}
+                          height={225}
+                          className="max-w-full max-h-full object-contain rounded-lg"
+                        />
+                      </div>
+                    ) : (
+                      <div className="aspect-video bg-muted rounded-lg flex items-center justify-center">
+                        <div className="text-center">
+                          <ImageIcon className="h-12 w-12 text-muted-foreground mx-auto mb-2" />
+                          <p className="text-sm text-muted-foreground">
+                            No image uploaded
+                          </p>
+                        </div>
+                      </div>
+                    )}
+                  </div>
 
                   <FormField
                     control={form.control}
@@ -289,6 +263,27 @@ export default function CourseDetail({ courseSlug }: CourseDetailProps) {
                         <strong>Author:</strong>{' '}
                         {course.author?.username || 'Unknown'}
                       </span>
+                    </div>
+                  </div>
+
+                  {/* Mobile-only: Tags Section - After Author */}
+                  <div className="lg:hidden space-y-2">
+                    <div className="flex items-center space-x-2 text-sm font-medium">
+                      <TagIcon className="h-4 w-4" />
+                      <span>Tags</span>
+                    </div>
+                    <div className="flex flex-wrap gap-2">
+                      {course.tagList && course.tagList.length > 0 ? (
+                        course.tagList.map((tag) => (
+                          <Badge key={tag} variant="secondary">
+                            {tag}
+                          </Badge>
+                        ))
+                      ) : (
+                        <p className="text-sm text-muted-foreground">
+                          No tags assigned
+                        </p>
+                      )}
                     </div>
                   </div>
 
