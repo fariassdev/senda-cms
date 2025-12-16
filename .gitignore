@@ -44,3 +44,7 @@ next-env.d.ts
 # BMAD method
 .bmad
 .github/chatmodes/bmad-*
+.github/agents/bmd-*
+.claude/
+docs/*.old.md
+.agent/**/bmad-*
