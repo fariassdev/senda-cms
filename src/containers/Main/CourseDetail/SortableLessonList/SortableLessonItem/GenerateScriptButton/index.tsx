@@ -23,7 +23,6 @@ export function GenerateScriptButton({
 
   const status = lesson.status as LessonStatus;
   const buttonState = getButtonState(status, isGenerating);
-  const isPrimary = buttonState.variant === 'default';
 
   const handleClick = useCallback(
     (e: React.MouseEvent) => {
@@ -48,14 +47,6 @@ export function GenerateScriptButton({
         className={cn(
           // Base styles - ensure minimum touch target
           'min-h-[36px] min-w-[36px]',
-          // Primary variant (Generate Script): solid cyan background
-          isPrimary && 'bg-[#7dcfff] text-slate-900 hover:bg-[#7dcfff]/90',
-          // Secondary variant (Regenerate): cyan border and text
-          !isPrimary &&
-            !buttonState.disabled &&
-            'border-[#7dcfff] text-[#7dcfff] hover:bg-[#7dcfff]/10',
-          // Focus state: visible cyan outline
-          'focus-visible:ring-[#7dcfff] focus-visible:ring-2',
           // Responsive: hide text on small screens, show only icon, fixed width on desktop
           'px-2 sm:px-0 sm:w-[155px]',
           className,

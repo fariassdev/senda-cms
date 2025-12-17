@@ -62,13 +62,10 @@ export function GenerateAudioButton({
       className={cn(
         // Base styles - ensure minimum touch target
         'min-h-[36px] min-w-[36px]',
-        // Cyan outline styling for audio button
+        // Primary outline styling for audio button
         !buttonState.disabled &&
-          'border-[#7dcfff] text-[#7dcfff] hover:bg-[#7dcfff]/10',
-        // Focus state: visible cyan outline
-        'focus-visible:ring-[#7dcfff] focus-visible:ring-2',
-        // Responsive: hide text on small screens, show only icon, fixed width on desktop
-        'px-2 sm:px-0 sm:w-[155px]',
+          // Responsive: hide text on small screens, show only icon, fixed width on desktop
+          'px-2 sm:px-0 sm:w-[155px]',
         className,
       )}
       onClick={handleClick}

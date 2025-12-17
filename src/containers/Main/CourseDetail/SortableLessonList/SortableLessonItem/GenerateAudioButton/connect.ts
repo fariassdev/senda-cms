@@ -70,7 +70,7 @@ export default function useConnect() {
     // SCRIPT_COMPLETED - ready to generate audio
     if (status === 'SCRIPT_COMPLETED') {
       return {
-        variant: 'outline' as const,
+        variant: 'default' as const,
         label: 'Generate Audio',
         icon: 'volume' as const,
         disabled: false,
