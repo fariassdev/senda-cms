@@ -804,49 +804,7 @@ This document provides the complete epic and story breakdown for Senda CMS, deco
 
 ---
 
-### Story 6.1: Full Responsive Design
-
-**As a** user on tablet or mobile,
-**I want** the CMS to work well on my device,
-**So that** I can manage content on the go.
-
-**Acceptance Criteria:**
-
-**Given** I access the CMS on a tablet (768px - 1024px)
-**Then** the layout adapts:
-
-- Sidebar collapses automatically
-- Course grid shows 2 columns
-- Tables show essential columns only
-- Touch targets are 44px minimum
-
-**Given** I access on mobile (< 768px)
-**Then** the layout adapts:
-
-- Sidebar hidden, accessible via hamburger menu
-- Course grid shows 1 column
-- Tables become card-based lists
-- Full-width modals
-- Bottom-fixed action buttons
-
-**And** all interactions work with touch:
-
-- Tap to select/open
-- Swipe for actions (optional)
-- Pinch-zoom disabled (not needed)
-
-**Prerequisites:** Epics 2-5 complete
-
-**Technical Notes:**
-
-- Tailwind responsive classes: `sm:`, `md:`, `lg:`
-- Test with Chrome DevTools device emulation
-- Test on real devices if available
-- Use `@container` queries for component-level responsiveness
-
----
-
-### Story 6.2: Production Deployment
+### Story 6.1: Production Deployment
 
 **As a** project owner,
 **I want** the CMS deployed to production,
@@ -878,7 +836,7 @@ This document provides the complete epic and story breakdown for Senda CMS, deco
 **Then** team is notified (Vercel email/Slack)
 **And** previous version remains active
 
-**Prerequisites:** Story 6.1 complete
+**Prerequisites:** Epics 2-5 complete
 
 **Technical Notes:**
 
@@ -1027,7 +985,7 @@ This document provides the complete epic and story breakdown for Senda CMS, deco
 
 **And** there is no layout shift (CLS < 0.1)
 
-**Prerequisites:** Epics 2-5 complete
+**Prerequisites:** Epics 2-6 complete
 
 **Technical Notes:**
 
@@ -1067,7 +1025,7 @@ This document provides the complete epic and story breakdown for Senda CMS, deco
 **Then** I see a modal: "Session expired. Please log in again."
 **And** I'm redirected to login after clicking OK
 
-**Prerequisites:** Epics 1-5 complete
+**Prerequisites:** Epics 1-6 complete
 
 **Technical Notes:**
 
@@ -1078,7 +1036,49 @@ This document provides the complete epic and story breakdown for Senda CMS, deco
 
 ---
 
-### Story 7.6: Performance Optimization
+### Story 7.6: Full Responsive Design
+
+**As a** user on tablet or mobile,
+**I want** the CMS to work well on my device,
+**So that** I can manage content on the go.
+
+**Acceptance Criteria:**
+
+**Given** I access the CMS on a tablet (768px - 1024px)
+**Then** the layout adapts:
+
+- Sidebar collapses automatically
+- Course grid shows 2 columns
+- Tables show essential columns only
+- Touch targets are 44px minimum
+
+**Given** I access on mobile (< 768px)
+**Then** the layout adapts:
+
+- Sidebar hidden, accessible via hamburger menu
+- Course grid shows 1 column
+- Tables become card-based lists
+- Full-width modals
+- Bottom-fixed action buttons
+
+**And** all interactions work with touch:
+
+- Tap to select/open
+- Swipe for actions (optional)
+- Pinch-zoom disabled (not needed)
+
+**Prerequisites:** Epics 2-6 complete
+
+**Technical Notes:**
+
+- Tailwind responsive classes: `sm:`, `md:`, `lg:`
+- Test with Chrome DevTools device emulation
+- Test on real devices if available
+- Use `@container` queries for component-level responsiveness
+
+---
+
+### Story 7.7: Performance Optimization
 
 **As a** user,
 **I want** the app to load and respond quickly,
@@ -1110,7 +1110,7 @@ This document provides the complete epic and story breakdown for Senda CMS, deco
 **When** I run Lighthouse performance audit
 **Then** score is 85+ on all pages
 
-**Prerequisites:** Epics 2-5 complete
+**Prerequisites:** Epics 2-6 complete
 
 **Technical Notes:**
 
@@ -1122,7 +1122,7 @@ This document provides the complete epic and story breakdown for Senda CMS, deco
 
 ---
 
-### Story 7.7: Accessibility Compliance (WCAG AA)
+### Story 7.8: Accessibility Compliance (WCAG AA)
 
 **As a** user with disabilities,
 **I want** the CMS to be fully accessible,
@@ -1155,7 +1155,7 @@ This document provides the complete epic and story breakdown for Senda CMS, deco
 **When** I run Lighthouse accessibility audit
 **Then** score is 90+ on all pages
 
-**Prerequisites:** Epics 2-5 complete
+**Prerequisites:** Epics 2-6 complete
 
 **Technical Notes:**
 
@@ -1178,7 +1178,7 @@ This document provides the complete epic and story breakdown for Senda CMS, deco
 | FR5  | Audio Generation     | Epic 5    | 5.1, 5.2, 5.4, 5.5           | Pending     |
 | FR5  | Audio Gen (Advanced) | Epic 7    | 7.1, 7.2, 7.3                | Backlog     |
 | FR6  | Navigation           | Epic 2    | ✅                           | Complete    |
-| FR7  | Feedback System      | Epics 2-6 | Distributed                  | In Progress |
+| FR7  | Feedback System      | Epics 2-7 | Distributed                  | In Progress |
 | FR8  | User Authentication  | Epic 1    | ✅                           | Complete    |
 | FR9  | Session Management   | Epic 1    | ✅                           | Complete    |
 | FR10 | Access Control       | Epic 1    | ✅                           | Complete    |

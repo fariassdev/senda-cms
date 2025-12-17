@@ -78,8 +78,7 @@ development_status:
 
   # Epic 6: Polish & Production Readiness
   epic-6: backlog
-  6-1-full-responsive-design: backlog
-  6-2-production-deployment: backlog
+  6-1-production-deployment: backlog
   epic-6-retrospective: optional
 
   # Epic 7: Post-MVP Features
@@ -89,6 +88,7 @@ development_status:
   7-3-batch-audio-generation: backlog
   7-4-skeleton-loaders-for-all-views: backlog
   7-5-error-boundaries-and-graceful-degradation: backlog
-  7-6-performance-optimization: backlog
-  7-7-accessibility-compliance-wcag-aa: backlog
+  7-6-full-responsive-design: backlog
+  7-7-performance-optimization: backlog
+  7-8-accessibility-compliance-wcag-aa: backlog
   epic-7-retrospective: optional
