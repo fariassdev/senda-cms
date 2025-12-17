@@ -1,11 +1,11 @@
 'use client';
 
-import { Clock, Eye, GripVertical, Pencil, Trash2 } from 'lucide-react';
+import { Clock, Eye, Pencil, Trash2 } from 'lucide-react';
 import Link from 'next/link';
 
 import { StatusBadge } from '@/components/StatusBadge';
 import { Button } from '@/components/ui/button';
-import { TableCell, TableRow } from '@/components/ui/table';
+import { Card, CardContent } from '@/components/ui/card';
 import {
   Tooltip,
   TooltipContent,
@@ -16,15 +16,10 @@ import { GenerateScriptButton } from '@/containers/Main/CourseDetail/SortableLes
 import { PlayButton } from '@/containers/Main/CourseDetail/SortableLessonList/SortableLessonItem/PlayButton';
 
 import useConnect from './connect';
-import type { LessonDragOverlayProps, SortableLessonItemProps } from './types';
+import type { LessonCardProps } from './types';
 
-export function SortableLessonItem(props: SortableLessonItemProps) {
+export function LessonCard(props: LessonCardProps) {
   const {
-    attributes,
-    listeners,
-    setNodeRef,
-    style,
-    isDragging,
     generateScript,
     updateAndGenerateScript,
     isGenerating,
@@ -35,61 +30,31 @@ export function SortableLessonItem(props: SortableLessonItemProps) {
     isGeneratingAudio,
   } = useConnect(props);
 
-  const { lesson, courseSlug, disabled = false, onEdit, onDelete } = props;
+  const { lesson, courseSlug, onEdit, onDelete } = props;
 
   return (
-    <TableRow
-      ref={setNodeRef}
-      style={style}
-      className={isDragging ? 'bg-muted shadow-lg' : ''}
-    >
-      {/* Drag Handle */}
-      <TableCell className="w-10">
-        <button
-          type="button"
-          className={`${
-            disabled
-              ? 'cursor-not-allowed text-muted-foreground/50'
-              : 'cursor-grab text-muted-foreground hover:text-foreground active:cursor-grabbing'
-          } focus:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2`}
-          aria-label={
-            disabled
-              ? 'Cannot reorder with only one lesson'
-              : `Reorder ${lesson.title}`
-          }
-          disabled={disabled}
-          {...attributes}
-          {...listeners}
-          aria-describedby={disabled ? undefined : 'sortable-instructions'}
-        >
-          <GripVertical className="h-5 w-5" />
-        </button>
-      </TableCell>
+    <Card>
+      <CardContent className="p-4">
+        {/* Header: Title and Status */}
+        <div className="flex items-start justify-between gap-3 mb-3">
+          <h3 className="font-medium text-base leading-tight">
+            {lesson.title}
+          </h3>
+          <StatusBadge status={lesson.status} />
+        </div>
 
-      {/* Lesson Title */}
-      <TableCell className="font-medium">{lesson.title}</TableCell>
+        {/* Metadata: Duration and Updated */}
+        <div className="flex flex-wrap items-center gap-x-4 gap-y-1 text-sm text-muted-foreground mb-4">
+          <span className="inline-flex items-center gap-1">
+            <Clock className="h-3.5 w-3.5" aria-hidden="true" />
+            <span>{lesson.durationMinutes} min</span>
+          </span>
+          <span>Updated: {formatTimestamp(lesson.updatedAt)}</span>
+        </div>
 
-      {/* Duration */}
-      <TableCell>
-        <span className="inline-flex items-center gap-1 text-muted-foreground">
-          <Clock className="h-4 w-4" aria-hidden="true" />
-          <span>{lesson.durationMinutes} min</span>
-        </span>
-      </TableCell>
-
-      {/* Status Badge */}
-      <TableCell>
-        <StatusBadge status={lesson.status} />
-      </TableCell>
-
-      {/* Last Updated */}
-      <TableCell className="text-muted-foreground">
-        {formatTimestamp(lesson.updatedAt)}
-      </TableCell>
-
-      {/* Actions */}
-      <TableCell className="text-right pr-2">
-        <div className="flex items-center justify-end gap-1">
+        {/* Actions */}
+        <div className="flex flex-wrap items-center gap-1">
+          {/* View Script */}
           <Tooltip>
             <TooltipTrigger asChild>
               <span>
@@ -122,13 +87,14 @@ export function SortableLessonItem(props: SortableLessonItemProps) {
               {hasViewableScript ? 'View Script' : 'Generate script first'}
             </TooltipContent>
           </Tooltip>
-          <PlayButton lesson={lesson} />
-        </div>
-      </TableCell>
 
-      {/* Actions */}
-      <TableCell className="text-right pl-0">
-        <div className="flex items-center justify-end gap-1">
+          {/* Play Audio */}
+          <PlayButton lesson={lesson} />
+
+          {/* Divider */}
+          <div className="h-5 w-px bg-border mx-1" />
+
+          {/* Generate Script */}
           <GenerateScriptButton
             lesson={lesson}
             onGenerate={generateScript}
@@ -136,11 +102,18 @@ export function SortableLessonItem(props: SortableLessonItemProps) {
             isGenerating={isGenerating}
             isUpdating={isUpdating}
           />
+
+          {/* Generate Audio */}
           <GenerateAudioButton
             lesson={lesson}
             onGenerate={generateAudio}
             isGenerating={isGeneratingAudio}
           />
+
+          {/* Divider */}
+          <div className="h-5 w-px bg-border mx-1" />
+
+          {/* Edit */}
           <Button
             type="button"
             variant="ghost"
@@ -152,6 +125,8 @@ export function SortableLessonItem(props: SortableLessonItemProps) {
           >
             <Pencil className="h-4 w-4" />
           </Button>
+
+          {/* Delete */}
           <Button
             type="button"
             variant="ghost"
@@ -164,20 +139,7 @@ export function SortableLessonItem(props: SortableLessonItemProps) {
             <Trash2 className="h-4 w-4" />
           </Button>
         </div>
-      </TableCell>
-    </TableRow>
-  );
-}
-
-export function LessonDragOverlay({ lesson }: LessonDragOverlayProps) {
-  return (
-    <div className="flex items-center gap-4 rounded-lg border-2 border-primary bg-background p-3 shadow-xl">
-      <GripVertical className="h-5 w-5 text-muted-foreground" />
-      <span className="font-medium">{lesson.title}</span>
-      <span className="text-sm text-muted-foreground">
-        {lesson.durationMinutes} min
-      </span>
-      <StatusBadge status={lesson.status} />
-    </div>
+      </CardContent>
+    </Card>
   );
 }
