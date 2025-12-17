@@ -39,7 +39,7 @@ export function GenerateAllScriptsButton({
         type="button"
         variant="outline"
         onClick={onViewProgress}
-        className="border-blue-500 text-blue-500 hover:bg-blue-500/10"
+        className="border-info text-info hover:bg-info/10"
       >
         <Eye className="mr-2 h-4 w-4" aria-hidden="true" />
         View Progress
@@ -54,11 +54,7 @@ export function GenerateAllScriptsButton({
         <Tooltip>
           <TooltipTrigger asChild>
             <span tabIndex={0}>
-              <Button
-                type="button"
-                disabled
-                className="bg-[#7dcfff]/50 text-slate-900 cursor-not-allowed"
-              >
+              <Button type="button" disabled>
                 <Sparkles className="mr-2 h-4 w-4" aria-hidden="true" />
                 Generate Scripts
               </Button>
@@ -74,12 +70,7 @@ export function GenerateAllScriptsButton({
 
   // Render active button with count badge
   return (
-    <Button
-      type="button"
-      onClick={onClick}
-      disabled={isGenerating}
-      className="bg-[#7dcfff] text-slate-900 hover:bg-[#7dcfff]/90"
-    >
+    <Button type="button" onClick={onClick} disabled={isGenerating}>
       <Sparkles className="mr-2 h-4 w-4" aria-hidden="true" />
       Generate Scripts ({eligibleCount})
     </Button>

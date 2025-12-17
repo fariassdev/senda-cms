@@ -7,39 +7,39 @@ describe('StatusBadge', () => {
     {
       status: 'PENDING',
       expectedLabel: 'Pending',
-      expectedClasses: ['text-gray-500', 'bg-gray-500/10'],
+      expectedClasses: ['text-muted-foreground', 'bg-muted'],
     },
     {
       status: 'SCRIPT_GENERATING',
       expectedLabel: 'Generating Script',
-      expectedClasses: ['text-blue-400', 'bg-blue-500/10'],
+      expectedClasses: ['text-info', 'bg-info/10'],
       shouldAnimate: true,
     },
     {
       status: 'AUDIO_GENERATING',
       expectedLabel: 'Generating Audio',
-      expectedClasses: ['text-blue-400', 'bg-blue-500/10'],
+      expectedClasses: ['text-info', 'bg-info/10'],
       shouldAnimate: true,
     },
     {
       status: 'SCRIPT_COMPLETED',
       expectedLabel: 'Script Ready',
-      expectedClasses: ['text-orange-400', 'bg-orange-500/10'],
+      expectedClasses: ['text-warning', 'bg-warning/10'],
     },
     {
       status: 'AUDIO_COMPLETED',
       expectedLabel: 'Completed',
-      expectedClasses: ['text-green-400', 'bg-green-500/10'],
+      expectedClasses: ['text-success', 'bg-success/10'],
     },
     {
       status: 'SCRIPT_FAILED',
       expectedLabel: 'Script Failed',
-      expectedClasses: ['text-red-400', 'bg-red-500/10'],
+      expectedClasses: ['text-destructive', 'bg-destructive/10'],
     },
     {
       status: 'AUDIO_FAILED',
       expectedLabel: 'Audio Failed',
-      expectedClasses: ['text-red-400', 'bg-red-500/10'],
+      expectedClasses: ['text-destructive', 'bg-destructive/10'],
     },
   ];
 
@@ -74,7 +74,7 @@ describe('StatusBadge', () => {
       .getByText('UNKNOWN_STATUS')
       .closest('[data-slot="badge"]');
     expect(badge).toBeInTheDocument();
-    expect(badge).toHaveClass('text-gray-500', 'bg-gray-500/10');
+    expect(badge).toHaveClass('text-muted-foreground', 'bg-muted');
   });
 
   it('applies custom className', () => {

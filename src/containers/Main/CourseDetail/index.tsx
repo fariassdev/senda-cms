@@ -174,8 +174,8 @@ export default function CourseDetail({ courseSlug }: CourseDetailProps) {
                             variant={field.value ? 'default' : 'secondary'}
                             className={
                               field.value
-                                ? 'bg-green-500 hover:bg-green-600'
-                                : 'bg-gray-500'
+                                ? 'bg-success hover:bg-success/90'
+                                : 'bg-muted'
                             }
                           >
                             {field.value ? 'Active' : 'Inactive'}
@@ -410,7 +410,7 @@ export default function CourseDetail({ courseSlug }: CourseDetailProps) {
                 variant="outline"
                 onClick={saveReorder}
                 disabled={isReordering}
-                className="border-cyan-600 text-cyan-600 hover:bg-cyan-50 hover:text-cyan-700"
+                className="border-primary text-primary hover:bg-primary/10"
               >
                 <Save className="mr-2 h-4 w-4" />
                 {isReordering ? 'Saving...' : 'Save Changes'}
@@ -429,11 +429,7 @@ export default function CourseDetail({ courseSlug }: CourseDetailProps) {
                 setIsBatchModalOpen(true);
               }}
             />
-            <Button
-              type="button"
-              onClick={handleOpenLessonCreate}
-              className="bg-cyan-600 hover:bg-cyan-700"
-            >
+            <Button type="button" onClick={handleOpenLessonCreate}>
               <Plus className="mr-2 h-4 w-4" />
               Add Lesson
             </Button>
@@ -524,7 +520,6 @@ export default function CourseDetail({ courseSlug }: CourseDetailProps) {
             <AlertDialogAction
               onClick={handleSaveAndNavigate}
               disabled={isReordering}
-              className="bg-cyan-600 hover:bg-cyan-700"
             >
               <Save className="mr-2 h-4 w-4" />
               {isReordering ? 'Saving...' : UNSAVED_CHANGES.saveButton}
