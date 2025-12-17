@@ -1,6 +1,6 @@
 import type { Lesson } from '@/types/models';
 
-export interface SortableLessonItemProps {
+export interface LessonRowProps {
   lesson: Lesson;
   courseSlug: string;
   disabled?: boolean;

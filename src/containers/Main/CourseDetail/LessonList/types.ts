@@ -1,6 +1,6 @@
 import type { Lesson } from '@/types/models';
 
-export interface SortableLessonListProps {
+export interface LessonListProps {
   lessons: Lesson[];
   isLoading: boolean;
   isError: boolean;
@@ -13,7 +13,7 @@ export interface SortableLessonListProps {
   isReordering?: boolean;
 }
 
-export interface SortableLessonListConnectProps {
+export interface LessonListConnectProps {
   lessons: Lesson[];
-  onReorder: SortableLessonListProps['onReorder'];
+  onReorder: LessonListProps['onReorder'];
 }

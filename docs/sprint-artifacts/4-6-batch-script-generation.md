@@ -202,7 +202,7 @@ src/containers/Main/CourseDetail/
 ```
 src/hooks/useScriptGeneration.ts           ← Pattern reference for mutations
 src/components/ScriptGenerationModal/      ← Pattern reference for modal structure
-src/containers/Main/CourseDetail/SortableLessonList/
+src/containers/Main/CourseDetail/LessonList/
                                            ← Lesson list structure reference
 ```
 
@@ -215,7 +215,7 @@ src/containers/Main/CourseDetail/SortableLessonList/
 ```
 CourseDetail (parent container)
 ├── GenerateAllScriptsButton (NEW - shows count, triggers modal)
-├── SortableLessonList (existing - lesson cards)
+├── LessonList (existing - lesson cards)
 ├── BatchGenerationModal (NEW - selection + progress views)
 │   ├── LessonSelectionList (lesson checkboxes)
 │   ├── ConfigurationForm (tone selector)

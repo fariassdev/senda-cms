@@ -84,8 +84,8 @@ So that I can customize the meditation audio style.
   - [x] 4.4 Pass isRegeneration prop based on lesson status (`AUDIO_COMPLETED`)
   - [x] 4.5 Maintain Shift+Click for quick generation (bypass modal, use defaults)
 
-- [x] **Task 5: Integration into SortableLessonItem** (AC: #1, #4, #6) (Prerequisites: Task 4)
-  - [x] 5.1 Update GenerateAudioButton integration in SortableLessonItem
+- [x] **Task 5: Integration into LessonRow** (AC: #1, #4, #6) (Prerequisites: Task 4)
+  - [x] 5.1 Update GenerateAudioButton integration in LessonRow
   - [x] 5.2 Pass required props for modal (lesson info, handlers)
   - [x] 5.3 Verify modal opens correctly from lesson list
 
@@ -192,7 +192,7 @@ src/types/
 src/hooks/
 ├── useAudioGeneration.ts              ← Add config parameter support
 
-src/containers/Main/CourseDetail/SortableLessonList/SortableLessonItem/GenerateAudioButton/
+src/containers/Main/CourseDetail/LessonList/LessonRow/GenerateAudioButton/
 ├── index.tsx                          ← Add modal integration
 ├── connect.ts                         ← Add modal state
 ├── types.ts                           ← Add modal-related types
@@ -355,7 +355,7 @@ const handleClick = (e: React.MouseEvent) => {
 };
 ```
 
-[Source: src/containers/Main/CourseDetail/SortableLessonList/SortableLessonItem/GenerateAudioButton/]
+[Source: src/containers/Main/CourseDetail/LessonList/LessonRow/GenerateAudioButton/]
 [Source: docs/sprint-artifacts/5-1-generate-audio-button-and-status.md - Shift+Click pattern]
 
 ### Slider Component (shadcn/ui)
@@ -448,7 +448,7 @@ import {
 - Button state logic with status-to-config mapping
 - Shift+Click pattern for quick actions (bypass modal)
 - Cyan color theme (#7dcfff) for audio-related components
-- Integration pattern with SortableLessonItem
+- Integration pattern with LessonRow
 
 **From Story 4.2 (Script Generation Configuration):**
 
@@ -512,7 +512,7 @@ Per WCAG 2.1 Level AA compliance:
 **Component Hierarchy Update:**
 
 ```
-SortableLessonItem (parent)
+LessonRow (parent)
 ├── StatusBadge (existing)
 ├── GenerateScriptButton (existing - Story 4.1)
 ├── GenerateAudioButton (Story 5.1) ← Modified
@@ -531,7 +531,7 @@ SortableLessonItem (parent)
 - [Source: docs/architecture.md#Container-Pattern-CRITICAL] - Container pattern
 - [Source: src/components/ScriptGenerationModal/] - Modal pattern reference
 - [Source: src/hooks/useAudioGeneration.ts] - Hook to extend
-- [Source: src/containers/Main/CourseDetail/SortableLessonList/SortableLessonItem/GenerateAudioButton/] - Button to update
+- [Source: src/containers/Main/CourseDetail/LessonList/LessonRow/GenerateAudioButton/] - Button to update
 - [Source: docs/sprint-artifacts/5-1-generate-audio-button-and-status.md] - Previous story learnings
 - [Source: docs/ux-design-specification.md#Button-Hierarchy] - Button styling
 

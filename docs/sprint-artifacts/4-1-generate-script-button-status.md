@@ -61,7 +61,7 @@ so that I can quickly create meditation content.
   - [x] 2.5 Implement `useScriptGeneration` hook with mutation logic
 
 - [x] **Task 3: Integrate button into LessonListItem** (AC: #1, #2, #3, #7)
-  - [x] 3.1 Import GenerateScriptButton into `src/components/SortableLessonItem.tsx` (modified from LessonListItem)
+  - [x] 3.1 Import GenerateScriptButton into `src/components/LessonRow.tsx` (modified from LessonListItem)
   - [x] 3.2 Pass lesson status and mutation handlers as props
   - [x] 3.3 Determine button variant based on lesson status
   - [x] 3.4 Ensure responsive behavior (icon-only on mobile via Tailwind classes)
@@ -360,7 +360,7 @@ Claude Opus 4.5 (Preview)
 
 - Task 1: Created GenerateScriptButton component with primary/secondary variants based on lesson status
 - Task 2: Created LessonScriptGeneration container following project patterns (connect.ts, constants.ts, types.ts)
-- Task 3: Integrated button into SortableLessonItem (primary lesson display component), added courseSlug prop to SortableLessonList
+- Task 3: Integrated button into LessonRow (primary lesson display component), added courseSlug prop to LessonList
 - Task 4: Implemented mutation using $api.useMutation with correct endpoint path `/api/courses/{slug}/lessons/{id}/generate-script`
 - Task 5: Added toast notifications - info on start, success/error handled by polling (Story 3.6)
 
@@ -384,9 +384,9 @@ Claude Opus 4.5 (Preview)
 
 **Modified files:**
 
-- `src/components/SortableLessonItem.tsx` - Added GenerateScriptButton integration
-- `src/components/SortableLessonList.tsx` - Added courseSlug prop
-- `src/containers/Main/CourseDetail/index.tsx` - Pass courseSlug to SortableLessonList
+- `src/components/LessonRow.tsx` - Added GenerateScriptButton integration
+- `src/components/LessonList.tsx` - Added courseSlug prop
+- `src/containers/Main/CourseDetail/index.tsx` - Pass courseSlug to LessonList
 
 ---
 
@@ -432,15 +432,15 @@ None
 
 ### Acceptance Criteria Coverage
 
-| AC# | Description                                                                    | Status      | Evidence                                                         |
-| --- | ------------------------------------------------------------------------------ | ----------- | ---------------------------------------------------------------- |
-| 1   | Generate Script button visible for PENDING/FAILED lessons (cyan, sparkle icon) | IMPLEMENTED | `GenerateScriptButton.tsx:25-29`, `SortableLessonItem.tsx:88-95` |
-| 2   | Regenerate Script button (outline) for COMPLETED statuses                      | IMPLEMENTED | `GenerateScriptButton.tsx:35-39`                                 |
-| 3   | Disabled "Generating..." with spinner for SCRIPT_GENERATING                    | IMPLEMENTED | `GenerateScriptButton.tsx:15-21`                                 |
-| 4   | Click triggers loading state, status change, pulse animation, toast            | IMPLEMENTED | `connect.ts:32,48-56`, `SortableLessonItem.tsx:92`               |
-| 5   | Polling detects completion, shows success/error toasts                         | IMPLEMENTED | `CourseDetail/connect.ts` (polling), `StatusBadge.tsx` (pulse)   |
-| 6   | API error shows toast, button returns to idle, status unchanged                | IMPLEMENTED | `connect.ts:58-68`                                               |
-| 7   | Mobile accessible (44px touch target), icon-only on small screens              | IMPLEMENTED | `GenerateScriptButton.tsx:58,79-81`                              |
+| AC# | Description                                                                    | Status      | Evidence                                                       |
+| --- | ------------------------------------------------------------------------------ | ----------- | -------------------------------------------------------------- |
+| 1   | Generate Script button visible for PENDING/FAILED lessons (cyan, sparkle icon) | IMPLEMENTED | `GenerateScriptButton.tsx:25-29`, `LessonRow.tsx:88-95`        |
+| 2   | Regenerate Script button (outline) for COMPLETED statuses                      | IMPLEMENTED | `GenerateScriptButton.tsx:35-39`                               |
+| 3   | Disabled "Generating..." with spinner for SCRIPT_GENERATING                    | IMPLEMENTED | `GenerateScriptButton.tsx:15-21`                               |
+| 4   | Click triggers loading state, status change, pulse animation, toast            | IMPLEMENTED | `connect.ts:32,48-56`, `LessonRow.tsx:92`                      |
+| 5   | Polling detects completion, shows success/error toasts                         | IMPLEMENTED | `CourseDetail/connect.ts` (polling), `StatusBadge.tsx` (pulse) |
+| 6   | API error shows toast, button returns to idle, status unchanged                | IMPLEMENTED | `connect.ts:58-68`                                             |
+| 7   | Mobile accessible (44px touch target), icon-only on small screens              | IMPLEMENTED | `GenerateScriptButton.tsx:58,79-81`                            |
 
 **Summary: 7 of 7 acceptance criteria fully implemented**
 
@@ -450,7 +450,7 @@ None
 | ----------------------------------------------- | --------- | ----------------- | ----------------------------------------------------------------- |
 | Task 1: Create GenerateScriptButton component   | Completed | VERIFIED COMPLETE | Component created with all variants, icons, accessibility         |
 | Task 2: Create LessonScriptGeneration container | Completed | VERIFIED COMPLETE | Container with mutation, constants, types following patterns      |
-| Task 3: Integrate button into LessonListItem    | Completed | VERIFIED COMPLETE | Button added to SortableLessonItem actions, courseSlug passed     |
+| Task 3: Integrate button into LessonListItem    | Completed | VERIFIED COMPLETE | Button added to LessonRow actions, courseSlug passed              |
 | Task 4: Implement script generation mutation    | Completed | VERIFIED COMPLETE | $api.useMutation with correct path, success/error handling        |
 | Task 5: Add toast notifications                 | Completed | VERIFIED COMPLETE | Info on start, error on failure, leverages polling for completion |
 | Task 6: Testing and validation                  | Completed | VERIFIED COMPLETE | Typecheck and lint passing, manual tests documented               |

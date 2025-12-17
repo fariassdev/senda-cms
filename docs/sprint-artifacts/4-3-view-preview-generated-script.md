@@ -423,7 +423,7 @@ Claude Opus 4.5 (Preview)
 - Used `$api.useQuery('get', '/api/courses/{slug}/lessons')` to fetch lessons, then find specific lesson by ID
 - Implemented `ScriptContent` component with speak/pause rendering and ARIA accessibility
 - Added `calculateScriptMetrics` utility for word count, char count, reading time
-- Added View Script button to `SortableLessonItem` with tooltip for navigation
+- Added View Script button to `LessonRow` with tooltip for navigation
 
 ### Completion Notes List
 
@@ -479,7 +479,7 @@ Claude Opus 4.5 (Preview)
 
 **Modified files:**
 
-- `src/components/SortableLessonItem.tsx` - Added View Script button with navigation
+- `src/components/LessonRow.tsx` - Added View Script button with navigation
 - `docs/sprint-artifacts/sprint-status.yaml` - Updated story status
 
 ---

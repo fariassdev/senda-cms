@@ -51,7 +51,7 @@ import LessonCreate from './LessonCreate';
 import LessonDelete from './LessonDelete';
 import LessonEdit from './LessonEdit';
 
-import { SortableLessonList } from './SortableLessonList';
+import { LessonList } from './LessonList';
 
 import useConnect from './connect';
 import { UNSAVED_CHANGES } from './constants';
@@ -436,7 +436,7 @@ export default function CourseDetail({ courseSlug }: CourseDetailProps) {
           </div>
         </CardHeader>
         <CardContent>
-          <SortableLessonList
+          <LessonList
             lessons={reorderState.displayLessons}
             courseSlug={courseSlug}
             isLoading={isLessonsLoading}

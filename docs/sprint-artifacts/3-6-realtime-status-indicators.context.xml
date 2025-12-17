@@ -212,9 +212,9 @@
         <reason>Related file for understanding reorder state management. getReorderState computes displayLessons from pendingOrder. Polling should update lessons without resetting pendingOrder unless explicit user action.</reason>
       </file>
       <file>
-        <path>src/components/SortableLessonList.tsx</path>
+        <path>src/components/LessonList.tsx</path>
         <kind>component</kind>
-        <symbol>SortableLessonList</symbol>
+        <symbol>LessonList</symbol>
         <lines>1-220</lines>
         <reason>Renders lesson list with StatusBadge. Receives displayLessons from parent. Status changes from polling will automatically reflect through this component.</reason>
       </file>

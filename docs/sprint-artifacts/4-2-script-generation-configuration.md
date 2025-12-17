@@ -217,7 +217,7 @@ return (
 - **GenerateScriptButton created**: Located at `src/components/GenerateScriptButton.tsx` - extend this component to support modal
 - **LessonScriptGeneration container**: Located at `src/containers/Main/LessonScriptGeneration/` - add configuration types and schema here
 - **Mutation pattern established**: Uses `$api.useMutation('post', '/api/courses/{slug}/lessons/{id}/generate-script')`
-- **Integration point**: Button integrated into `SortableLessonItem.tsx`, receives courseSlug via props
+- **Integration point**: Button integrated into `LessonRow.tsx`, receives courseSlug via props
 - **Polling handles completion**: Story 3.6 polling infrastructure handles SCRIPT_GENERATING → SCRIPT_COMPLETED transitions
 
 **Files to modify:**
@@ -358,7 +358,7 @@ Claude Opus 4.5 (Preview)
 3. Updated `types.ts` with ScriptConfigFormData and ScriptConfigModalProps interfaces
 4. Updated `connect.ts` to accept optional config parameter and show appropriate toast messages
 5. Refactored `GenerateScriptButton.tsx` with modal integration, Shift+Click bypass, localStorage persistence
-6. Updated `SortableLessonItem.tsx` to pass lessonDuration, keyThemes, and courseSlug to GenerateScriptButton
+6. Updated `LessonRow.tsx` to pass lessonDuration, keyThemes, and courseSlug to GenerateScriptButton
 7. Updated exports in `index.ts`
 8. **Correct Course:** Modal now shows ALL lesson fields (title, corePractice, keyPoint, tone, duration)
 9. **Correct Course:** Added `lessonEditSchema` for complete lesson validation
@@ -375,7 +375,7 @@ Claude Opus 4.5 (Preview)
 
 - `src/components/ScriptConfigModal.tsx` - Complete rewrite to show all lesson fields, dirty form detection
 - `src/components/GenerateScriptButton.tsx` - Simplified props (receives full Lesson object)
-- `src/components/SortableLessonItem.tsx` - Updated to pass lesson object and new callbacks
+- `src/components/LessonRow.tsx` - Updated to pass lesson object and new callbacks
 - `src/containers/Main/LessonScriptGeneration/constants.ts` - Added lessonEditSchema, LessonEditFormData
 - `src/containers/Main/LessonScriptGeneration/types.ts` - Updated ScriptConfigModalProps interface
 - `src/containers/Main/LessonScriptGeneration/connect.ts` - Added updateAndGenerateScript, isUpdating

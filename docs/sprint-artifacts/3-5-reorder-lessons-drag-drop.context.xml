@@ -38,15 +38,15 @@
         <subtask>3.9 Implement onError with rollback to previous lesson order</subtask>
         <subtask>3.10 Implement onSuccess with toast notification and clear pending order</subtask>
       </task>
-      <task id="4">Create SortableLessonItem component
-        <subtask>4.1 Create src/components/SortableLessonItem.tsx</subtask>
+      <task id="4">Create LessonRow component
+        <subtask>4.1 Create src/components/LessonRow.tsx</subtask>
         <subtask>4.2 Integrate useSortable hook from @dnd-kit/sortable</subtask>
         <subtask>4.3 Apply drag handle using attributes and listeners on GripVertical button</subtask>
         <subtask>4.4 Style dragging state (transform, opacity, elevated shadow)</subtask>
         <subtask>4.5 Ensure existing edit/delete callbacks still work</subtask>
       </task>
-      <task id="5">Create SortableLessonList component
-        <subtask>5.1 Create src/components/SortableLessonList.tsx</subtask>
+      <task id="5">Create LessonList component
+        <subtask>5.1 Create src/components/LessonList.tsx</subtask>
         <subtask>5.2 Wrap table body with DndContext and SortableContext</subtask>
         <subtask>5.3 Configure closestCenter collision detection strategy</subtask>
         <subtask>5.4 Implement handleDragEnd callback to notify parent of local reorder</subtask>
@@ -61,8 +61,8 @@
         <subtask>6.5 Create announcements prop for DndContext with proper messages</subtask>
       </task>
       <task id="7">Integrate with CourseDetail container
-        <subtask>7.1 Replace LessonList with SortableLessonList in CourseDetail</subtask>
-        <subtask>7.2 Pass displayLessons from reorderState to SortableLessonList</subtask>
+        <subtask>7.1 Replace LessonList with LessonList in CourseDetail</subtask>
+        <subtask>7.2 Pass displayLessons from reorderState to LessonList</subtask>
         <subtask>7.3 Add handleLocalReorder, saveReorder, discardReorder to connect.ts</subtask>
         <subtask>7.4 Add "Save Changes" button that appears when hasUnsavedChanges is true</subtask>
         <subtask>7.5 Ensure edit/delete modals still function correctly with new structure</subtask>
@@ -208,19 +208,19 @@
         <path>src/components/LessonListItem.tsx</path>
         <kind>component</kind>
         <symbol>LessonListItem</symbol>
-        <reason>Individual lesson row with GripVertical drag handle (currently disabled). Needs to be wrapped by SortableLessonItem for DnD functionality.</reason>
+        <reason>Individual lesson row with GripVertical drag handle (currently disabled). Needs to be wrapped by LessonRow for DnD functionality.</reason>
       </file>
       <file>
         <path>src/containers/Main/CourseDetail/connect.ts</path>
         <kind>container-logic</kind>
         <symbol>useConnect</symbol>
-        <reason>Main orchestration for CourseDetail. Add handleReorderLessons callback and integrate with SortableLessonList. Contains lessons query and refetchLessons.</reason>
+        <reason>Main orchestration for CourseDetail. Add handleReorderLessons callback and integrate with LessonList. Contains lessons query and refetchLessons.</reason>
       </file>
       <file>
         <path>src/containers/Main/CourseDetail/index.tsx</path>
         <kind>container-view</kind>
         <symbol>CourseDetail</symbol>
-        <reason>Main course detail view that renders LessonList. Replace LessonList with SortableLessonList component.</reason>
+        <reason>Main course detail view that renders LessonList. Replace LessonList with LessonList component.</reason>
       </file>
       <file>
         <path>src/lib/api.ts</path>
@@ -313,7 +313,7 @@
   </interfaces>
 
   <constraints>
-    <constraint type="pattern">Container Pattern: All reorder mutation logic goes in connect.ts. SortableLessonList and SortableLessonItem are presentational components receiving handlers as props.</constraint>
+    <constraint type="pattern">Container Pattern: All reorder mutation logic goes in connect.ts. LessonList and LessonRow are presentational components receiving handlers as props.</constraint>
     <constraint type="pattern">OpenAPI-First: Use $api.useMutation from openapi-react-query. Never write manual fetch calls. Request body must match ReorderLessonsRequest schema exactly.</constraint>
     <constraint type="pattern">Optimistic Updates: Implement onMutate to capture previous state and update cache optimistically. Implement onError to rollback. Implement onSuccess for toast and optional cache invalidation.</constraint>
     <constraint type="accessibility">WCAG 2.1 AA: Full keyboard navigation for drag-and-drop. Tab to focus, Enter/Space to activate, Arrow keys to move, Enter to confirm, Escape to cancel. Screen reader announcements required.</constraint>

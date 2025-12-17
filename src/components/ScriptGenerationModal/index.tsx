@@ -25,7 +25,7 @@ import type { ScriptGenerationModalProps } from './types';
  *
  * Used by:
  * - ScriptPreview (regeneration flow)
- * - CourseDetail/SortableLessonList (initial generation and regeneration)
+ * - CourseDetail/LessonList (initial generation and regeneration)
  */
 export function ScriptGenerationModal({
   open,

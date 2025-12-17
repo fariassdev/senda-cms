@@ -110,7 +110,7 @@ So that I can get a better result if the first generation wasn't ideal.
 
 - [x] **Task 6: Update CourseDetail Integration** (AC: #9)
   - [x] 6.1 Verify existing GenerateScriptButton already shows "Regenerate Script" for SCRIPT_COMPLETED status
-  - [x] 6.2 Confirm ScriptConfigModal from SortableLessonList works for regeneration
+  - [x] 6.2 Confirm ScriptConfigModal from LessonList works for regeneration
   - [x] 6.3 Add warning banner to ScriptConfigModal when lesson has existing script
   - [x] 6.4 Determine if script exists by checking `lesson.script?.length > 0`
 
@@ -203,7 +203,7 @@ src/containers/Main/ScriptPreview/
 src/containers/Main/ScriptPreview/FixedActionBar/
 ├── index.tsx          ← Handle Shift+Click for quick regeneration
 
-src/containers/Main/CourseDetail/SortableLessonList/ScriptConfigModal/
+src/containers/Main/CourseDetail/LessonList/ScriptConfigModal/
 ├── index.tsx          ← Add warning banner when script exists
 ```
 
@@ -213,7 +213,7 @@ src/containers/Main/CourseDetail/SortableLessonList/ScriptConfigModal/
 src/hooks/useScriptGeneration.ts    ← Existing hook for script generation
 src/hooks/useLessonActions.ts       ← Existing hook for lesson updates
 src/components/LessonForm.tsx       ← Reusable form for lesson editing
-src/containers/Main/CourseDetail/SortableLessonList/ScriptConfigModal/
+src/containers/Main/CourseDetail/LessonList/ScriptConfigModal/
                                     ← Pattern reference for modal structure
 ```
 
@@ -405,7 +405,7 @@ const isRegeneration = lesson.script && lesson.script.length > 0;
 }
 ```
 
-[Source: src/containers/Main/CourseDetail/SortableLessonList/ScriptConfigModal/index.tsx]
+[Source: src/containers/Main/CourseDetail/LessonList/ScriptConfigModal/index.tsx]
 
 ### Accessibility Requirements
 
@@ -507,15 +507,15 @@ Anthropic Claude (Antigravity Agent)
 - `src/containers/Main/ScriptPreview/FixedActionBar/index.tsx` - Added tooltip for Shift+Click hint
 - `src/containers/Main/ScriptPreview/FixedActionBar/types.ts` - Updated onRegenerate type to accept MouseEvent
 - `src/containers/Main/ScriptPreview/ScriptHeader/index.tsx` - Added Version History placeholder
-- `src/containers/Main/CourseDetail/SortableLessonList/ScriptConfigModal/index.tsx` - Re-exports shared ScriptGenerationModal
-- `src/containers/Main/CourseDetail/SortableLessonList/SortableLessonItem/GenerateScriptButton/index.tsx` - Removed unused courseSlug prop
-- `src/containers/Main/CourseDetail/SortableLessonList/SortableLessonItem/GenerateScriptButton/types.ts` - Removed courseSlug from interface
+- `src/containers/Main/CourseDetail/LessonList/ScriptConfigModal/index.tsx` - Re-exports shared ScriptGenerationModal
+- `src/containers/Main/CourseDetail/LessonList/LessonRow/GenerateScriptButton/index.tsx` - Removed unused courseSlug prop
+- `src/containers/Main/CourseDetail/LessonList/LessonRow/GenerateScriptButton/types.ts` - Removed courseSlug from interface
 
 **Deleted Files:**
 
 - `src/containers/Main/ScriptPreview/RegenerateScriptModal/` - Replaced by shared ScriptGenerationModal
-- `src/containers/Main/CourseDetail/SortableLessonList/ScriptConfigModal/connect.ts` - Logic moved to shared component
-- `src/containers/Main/CourseDetail/SortableLessonList/ScriptConfigModal/types.ts` - Types moved to shared component
+- `src/containers/Main/CourseDetail/LessonList/ScriptConfigModal/connect.ts` - Logic moved to shared component
+- `src/containers/Main/CourseDetail/LessonList/ScriptConfigModal/types.ts` - Types moved to shared component
 
 ---
 
