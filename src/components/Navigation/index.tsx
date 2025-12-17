@@ -1,7 +1,14 @@
 'use client';
 
-import { BookOpenIcon, LogOutIcon, UserIcon } from 'lucide-react';
+import {
+  BookOpenIcon,
+  LogOutIcon,
+  MoonIcon,
+  SunIcon,
+  UserIcon,
+} from 'lucide-react';
 import Link from 'next/link';
+import { useTheme } from 'next-themes';
 
 import {
   Sidebar,
@@ -17,6 +24,7 @@ import {
   SidebarProvider,
   SidebarTrigger,
 } from '@/components/ui/sidebar';
+import { Switch } from '@/components/ui/switch';
 
 import useConnect from './connect';
 import type { NavigationProps } from './types';
@@ -27,9 +35,17 @@ import type { NavigationProps } from './types';
  * - Active route highlighting
  * - User authentication status and logout functionality
  * - Organized navigation structure for different app sections
+ * - Theme toggle for dark/light mode
  */
 export function Navigation({ children }: NavigationProps) {
   const { pathname, user, navigationItems, handleLogout } = useConnect();
+  const { theme, setTheme } = useTheme();
+
+  const isDarkMode = theme === 'dark';
+
+  const handleThemeToggle = () => {
+    setTheme(isDarkMode ? 'light' : 'dark');
+  };
 
   return (
     <SidebarProvider>
@@ -74,6 +90,26 @@ export function Navigation({ children }: NavigationProps) {
 
           <SidebarFooter className="border-t border-sidebar-border">
             <SidebarMenu>
+              {/* Theme Toggle */}
+              <SidebarMenuItem>
+                <div className="flex items-center justify-between px-2 py-2">
+                  <div className="flex items-center gap-2">
+                    {isDarkMode ? (
+                      <MoonIcon className="size-4 text-primary" />
+                    ) : (
+                      <SunIcon className="size-4 text-warning" />
+                    )}
+                    <span className="text-sm">
+                      {isDarkMode ? 'Dark Mode' : 'Light Mode'}
+                    </span>
+                  </div>
+                  <Switch
+                    checked={isDarkMode}
+                    onCheckedChange={handleThemeToggle}
+                    aria-label="Toggle dark mode"
+                  />
+                </div>
+              </SidebarMenuItem>
               <SidebarMenuItem>
                 <SidebarMenuButton>
                   <UserIcon className="size-4" />
