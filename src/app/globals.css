@@ -69,70 +69,71 @@
 }
 
 /* ===========================================
-   LIGHT MODE (not primary for CMS)
+   LIGHT MODE - From mobile app mockup
+   Colors extracted from Senda App mockups
    =========================================== */
 :root {
   --radius: 0.75rem;
 
-  /* Background & Foreground */
-  --background: #f6f8f7;
-  --foreground: #18181b;
+  /* Background & Foreground - from mockup */
+  --background: #fafafa;
+  --foreground: #0f172a; /* slate-900 */
 
-  /* Card */
-  --card: rgba(255, 255, 255, 0.5);
-  --card-foreground: #18181b;
+  /* Card - pure white with subtle shadow */
+  --card: #ffffff;
+  --card-foreground: #0f172a; /* slate-900 */
 
   /* Popover */
   --popover: #ffffff;
-  --popover-foreground: #18181b;
+  --popover-foreground: #0f172a;
 
-  /* Primary - Mint/Emerald #13ECA4 */
-  --primary: #13eca4;
-  --primary-foreground: #111816;
+  /* Primary - Teal #2DD4BF from mockup */
+  --primary: #2dd4bf;
+  --primary-foreground: #0f766e; /* teal-700 for contrast */
 
-  /* Secondary */
-  --secondary: #e4e4e7;
-  --secondary-foreground: #18181b;
+  /* Secondary - slate-100 */
+  --secondary: #f1f5f9;
+  --secondary-foreground: #0f172a;
 
-  /* Muted */
-  --muted: #f4f4f5;
-  --muted-foreground: #71717a;
+  /* Muted - slate-100/50 */
+  --muted: #f1f5f9;
+  --muted-foreground: #64748b; /* slate-500 */
 
-  /* Accent */
-  --accent: #f4f4f5;
-  --accent-foreground: #18181b;
+  /* Accent - teal-50 */
+  --accent: #f0fdfa;
+  --accent-foreground: #0f766e; /* teal-700 */
 
   /* Destructive */
-  --destructive: #f87171;
+  --destructive: #ef4444;
 
-  /* Border & Input */
-  --border: #e4e4e7;
-  --input: #e4e4e7;
-  --ring: #13eca4;
+  /* Border & Input - slate-200 from mockup */
+  --border: #e2e8f0;
+  --input: #e2e8f0;
+  --ring: #2dd4bf;
 
   /* Senda custom */
-  --surface: rgba(255, 255, 255, 0.5);
-  --description: #52525b;
-  --success: #13eca4;
-  --warning: #fbbf24;
-  --info: #38bdf8;
+  --surface: #ffffff;
+  --description: #64748b; /* slate-500 */
+  --success: #10b981; /* emerald-500 */
+  --warning: #f59e0b; /* amber-500 */
+  --info: #0ea5e9; /* sky-500 */
 
   /* Chart colors */
-  --chart-1: #13eca4;
-  --chart-2: #38bdf8;
-  --chart-3: #fbbf24;
-  --chart-4: #f87171;
-  --chart-5: #a78bfa;
+  --chart-1: #2dd4bf;
+  --chart-2: #0ea5e9;
+  --chart-3: #f59e0b;
+  --chart-4: #ef4444;
+  --chart-5: #8b5cf6;
 
-  /* Sidebar - Light */
+  /* Sidebar - Light with white bg */
   --sidebar: #ffffff;
-  --sidebar-foreground: #18181b;
-  --sidebar-primary: #13eca4;
-  --sidebar-primary-foreground: #111816;
-  --sidebar-accent: #f4f4f5;
-  --sidebar-accent-foreground: #18181b;
-  --sidebar-border: #e4e4e7;
-  --sidebar-ring: #13eca4;
+  --sidebar-foreground: #0f172a;
+  --sidebar-primary: #2dd4bf;
+  --sidebar-primary-foreground: #0f766e;
+  --sidebar-accent: #f0fdfa; /* teal-50 */
+  --sidebar-accent-foreground: #0f766e;
+  --sidebar-border: #f1f5f9; /* slate-100 */
+  --sidebar-ring: #2dd4bf;
 }
 
 /* ===========================================
