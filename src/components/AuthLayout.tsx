@@ -4,6 +4,7 @@ import { usePathname, useRouter } from 'next/navigation';
 import { useEffect } from 'react';
 
 import { Navigation } from '@/components/Navigation';
+import Logo from '@/components/ui/logo';
 import CourseList from '@/containers/Main/CourseList';
 import useAuthRefresh from '@/hooks/useAuthRefresh';
 import { useAuthStore } from '@/stores/authStore';
@@ -44,13 +45,13 @@ export default function AuthLayout({ children }: AuthLayoutProps) {
     }
   }, [isLoading, isAuthenticated, isLoginPage, router]);
 
-  // Show loading spinner while checking authentication
+  // Show loading state with logo while checking authentication
   if (isLoading) {
     return (
-      <div className="flex min-h-screen items-center justify-center">
-        <div className="flex flex-col items-center space-y-4">
-          <div className="h-8 w-8 animate-spin rounded-full border-4 border-gray-300 border-t-blue-600" />
-          <p className="text-sm text-gray-600">Loading...</p>
+      <div className="flex min-h-screen items-center justify-center bg-background">
+        <div className="flex flex-col items-center space-y-6">
+          <Logo size={64} className="animate-pulse" />
+          <p className="text-sm text-muted-foreground">Loading...</p>
         </div>
       </div>
     );

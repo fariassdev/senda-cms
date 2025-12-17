@@ -1,14 +1,10 @@
 'use client';
 
-import {
-  BookOpenIcon,
-  LogOutIcon,
-  MoonIcon,
-  SunIcon,
-  UserIcon,
-} from 'lucide-react';
+import { LogOutIcon, MoonIcon, SunIcon, UserIcon } from 'lucide-react';
 import Link from 'next/link';
 import { useTheme } from 'next-themes';
+
+import Logo from '@/components/ui/logo';
 
 import {
   Sidebar,
@@ -53,9 +49,7 @@ export function Navigation({ children }: NavigationProps) {
         <Sidebar>
           <SidebarHeader className="border-b border-sidebar-border">
             <div className="flex items-center gap-2 px-2 py-2">
-              <div className="flex aspect-square size-8 items-center justify-center rounded-lg bg-sidebar-primary text-sidebar-primary-foreground">
-                <BookOpenIcon className="size-4" />
-              </div>
+              <Logo size={32} />
               <div className="grid flex-1 text-left text-sm leading-tight">
                 <span className="truncate font-semibold">Senda CMS</span>
                 <span className="truncate text-xs text-sidebar-foreground/70">
