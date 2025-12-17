@@ -14,48 +14,48 @@ const statusConfigMap: Record<LessonStatus, StatusConfig> = {
   PENDING: {
     label: 'Pending',
     icon: Circle,
-    colorClass: 'text-gray-500',
-    bgClass: 'bg-gray-500/10 border-gray-500/20',
+    colorClass: 'text-muted-foreground',
+    bgClass: 'bg-muted border-border',
   },
   SCRIPT_GENERATING: {
     label: 'Generating Script',
     icon: Loader2,
-    colorClass: 'text-blue-400',
-    bgClass: 'bg-blue-500/10 border-blue-500/20',
+    colorClass: 'text-info',
+    bgClass: 'bg-info/10 border-info/20',
     animateSpin: true,
     animatePulse: true,
   },
   AUDIO_GENERATING: {
     label: 'Generating Audio',
     icon: Loader2,
-    colorClass: 'text-blue-400',
-    bgClass: 'bg-blue-500/10 border-blue-500/20',
+    colorClass: 'text-info',
+    bgClass: 'bg-info/10 border-info/20',
     animateSpin: true,
     animatePulse: true,
   },
   SCRIPT_COMPLETED: {
     label: 'Script Ready',
     icon: CheckCircle,
-    colorClass: 'text-orange-400',
-    bgClass: 'bg-orange-500/10 border-orange-500/20',
+    colorClass: 'text-warning',
+    bgClass: 'bg-warning/10 border-warning/20',
   },
   AUDIO_COMPLETED: {
     label: 'Completed',
     icon: CheckCircle,
-    colorClass: 'text-green-400',
-    bgClass: 'bg-green-500/10 border-green-500/20',
+    colorClass: 'text-success',
+    bgClass: 'bg-success/10 border-success/20',
   },
   SCRIPT_FAILED: {
     label: 'Script Failed',
     icon: XCircle,
-    colorClass: 'text-red-400',
-    bgClass: 'bg-red-500/10 border-red-500/20',
+    colorClass: 'text-destructive',
+    bgClass: 'bg-destructive/10 border-destructive/20',
   },
   AUDIO_FAILED: {
     label: 'Audio Failed',
     icon: XCircle,
-    colorClass: 'text-red-400',
-    bgClass: 'bg-red-500/10 border-red-500/20',
+    colorClass: 'text-destructive',
+    bgClass: 'bg-destructive/10 border-destructive/20',
   },
 };
 
@@ -65,8 +65,8 @@ export default function useConnect() {
       statusConfigMap[status as LessonStatus] ?? {
         label: status,
         icon: Circle,
-        colorClass: 'text-gray-500',
-        bgClass: 'bg-gray-500/10 border-gray-500/20',
+        colorClass: 'text-muted-foreground',
+        bgClass: 'bg-muted border-border',
       }
     );
   }

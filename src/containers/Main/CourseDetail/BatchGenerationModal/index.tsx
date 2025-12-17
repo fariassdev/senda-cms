@@ -36,19 +36,23 @@ function StatusIcon({ status }: { status?: LessonBatchStatus }) {
     case 'generating':
       return (
         <Loader2
-          className="h-4 w-4 animate-spin text-blue-500"
+          className="h-4 w-4 animate-spin text-info"
           aria-hidden="true"
         />
       );
     case 'completed':
       return (
-        <CheckCircle className="h-4 w-4 text-green-500" aria-hidden="true" />
+        <CheckCircle className="h-4 w-4 text-success" aria-hidden="true" />
       );
     case 'failed':
-      return <XCircle className="h-4 w-4 text-red-500" aria-hidden="true" />;
+      return (
+        <XCircle className="h-4 w-4 text-destructive" aria-hidden="true" />
+      );
     case 'pending':
     default:
-      return <Clock className="h-4 w-4 text-gray-400" aria-hidden="true" />;
+      return (
+        <Clock className="h-4 w-4 text-muted-foreground" aria-hidden="true" />
+      );
   }
 }
 
@@ -143,7 +147,7 @@ export function BatchGenerationModal({
     <>
       <DialogHeader>
         <DialogTitle className="flex items-center gap-2">
-          <Sparkles className="h-5 w-5 text-[#7dcfff]" aria-hidden="true" />
+          <Sparkles className="h-5 w-5 text-primary" aria-hidden="true" />
           {MODAL_CONFIG.title(selectedCount)}
         </DialogTitle>
         <DialogDescription>{MODAL_CONFIG.description}</DialogDescription>
@@ -222,7 +226,7 @@ export function BatchGenerationModal({
           type="button"
           variant="outline"
           onClick={handleClose}
-          className="border-[#7dcfff] text-[#7dcfff] hover:bg-[#7dcfff]/10"
+          className="border-primary text-primary hover:bg-primary/10"
         >
           {MODAL_CONFIG.cancelLabel}
         </Button>
@@ -230,7 +234,6 @@ export function BatchGenerationModal({
           type="button"
           onClick={handleGenerate}
           disabled={isGenerateDisabled || isGenerating}
-          className="bg-[#7dcfff] text-slate-900 hover:bg-[#7dcfff]/90"
         >
           {isGenerating && (
             <Loader2 className="mr-2 h-4 w-4 animate-spin" aria-hidden="true" />
@@ -248,7 +251,7 @@ export function BatchGenerationModal({
       <DialogHeader>
         <DialogTitle className="flex items-center gap-2">
           <Loader2
-            className="h-5 w-5 animate-spin text-[#7dcfff]"
+            className="h-5 w-5 animate-spin text-primary"
             aria-hidden="true"
           />
           {MODAL_CONFIG.titleProgress}
@@ -292,12 +295,12 @@ export function BatchGenerationModal({
             <span
               className={`text-xs ${
                 lesson.batchStatus === 'completed'
-                  ? 'text-green-500'
+                  ? 'text-success'
                   : lesson.batchStatus === 'failed'
-                    ? 'text-red-500'
+                    ? 'text-destructive'
                     : lesson.batchStatus === 'generating'
-                      ? 'text-blue-500'
-                      : 'text-gray-400'
+                      ? 'text-info'
+                      : 'text-muted-foreground'
               }`}
             >
               {getStatusLabel(lesson.batchStatus)}
@@ -311,7 +314,7 @@ export function BatchGenerationModal({
           type="button"
           variant="outline"
           onClick={handleClose}
-          className="border-[#7dcfff] text-[#7dcfff] hover:bg-[#7dcfff]/10"
+          className="border-primary text-primary hover:bg-primary/10"
         >
           {MODAL_CONFIG.closeLabel}
         </Button>
@@ -325,12 +328,9 @@ export function BatchGenerationModal({
       <DialogHeader>
         <DialogTitle className="flex items-center gap-2">
           {progressStats.failed > 0 ? (
-            <XCircle className="h-5 w-5 text-amber-500" aria-hidden="true" />
+            <XCircle className="h-5 w-5 text-warning" aria-hidden="true" />
           ) : (
-            <CheckCircle
-              className="h-5 w-5 text-green-500"
-              aria-hidden="true"
-            />
+            <CheckCircle className="h-5 w-5 text-success" aria-hidden="true" />
           )}
           {MODAL_CONFIG.titleComplete}
         </DialogTitle>
@@ -387,11 +387,7 @@ export function BatchGenerationModal({
             {BATCH_MESSAGES.RETRY_BUTTON(progressStats.failed)}
           </Button>
         )}
-        <Button
-          type="button"
-          onClick={handleClose}
-          className="bg-[#7dcfff] text-slate-900 hover:bg-[#7dcfff]/90"
-        >
+        <Button type="button" onClick={handleClose}>
           Done
         </Button>
       </DialogFooter>

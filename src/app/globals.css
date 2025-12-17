@@ -3,11 +3,22 @@
 
 @custom-variant dark (&:is(.dark *));
 
+/* ===========================================
+   SENDA DESIGN SYSTEM - CSS Variables
+   Extracted from app mockups (2025-12-17)
+   =========================================== */
+
 @theme inline {
+  /* Core color mappings */
   --color-background: var(--background);
   --color-foreground: var(--foreground);
-  --font-sans: var(--font-geist-sans);
-  --font-mono: var(--font-geist-mono);
+
+  /* Typography */
+  --font-sans: var(--font-manrope), system-ui, sans-serif;
+  --font-mono: 'Fira Code', monospace;
+  --font-display: var(--font-manrope), system-ui, sans-serif;
+
+  /* Component colors */
   --color-sidebar-ring: var(--sidebar-ring);
   --color-sidebar-border: var(--sidebar-border);
   --color-sidebar-accent-foreground: var(--sidebar-accent-foreground);
@@ -16,11 +27,15 @@
   --color-sidebar-primary: var(--sidebar-primary);
   --color-sidebar-foreground: var(--sidebar-foreground);
   --color-sidebar: var(--sidebar);
+
+  /* Chart colors */
   --color-chart-5: var(--chart-5);
   --color-chart-4: var(--chart-4);
   --color-chart-3: var(--chart-3);
   --color-chart-2: var(--chart-2);
   --color-chart-1: var(--chart-1);
+
+  /* UI colors */
   --color-ring: var(--ring);
   --color-input: var(--input);
   --color-border: var(--border);
@@ -37,86 +52,307 @@
   --color-popover: var(--popover);
   --color-card-foreground: var(--card-foreground);
   --color-card: var(--card);
-  --radius-sm: calc(var(--radius) - 4px);
-  --radius-md: calc(var(--radius) - 2px);
-  --radius-lg: var(--radius);
-  --radius-xl: calc(var(--radius) + 4px);
+
+  /* Senda custom colors */
+  --color-success: var(--success);
+  --color-warning: var(--warning);
+  --color-info: var(--info);
+  --color-surface: var(--surface);
+  --color-description: var(--description);
+
+  /* Border radius - from mockups */
+  --radius-sm: 0.25rem; /* 4px - default */
+  --radius-md: 0.5rem; /* 8px - rounded-lg */
+  --radius-lg: 0.75rem; /* 12px - rounded-xl */
+  --radius-xl: 1rem; /* 16px */
+  --radius-2xl: 1.5rem; /* 24px */
 }
 
+/* ===========================================
+   LIGHT MODE - From mobile app mockup
+   Colors extracted from Senda App mockups
+   =========================================== */
 :root {
-  --radius: 0.625rem;
-  --background: oklch(1 0 0);
-  --foreground: oklch(0.129 0.042 264.695);
-  --card: oklch(1 0 0);
-  --card-foreground: oklch(0.129 0.042 264.695);
-  --popover: oklch(1 0 0);
-  --popover-foreground: oklch(0.129 0.042 264.695);
-  --primary: oklch(0.208 0.042 265.755);
-  --primary-foreground: oklch(0.984 0.003 247.858);
-  --secondary: oklch(0.968 0.007 247.896);
-  --secondary-foreground: oklch(0.208 0.042 265.755);
-  --muted: oklch(0.968 0.007 247.896);
-  --muted-foreground: oklch(0.554 0.046 257.417);
-  --accent: oklch(0.968 0.007 247.896);
-  --accent-foreground: oklch(0.208 0.042 265.755);
-  --destructive: oklch(0.577 0.245 27.325);
-  --border: oklch(0.929 0.013 255.508);
-  --input: oklch(0.929 0.013 255.508);
-  --ring: oklch(0.704 0.04 256.788);
-  --chart-1: oklch(0.646 0.222 41.116);
-  --chart-2: oklch(0.6 0.118 184.704);
-  --chart-3: oklch(0.398 0.07 227.392);
-  --chart-4: oklch(0.828 0.189 84.429);
-  --chart-5: oklch(0.769 0.188 70.08);
-  --sidebar: oklch(0.984 0.003 247.858);
-  --sidebar-foreground: oklch(0.129 0.042 264.695);
-  --sidebar-primary: oklch(0.208 0.042 265.755);
-  --sidebar-primary-foreground: oklch(0.984 0.003 247.858);
-  --sidebar-accent: oklch(0.968 0.007 247.896);
-  --sidebar-accent-foreground: oklch(0.208 0.042 265.755);
-  --sidebar-border: oklch(0.929 0.013 255.508);
-  --sidebar-ring: oklch(0.704 0.04 256.788);
+  --radius: 0.75rem;
+
+  /* Background & Foreground - from mockup */
+  --background: #fafafa;
+  --foreground: #0f172a; /* slate-900 */
+
+  /* Card - pure white with subtle shadow */
+  --card: #ffffff;
+  --card-foreground: #0f172a; /* slate-900 */
+
+  /* Popover */
+  --popover: #ffffff;
+  --popover-foreground: #0f172a;
+
+  /* Primary - Teal #2DD4BF from mockup */
+  --primary: #2dd4bf;
+  --primary-foreground: #0f766e; /* teal-700 for contrast */
+
+  /* Secondary - slate-100 */
+  --secondary: #f1f5f9;
+  --secondary-foreground: #0f172a;
+
+  /* Muted - slate-100/50 */
+  --muted: #f1f5f9;
+  --muted-foreground: #64748b; /* slate-500 */
+
+  /* Accent - teal-50 */
+  --accent: #f0fdfa;
+  --accent-foreground: #0f766e; /* teal-700 */
+
+  /* Destructive */
+  --destructive: #ef4444;
+
+  /* Border & Input - slate-200 from mockup */
+  --border: #e2e8f0;
+  --input: #e2e8f0;
+  --ring: #2dd4bf;
+
+  /* Senda custom */
+  --surface: #ffffff;
+  --description: #64748b; /* slate-500 */
+  --success: #10b981; /* emerald-500 */
+  --warning: #f59e0b; /* amber-500 */
+  --info: #0ea5e9; /* sky-500 */
+
+  /* Chart colors */
+  --chart-1: #2dd4bf;
+  --chart-2: #0ea5e9;
+  --chart-3: #f59e0b;
+  --chart-4: #ef4444;
+  --chart-5: #8b5cf6;
+
+  /* Sidebar - Light with white bg */
+  --sidebar: #ffffff;
+  --sidebar-foreground: #0f172a;
+  --sidebar-primary: #2dd4bf;
+  --sidebar-primary-foreground: #0f766e;
+  --sidebar-accent: #f0fdfa; /* teal-50 */
+  --sidebar-accent-foreground: #0f766e;
+  --sidebar-border: #f1f5f9; /* slate-100 */
+  --sidebar-ring: #2dd4bf;
 }
 
+/* ===========================================
+   DARK MODE (PRIMARY for CMS)
+   Colors extracted from Senda app mockups
+   =========================================== */
 .dark {
-  --background: oklch(0.129 0.042 264.695);
-  --foreground: oklch(0.984 0.003 247.858);
-  --card: oklch(0.208 0.042 265.755);
-  --card-foreground: oklch(0.984 0.003 247.858);
-  --popover: oklch(0.208 0.042 265.755);
-  --popover-foreground: oklch(0.984 0.003 247.858);
-  --primary: oklch(0.929 0.013 255.508);
-  --primary-foreground: oklch(0.208 0.042 265.755);
-  --secondary: oklch(0.279 0.041 260.031);
-  --secondary-foreground: oklch(0.984 0.003 247.858);
-  --muted: oklch(0.279 0.041 260.031);
-  --muted-foreground: oklch(0.704 0.04 256.788);
-  --accent: oklch(0.279 0.041 260.031);
-  --accent-foreground: oklch(0.984 0.003 247.858);
-  --destructive: oklch(0.704 0.191 22.216);
-  --border: oklch(1 0 0 / 10%);
-  --input: oklch(1 0 0 / 15%);
-  --ring: oklch(0.551 0.027 264.364);
-  --chart-1: oklch(0.488 0.243 264.376);
-  --chart-2: oklch(0.696 0.17 162.48);
-  --chart-3: oklch(0.769 0.188 70.08);
-  --chart-4: oklch(0.627 0.265 303.9);
-  --chart-5: oklch(0.645 0.246 16.439);
-  --sidebar: oklch(0.208 0.042 265.755);
-  --sidebar-foreground: oklch(0.984 0.003 247.858);
-  --sidebar-primary: oklch(0.488 0.243 264.376);
-  --sidebar-primary-foreground: oklch(0.984 0.003 247.858);
-  --sidebar-accent: oklch(0.279 0.041 260.031);
-  --sidebar-accent-foreground: oklch(0.984 0.003 247.858);
-  --sidebar-border: oklch(1 0 0 / 10%);
-  --sidebar-ring: oklch(0.551 0.027 264.364);
+  /* Background - Deep forest green #10221C */
+  --background: #10221c;
+  --foreground: #ffffff;
+
+  /* Card - Elevated surface #1C2723 */
+  --card: #1c2723;
+  --card-foreground: #ffffff;
+
+  /* Popover */
+  --popover: #1c2723;
+  --popover-foreground: #ffffff;
+
+  /* Primary - Mint/Emerald #13ECA4 */
+  --primary: #13eca4;
+  --primary-foreground: #111816;
+
+  /* Secondary - Subtle surface */
+  --secondary: rgba(255, 255, 255, 0.05);
+  --secondary-foreground: #ffffff;
+
+  /* Muted */
+  --muted: #1c2723;
+  --muted-foreground: #9db9b0;
+
+  /* Accent */
+  --accent: rgba(19, 236, 164, 0.2);
+  --accent-foreground: #13eca4;
+
+  /* Destructive */
+  --destructive: #f87171;
+
+  /* Border - zinc-800 #27272A */
+  --border: #27272a;
+  --input: #27272a;
+  --ring: #13eca4;
+
+  /* Senda custom colors */
+  --surface: #1c2723;
+  --description: #c7dcd5;
+  --success: #13eca4;
+  --warning: #fbbf24;
+  --info: #38bdf8;
+
+  /* Chart colors */
+  --chart-1: #13eca4;
+  --chart-2: #38bdf8;
+  --chart-3: #fbbf24;
+  --chart-4: #f87171;
+  --chart-5: #a78bfa;
+
+  /* Sidebar - Dark forest */
+  --sidebar: #10221c;
+  --sidebar-foreground: #ffffff;
+  --sidebar-primary: #13eca4;
+  --sidebar-primary-foreground: #111816;
+  --sidebar-accent: rgba(19, 236, 164, 0.15);
+  --sidebar-accent-foreground: #13eca4;
+  --sidebar-border: #27272a;
+  --sidebar-ring: #13eca4;
 }
 
+/* ===========================================
+   BASE STYLES
+   =========================================== */
 @layer base {
   * {
     @apply border-border outline-ring/50;
   }
+
   body {
-    @apply bg-background text-foreground;
+    @apply bg-background text-foreground font-sans antialiased;
+  }
+
+  /* Headings - Manrope bold */
+  h1,
+  h2,
+  h3,
+  h4,
+  h5,
+  h6 {
+    @apply font-display font-bold tracking-tight;
+  }
+
+  h1 {
+    @apply text-3xl leading-tight;
+  }
+
+  h2 {
+    @apply text-2xl leading-tight;
+  }
+
+  h3 {
+    @apply text-xl leading-tight;
+  }
+
+  h4 {
+    @apply text-lg leading-tight;
+  }
+}
+
+/* ===========================================
+   COMPONENT OVERRIDES
+   =========================================== */
+@layer components {
+  /* Primary button - Mint/emerald with dark text */
+  .btn-primary {
+    @apply bg-primary text-primary-foreground font-bold rounded-xl px-6 py-3;
+    @apply hover:brightness-110 transition-all;
+  }
+
+  /* Secondary button - Transparent with border */
+  .btn-secondary {
+    @apply bg-transparent border border-border text-foreground font-medium rounded-lg px-4 py-2;
+    @apply hover:bg-accent transition-all;
+  }
+
+  /* Ghost button */
+  .btn-ghost {
+    @apply bg-transparent text-muted-foreground font-medium;
+    @apply hover:bg-accent hover:text-accent-foreground transition-all;
+  }
+
+  /* Card surface - From mockups */
+  .card-surface {
+    @apply bg-card border border-border rounded-xl;
+  }
+
+  /* Stats box - Transparent surface */
+  .stats-box {
+    @apply bg-secondary border border-border rounded-xl p-4;
+  }
+
+  /* Session/Lesson item */
+  .session-item {
+    @apply flex items-center gap-4 bg-secondary border border-border rounded-xl p-4;
+  }
+
+  /* Play button circle */
+  .play-button {
+    @apply flex items-center justify-center size-12 rounded-full bg-accent text-accent-foreground;
+  }
+
+  /* Active play button */
+  .play-button-active {
+    @apply flex items-center justify-center size-12 rounded-full bg-primary text-primary-foreground;
+  }
+
+  /* Category pill/filter */
+  .category-pill {
+    @apply inline-flex px-4 py-2 rounded-full text-sm font-medium;
+    @apply bg-secondary text-secondary-foreground border border-border;
+    @apply transition-all cursor-pointer;
+  }
+
+  .category-pill-active {
+    @apply bg-primary text-primary-foreground border-primary;
+  }
+
+  /* Input focus ring - Mint glow */
+  .input-focus {
+    @apply focus:ring-2 focus:ring-primary focus:ring-offset-0 focus:border-primary;
+  }
+
+  /* Success state */
+  .text-success {
+    color: var(--success);
+  }
+
+  .bg-success {
+    background-color: var(--success);
+  }
+
+  /* Warning state */
+  .text-warning {
+    color: var(--warning);
+  }
+
+  .bg-warning {
+    background-color: var(--warning);
+  }
+
+  /* Info state */
+  .text-info {
+    color: var(--info);
+  }
+
+  .bg-info {
+    background-color: var(--info);
+  }
+
+  /* Description text color */
+  .text-description {
+    color: var(--description);
+  }
+}
+
+/* ===========================================
+   UTILITY OVERRIDES
+   =========================================== */
+@layer utilities {
+  /* Backdrop blur for sticky elements */
+  .backdrop-senda {
+    @apply backdrop-blur-lg bg-background/80;
+  }
+
+  /* Primary muted background (20% opacity) */
+  .bg-primary-muted {
+    background-color: rgba(19, 236, 164, 0.2);
+  }
+
+  /* Surface transparent (5% white) */
+  .bg-surface-transparent {
+    background-color: rgba(255, 255, 255, 0.05);
   }
 }

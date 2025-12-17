@@ -1,6 +1,7 @@
 'use client';
 
 import type { FC } from 'react';
+
 import { Button } from '@/components/ui/button';
 import {
   Card,
@@ -18,6 +19,7 @@ import {
   FormMessage,
 } from '@/components/ui/form';
 import { Input } from '@/components/ui/input';
+import Logo from '@/components/ui/logo';
 import useConnect from './connect';
 
 const SignIn: FC = () => {
@@ -27,6 +29,9 @@ const SignIn: FC = () => {
     <div className="flex min-h-screen items-center justify-center bg-background p-4">
       <Card className="w-full max-w-md">
         <CardHeader className="text-center">
+          <div className="flex justify-center mb-4">
+            <Logo size={64} />
+          </div>
           <CardTitle className="text-2xl font-bold">
             Welcome to Senda CMS
           </CardTitle>

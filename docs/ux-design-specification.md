@@ -1,6 +1,7 @@
 # senda-cms UX Design Specification
 
 _Created on 2025-11-28 by Rupo_
+_Updated on 2025-12-16 - Integrated with Senda Design System_
 _Generated using BMad Method - Create UX Design Workflow v1.0_
 
 ---
@@ -21,7 +22,19 @@ Senda CMS is a content management system for creating and managing guided medita
 
 ### 1.1 Design System Choice
 
-[To be completed]
+**📚 Shared Design System:** The visual language for Senda CMS is defined in the **[Senda Design System](./design-system.md)**, which serves as the single source of truth for both the CMS (admin platform) and the Senda mobile app (consumer product).
+
+**Foundation:** shadcn/ui components with custom Senda theming
+
+**Key Design System Elements:**
+
+- **Color Palette:** Forest green theme (`#0B1A17` background, `#2DD4BF` primary accent)
+- **Typography:** Inter font family with defined type scale
+- **Spacing:** 4px baseline grid system
+- **Components:** Unified patterns for cards, buttons, navigation
+- **Platform Adaptations:** CMS uses sidebar navigation, mobile uses bottom nav
+
+For complete token definitions, component patterns, and implementation code, refer to `docs/design-system.md`.
 
 ---
 
@@ -121,70 +134,83 @@ shadcn/ui provides the component primitives with Tailwind CSS for styling. This 
 
 A custom blend combining the structure of Theme 1 with softer, pastel tones inspired by Tokyo Night. This creates a calm, creative atmosphere with excellent readability and reduced eye strain.
 
-**Core Palette:**
+**📚 Full Color Definition:** See [Senda Design System](./design-system.md) for complete token definitions.
 
-| Color Role         | Hex Code  | Usage                            | Rationale                                           |
-| ------------------ | --------- | -------------------------------- | --------------------------------------------------- |
-| **Background**     | `#1a1d29` | Main app background              | Soft dark blue-grey, easy on eyes for long sessions |
-| **Surface**        | `#24283b` | Cards, modals, elevated elements | Subtle elevation, maintains calm aesthetic          |
-| **Border**         | `#343b58` | Dividers, input borders          | Gentle separation without harsh lines               |
-| **Primary**        | `#7dcfff` | CTAs, links, focus states        | Pastel cyan - energetic but calming                 |
-| **Primary Hover**  | `#9ee4ff` | Button hover states              | Lighter cyan for feedback                           |
-| **Text Primary**   | `#e1e8ed` | Headings, important text         | High contrast for readability                       |
-| **Text Secondary** | `#a9b1d6` | Descriptions, metadata           | Softer for hierarchy                                |
-| **Text Muted**     | `#6b7280` | Timestamps, helper text          | Subtle, non-distracting                             |
+**Core Palette (Extracted from Senda App Mockups):**
+
+| Color Role              | Hex Code                  | CSS Variable                  | Usage                                                 |
+| ----------------------- | ------------------------- | ----------------------------- | ----------------------------------------------------- |
+| **Primary**             | `#13ECA4`                 | `--color-primary`             | CTAs, active nav, accent icons - vibrant mint/emerald |
+| **Primary 20%**         | `rgba(19, 236, 164, 0.2)` | `--color-primary-20`          | Badge backgrounds, icon circles                       |
+| **Background Dark**     | `#10221C`                 | `--color-background-dark`     | Main app background (dark mode)                       |
+| **Background Light**    | `#F6F8F7`                 | `--color-background-light`    | Main app background (light mode)                      |
+| **Surface**             | `#1C2723`                 | `--color-surface`             | Cards, greeting box, benefit cards                    |
+| **Surface Transparent** | `rgba(255,255,255,0.05)`  | `--color-surface-transparent` | Stats boxes, session cards (`bg-white/5`)             |
+| **Border Dark**         | `#27272A`                 | `--color-border`              | Card borders (zinc-800)                               |
+| **Border Light**        | `#E4E4E7`                 | `--color-border-light`        | Card borders (zinc-200)                               |
+
+**Text Colors (Dark Mode - Default):**
+
+| Color Role           | Hex Code  | CSS Variable               | Usage                              |
+| -------------------- | --------- | -------------------------- | ---------------------------------- |
+| **Text Primary**     | `#FFFFFF` | `--color-text-primary`     | Headlines, primary text            |
+| **Text Secondary**   | `#9DB9B0` | `--color-text-secondary`   | Subtitles, metadata, nav inactive  |
+| **Text Description** | `#C7DCD5` | `--color-text-description` | Hero descriptions, body text       |
+| **Text Muted**       | `#71717A` | `--color-text-muted`       | Timestamps, disabled (zinc-500)    |
+| **Text on Primary**  | `#111816` | `--color-text-on-primary`  | Button text on primary backgrounds |
+
+**Text Colors (Light Mode):**
+
+| Color Role         | Hex Code  | Usage                |
+| ------------------ | --------- | -------------------- |
+| **Text Primary**   | `#18181B` | Headlines (zinc-900) |
+| **Text Secondary** | `#52525B` | Body text (zinc-600) |
+| **Text Muted**     | `#A1A1AA` | Metadata (zinc-400)  |
 
 **Semantic Colors:**
 
-| State       | Hex Code  | Usage                                  |
-| ----------- | --------- | -------------------------------------- |
-| **Success** | `#9ece6a` | Published, completed, success messages |
-| **Warning** | `#e0af68` | In progress, draft, caution states     |
-| **Error**   | `#f7768e` | Failed, errors, destructive actions    |
-| **Info**    | `#7aa2f7` | Processing, informational states       |
+| State       | Hex Code  | Usage                                  | Icon Pairing |
+| ----------- | --------- | -------------------------------------- | ------------ |
+| **Success** | `#13ECA4` | Published, completed, success messages | ✓ Checkmark  |
+| **Warning** | `#FBBF24` | In progress, draft, caution states     | ⏳ Hourglass |
+| **Error**   | `#F87171` | Failed, errors, destructive actions    | ✕ Close      |
+| **Info**    | `#38BDF8` | Processing, informational states       | ℹ Info      |
 
 **Typography System:**
 
 - **Font Family:**
-  - Headings: `Inter, -apple-system, system-ui, sans-serif`
-  - Body: `Inter, -apple-system, system-ui, sans-serif`
-  - Monospace: `'Fira Code', 'Courier New', monospace` (for timestamps, metadata)
+  - Primary: `'Manrope', sans-serif` (from mockups)
+  - Monospace: `'Fira Code', monospace`
 
-- **Type Scale:**
-  - H1: 2.5rem (40px) / 600 weight
-  - H2: 2rem (32px) / 600 weight
-  - H3: 1.5rem (24px) / 600 weight
-  - H4: 1.25rem (20px) / 600 weight
-  - Body: 1rem (16px) / 400 weight
-  - Small: 0.875rem (14px) / 400 weight
-  - Tiny: 0.75rem (12px) / 400 weight
-
-- **Line Heights:**
-  - Headings: 1.2
-  - Body: 1.6
-  - UI Elements: 1.5
+- **Type Scale (from mockups):**
+  - Display: 32px / 700 weight - Hero headlines ("Rewire Your Mind")
+  - H2: 22px / 700 weight - Section titles ("Featured Courses")
+  - H3: 18px / 700 weight - Page titles, centered headers
+  - Body: 16px / 400-600 weight - Body text, session titles
+  - SM: 14px / 400 weight - Metadata, durations
+  - XS: 12px / 500-700 weight - Navigation labels
 
 **Spacing System:**
 
-Based on 4px baseline:
+Based on Tailwind defaults (from mockups):
 
-- xs: 0.25rem (4px)
-- sm: 0.5rem (8px)
-- md: 1rem (16px)
-- lg: 1.5rem (24px)
-- xl: 2rem (32px)
-- 2xl: 3rem (48px)
-- 3xl: 4rem (64px)
+| Token   | Value   | Pixels | Common Usage           |
+| ------- | ------- | ------ | ---------------------- |
+| space-1 | 0.25rem | 4px    | Tight gaps             |
+| space-2 | 0.5rem  | 8px    | pt-2, pb-2             |
+| space-3 | 0.75rem | 12px   | gap-3                  |
+| space-4 | 1rem    | 16px   | p-4 (standard padding) |
+| space-6 | 1.5rem  | 24px   | pt-6                   |
+| space-8 | 2rem    | 32px   | pt-8 (section spacing) |
 
-**Layout Grid:**
+**Border Radius (from mockups):**
 
-- 12-column grid system (Tailwind default)
-- Container max-width: 1440px
-- Gutters: 1rem (16px) mobile, 1.5rem (24px) desktop
-
-**Interactive Visualizations:**
-
-- **Color Theme Explorer:** [ux-color-themes.html](./ux-color-themes.html) - Shows original 4 themes plus final hybrid
+| Token          | Value   | Pixels | Usage                      |
+| -------------- | ------- | ------ | -------------------------- |
+| radius-default | 0.25rem | 4px    | Default                    |
+| radius-lg      | 0.5rem  | 8px    | Buttons (rounded-lg)       |
+| radius-xl      | 0.75rem | 12px   | Cards, images (rounded-xl) |
+| radius-full    | 9999px  | -      | Pills, circular buttons    |
 
 ---
 
@@ -598,9 +624,9 @@ graph TD
     K -->|Complete| L[Audio Preview]
     L -->|Approve| M[Lesson Complete]
 
-    style C fill:#7dcfff
-    style I fill:#7dcfff
-    style K fill:#7dcfff
+    style C fill:#13ECA4
+    style I fill:#13ECA4
+    style K fill:#13ECA4
 ```
 
 **Key Journey Principles:**
@@ -674,9 +700,9 @@ graph TD
 
 **shadcn/ui Customization:**
 
-- All components use pastel theme CSS variables
-- Button primary → cyan (#7dcfff) background
-- Form inputs → dark background (#24283b) with cyan focus ring
+- All components use Senda Design System CSS variables
+- Button primary → mint/emerald (`#13ECA4`) background
+- Form inputs → dark background (`#1C2723`) with mint focus ring
 - Dialogs → backdrop blur, dark surface
 - Toasts → positioned top-right, auto-dismiss 4s
 
@@ -694,26 +720,27 @@ These patterns ensure predictable, cohesive behavior across the entire applicati
 
 **Primary Actions** (What moves the user forward)
 
-- Style: Solid cyan (#7dcfff) background, dark text (#1a1d29)
-- Usage: "Create Course", "Generate Script", "Save", "Publish"
-- Hover: Lighter cyan (#9ee4ff) + lift effect
-- Disabled: Grey background (#2a3f54), grey text (#5a6d7f)
+- Style: Solid mint/emerald (`#13ECA4`) background, dark text (`#111816`)
+- Usage: "Start Your Journey", "Begin", "Start Course", "Create Course"
+- Hover: Slightly lighter mint
+- Disabled: Grey background, grey text
+- Border-radius: `rounded-xl` (12px) for large CTAs, `rounded-lg` (8px) for inline
 
 **Secondary Actions** (Alternative or less critical)
 
-- Style: Transparent background, cyan border, cyan text
+- Style: Transparent background, border (`#27272A`), white text
 - Usage: "Save as Draft", "Cancel", "Add Lesson"
-- Hover: Filled cyan background with transition
+- Hover: Filled surface-highlight background with transition
 
 **Tertiary Actions** (Utility, low emphasis)
 
-- Style: Ghost (no border), grey text (#a9b1d6)
+- Style: Ghost (no border), muted text (`#9DB9B0`)
 - Usage: "Skip", "Learn More", inline actions
-- Hover: Light background highlight
+- Hover: Light background highlight (`#1C2723`)
 
 **Destructive Actions** (Delete, remove, irreversible)
 
-- Style: Red/pink (#f7768e) background, white text
+- Style: Red (`#F87171`) background, white text
 - Usage: "Delete Course", "Remove Lesson", "Discard Changes"
 - Hover: Darker red
 - Always require confirmation
@@ -731,7 +758,7 @@ These patterns ensure predictable, cohesive behavior across the entire applicati
 **Success Messages**
 
 - Pattern: Toast notification (top-right)
-- Style: Green background (#9ece6a), white text, success icon
+- Style: Mint/emerald background (`#13ECA4`), dark text (`#111816`), success icon (✓)
 - Examples: "Course created", "Script generated", "Changes saved"
 - Duration: 4 seconds auto-dismiss
 - Interaction: Click to dismiss immediately
@@ -739,7 +766,7 @@ These patterns ensure predictable, cohesive behavior across the entire applicati
 **Error Messages**
 
 - Pattern: Toast notification (top-right) + inline form errors
-- Style: Red/pink background (#f7768e), white text, error icon
+- Style: Red background (`#F87171`), white text, error icon (✕)
 - Examples: "Generation failed", "Network error", "Invalid input"
 - Duration: 6 seconds (longer to read) or manual dismiss
 - Inline: Below form field with explanation
@@ -747,21 +774,21 @@ These patterns ensure predictable, cohesive behavior across the entire applicati
 **Warning Messages**
 
 - Pattern: Toast or inline banner
-- Style: Orange background (#e0af68), dark text
+- Style: Amber background (`#FBBF24`), dark text (`#111816`)
 - Examples: "Unsaved changes", "Low storage", "API rate limit"
 - Duration: 5 seconds or manual dismiss
 
 **Info Messages**
 
 - Pattern: Toast or banner
-- Style: Blue background (#7aa2f7), white text
+- Style: Sky blue background (`#38BDF8`), white text
 - Examples: "Processing in background", "Feature tip", "Update available"
 - Duration: 4 seconds
 
 **Loading States**
 
 - Pattern: Inline spinners, progress bars, skeleton screens
-- Style: Cyan spinner, animated gradient progress bars
+- Style: Mint/emerald (`#13ECA4`) spinner, animated gradient progress bars
 - Usage: Button → spinner replaces text; Page → skeleton; Long task → progress bar
 - Text: "Generating...", "Saving...", "Loading..."
 
@@ -791,14 +818,14 @@ These patterns ensure predictable, cohesive behavior across the entire applicati
 
 - Pattern: Small grey text below input
 - Usage: Format hints, examples, character limits
-- Style: 0.85rem, grey (#6b7280)
+- Style: 0.85rem, muted text (`#9DB9B0`)
 
 **Input States**
 
-- Default: Dark background (#24283b), light border (#343b58)
-- Focus: Cyan border (#7dcfff), cyan glow shadow
-- Error: Red border (#f7768e), red glow
-- Disabled: Darker background, grey text, cursor not-allowed
+- Default: Dark background (`#1C2723` or `bg-white/5`), subtle border (`#27272A`)
+- Focus: Mint/emerald border (`#13ECA4`), mint glow shadow
+- Error: Red border (`#F87171`), red glow
+- Disabled: Darker background, grey text (`#71717A`), cursor not-allowed
 
 ---
 
@@ -835,9 +862,9 @@ These patterns ensure predictable, cohesive behavior across the entire applicati
 
 **Active State Indication**
 
-- Sidebar: Cyan background highlight + right border accent
-- Breadcrumbs: Bold text + non-clickable
-- Tabs: Underline + cyan color
+- Sidebar: Mint muted background (`rgba(19, 236, 164, 0.2)`) + left border accent (`#13ECA4`)
+- Bottom Nav: Active item uses `text-primary` (`#13ECA4`), inactive uses `text-[#9db9b0]`
+- Tabs: Underline + mint color (`#13ECA4`)
 
 **Breadcrumb Usage**
 
@@ -1096,8 +1123,8 @@ These patterns ensure predictable, cohesive behavior across the entire applicati
 
 | Element Type        | Required Ratio | Our Implementation                     |
 | ------------------- | -------------- | -------------------------------------- |
-| Normal Text (16px+) | 4.5:1          | #e1e8ed on #1a1d29 = 11.5:1 ✅         |
-| Large Text (24px+)  | 3:1            | All headings exceed 7:1 ✅             |
+| Normal Text (16px+) | 4.5:1          | #FFFFFF on #10221C = 14.8:1 ✅ AAA     |
+| Large Text (24px+)  | 3:1            | All headings exceed 10:1 ✅            |
 | UI Components       | 3:1            | Buttons, borders meet minimum ✅       |
 | Interactive States  | 3:1            | Focus rings, hover states compliant ✅ |
 
@@ -1123,7 +1150,7 @@ These patterns ensure predictable, cohesive behavior across the entire applicati
 
 **Focus Management:**
 
-- Visible focus ring: 2px solid cyan (#7dcfff), 2px offset
+- Visible focus ring: 2px solid mint/emerald (`#13ECA4`), 2px offset
 - Skip to main content link for screen readers
 - Focus trap in modals (Tab cycles within modal)
 - Return focus to trigger element on modal close
@@ -1372,6 +1399,8 @@ This specification provides comprehensive guidance for implementing Senda CMS wi
 
 **For Implementation Team:**
 
+**📚 Full Design System:** See [design-system.md](./design-system.md) for complete CSS variables and component patterns.
+
 **Design Tokens (Tailwind Config):**
 
 ```javascript
@@ -1380,26 +1409,47 @@ module.exports = {
   theme: {
     extend: {
       colors: {
-        background: '#1a1d29',
-        surface: '#24283b',
-        border: '#343b58',
-        primary: {
-          DEFAULT: '#7dcfff',
-          hover: '#9ee4ff',
+        primary: '#13ECA4',
+        'background-light': '#F6F8F7',
+        'background-dark': '#10221C',
+        surface: {
+          DEFAULT: '#1C2723',
+          transparent: 'rgba(255, 255, 255, 0.05)',
+        },
+        border: {
+          DEFAULT: '#27272A',
+          light: '#E4E4E7',
         },
         text: {
-          primary: '#e1e8ed',
-          secondary: '#a9b1d6',
-          muted: '#6b7280',
+          primary: {
+            DEFAULT: '#FFFFFF',
+            light: '#18181B',
+          },
+          secondary: {
+            DEFAULT: '#9DB9B0',
+            light: '#52525B',
+          },
+          description: '#C7DCD5',
+          muted: {
+            DEFAULT: '#71717A',
+            light: '#A1A1AA',
+          },
+          'on-primary': '#111816',
         },
-        success: '#9ece6a',
-        warning: '#e0af68',
-        error: '#f7768e',
-        info: '#7aa2f7',
+        success: '#13ECA4',
+        warning: '#FBBF24',
+        error: '#F87171',
+        info: '#38BDF8',
       },
       fontFamily: {
-        sans: ['Inter', 'system-ui', 'sans-serif'],
-        mono: ['Fira Code', 'Courier New', 'monospace'],
+        display: ['Manrope', 'sans-serif'],
+        mono: ['Fira Code', 'monospace'],
+      },
+      borderRadius: {
+        DEFAULT: '0.25rem',
+        lg: '0.5rem',
+        xl: '0.75rem',
+        full: '9999px',
       },
     },
   },
@@ -1409,7 +1459,7 @@ module.exports = {
 **shadcn/ui Theme:**
 
 - Already configured in `components.json`
-- Update CSS variables in `app/globals.css` to match pastel palette
+- Update CSS variables in `app/globals.css` to match Senda palette
 - Component styling inherits from Tailwind config
 
 **Priority Implementation Order:**
@@ -1614,9 +1664,10 @@ This UX Design Specification can serve as input to:
 
 ### Version History
 
-| Date       | Version | Changes                         | Author |
-| ---------- | ------- | ------------------------------- | ------ |
-| 2025-11-28 | 1.0     | Initial UX Design Specification | Rupo   |
+| Date       | Version | Changes                                                                                                          | Author              |
+| ---------- | ------- | ---------------------------------------------------------------------------------------------------------------- | ------------------- |
+| 2025-12-16 | 2.0     | Integrated with Senda Design System (forest green palette), updated all color tokens, linked to design-system.md | Sally (UX Designer) |
+| 2025-11-28 | 1.0     | Initial UX Design Specification                                                                                  | Rupo                |
 
 ---
 
