@@ -245,7 +245,7 @@ The polling mechanism must work correctly with the reorder feature from Story 3.
 
 **Files unchanged:**
 
-- `src/components/SortableLessonList.tsx` - Receives updated data via props
+- `src/components/LessonList.tsx` - Receives updated data via props
 - `src/components/LessonRow.tsx` - Renders updated StatusBadge
 - `src/components/LessonListItem.tsx` - Uses StatusBadge for display
 
@@ -276,7 +276,7 @@ toast.error(`Generation failed for ${lesson.title}`);
 
 - **LessonReorder container**: Created for reorder state management - avoid conflicts
 - **pendingOrder state**: Must be preserved during polling updates
-- **SortableLessonList**: Receives `displayLessons` - now may receive updated statuses
+- **LessonList**: Receives `displayLessons` - now may receive updated statuses
 - **Cache invalidation**: `refetchLessons()` works - polling will use same pattern
 - **Toast notifications**: Pattern established - follow same approach
 

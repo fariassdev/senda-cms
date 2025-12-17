@@ -11,12 +11,12 @@ import {
 } from '@dnd-kit/core';
 import { arrayMove, sortableKeyboardCoordinates } from '@dnd-kit/sortable';
 import { useMemo, useState } from 'react';
-import type { SortableLessonListConnectProps } from './types';
+import type { LessonListConnectProps } from './types';
 
 export default function useConnect({
   lessons,
   onReorder,
-}: SortableLessonListConnectProps) {
+}: LessonListConnectProps) {
   const [activeId, setActiveId] = useState<UniqueIdentifier | null>(null);
 
   // Configure sensors for pointer and keyboard (AC5)

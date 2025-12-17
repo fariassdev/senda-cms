@@ -20,9 +20,9 @@ import { LessonCard } from './LessonCard';
 import { LessonDragOverlay, LessonRow } from './LessonRow';
 
 import useConnect from './connect';
-import type { SortableLessonListProps } from './types';
+import type { LessonListProps } from './types';
 
-export function SortableLessonList({
+export function LessonList({
   lessons,
   isLoading,
   isError,
@@ -33,7 +33,7 @@ export function SortableLessonList({
   onDeleteLesson,
   onReorder,
   isReordering = false,
-}: SortableLessonListProps) {
+}: LessonListProps) {
   const {
     sensors,
     lessonIds,

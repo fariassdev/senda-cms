@@ -66,7 +66,7 @@ So that I can create the final meditation content.
   - [x] 1.8 Return `{ generateAudio, isGenerating }` from hook
 
 - [x] **Task 2: Create GenerateAudioButton Component** (AC: #1, #2, #3, #4, #5, #7) (Prerequisites: None - can run parallel with Task 1)
-  - [x] 2.1 Create `src/containers/Main/CourseDetail/SortableLessonList/LessonRow/GenerateAudioButton/index.tsx`
+  - [x] 2.1 Create `src/containers/Main/CourseDetail/LessonList/LessonRow/GenerateAudioButton/index.tsx`
   - [x] 2.2 Create `connect.ts` with button state logic (getButtonState)
   - [x] 2.3 Create `types.ts` with `GenerateAudioButtonProps` interface
   - [x] 2.4 Create `constants.ts` with AUDIO_BUTTON_STATES mapping
@@ -143,7 +143,7 @@ See hook implementation below (lines 176-276) for complete mutation details.
 src/hooks/
 ├── useAudioGeneration.ts              ← New hook for audio generation
 
-src/containers/Main/CourseDetail/SortableLessonList/LessonRow/
+src/containers/Main/CourseDetail/LessonList/LessonRow/
 ├── GenerateAudioButton/
 │   ├── index.tsx                      ← Button component
 │   ├── connect.ts                     ← Button state logic
@@ -154,7 +154,7 @@ src/containers/Main/CourseDetail/SortableLessonList/LessonRow/
 **Files to Modify:**
 
 ```
-src/containers/Main/CourseDetail/SortableLessonList/LessonRow/
+src/containers/Main/CourseDetail/LessonList/LessonRow/
 ├── index.tsx                          ← Add GenerateAudioButton
 ├── connect.ts                         ← Add useAudioGeneration hook
 ├── types.ts                           ← Add audio-related props if needed
@@ -228,7 +228,7 @@ className={cn(
 ```
 
 **Complete pattern reference:**  
-[See: src/containers/Main/CourseDetail/SortableLessonList/LessonRow/GenerateScriptButton/]
+[See: src/containers/Main/CourseDetail/LessonList/LessonRow/GenerateScriptButton/]
 
 ### StatusBadge Verification
 
@@ -330,7 +330,7 @@ Place GenerateAudioButton after GenerateScriptButton in the actions cell, mainta
 - [Source: docs/architecture.md#Container-Pattern-CRITICAL] - Component structure
 - [Source: docs/ux-design-specification.md#Button-Hierarchy] - Button styling
 - [Source: src/hooks/useScriptGeneration.ts] - Hook pattern reference
-- [Source: src/containers/Main/CourseDetail/SortableLessonList/LessonRow/GenerateScriptButton/] - Component pattern reference
+- [Source: src/containers/Main/CourseDetail/LessonList/LessonRow/GenerateScriptButton/] - Component pattern reference
 - [Source: docs/sprint-artifacts/4-1-generate-script-button-status.md] - Previous story learnings
 - [Source: docs/project_context.md] - AI agent implementation rules
 
@@ -370,14 +370,14 @@ Gemini Antigravity (Claude-based)
 **New Files:**
 
 - `src/hooks/useAudioGeneration.ts`
-- `src/containers/Main/CourseDetail/SortableLessonList/LessonRow/GenerateAudioButton/index.tsx`
-- `src/containers/Main/CourseDetail/SortableLessonList/LessonRow/GenerateAudioButton/connect.ts`
-- `src/containers/Main/CourseDetail/SortableLessonList/LessonRow/GenerateAudioButton/types.ts`
+- `src/containers/Main/CourseDetail/LessonList/LessonRow/GenerateAudioButton/index.tsx`
+- `src/containers/Main/CourseDetail/LessonList/LessonRow/GenerateAudioButton/connect.ts`
+- `src/containers/Main/CourseDetail/LessonList/LessonRow/GenerateAudioButton/types.ts`
 
 **Modified Files:**
 
-- `src/containers/Main/CourseDetail/SortableLessonList/LessonRow/index.tsx`
-- `src/containers/Main/CourseDetail/SortableLessonList/LessonRow/connect.ts`
+- `src/containers/Main/CourseDetail/LessonList/LessonRow/index.tsx`
+- `src/containers/Main/CourseDetail/LessonList/LessonRow/connect.ts`
 - `docs/sprint-artifacts/sprint-status.yaml`
 
 ---

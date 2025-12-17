@@ -192,7 +192,7 @@ src/types/
 src/hooks/
 ├── useAudioGeneration.ts              ← Add config parameter support
 
-src/containers/Main/CourseDetail/SortableLessonList/LessonRow/GenerateAudioButton/
+src/containers/Main/CourseDetail/LessonList/LessonRow/GenerateAudioButton/
 ├── index.tsx                          ← Add modal integration
 ├── connect.ts                         ← Add modal state
 ├── types.ts                           ← Add modal-related types
@@ -355,7 +355,7 @@ const handleClick = (e: React.MouseEvent) => {
 };
 ```
 
-[Source: src/containers/Main/CourseDetail/SortableLessonList/LessonRow/GenerateAudioButton/]
+[Source: src/containers/Main/CourseDetail/LessonList/LessonRow/GenerateAudioButton/]
 [Source: docs/sprint-artifacts/5-1-generate-audio-button-and-status.md - Shift+Click pattern]
 
 ### Slider Component (shadcn/ui)
@@ -531,7 +531,7 @@ LessonRow (parent)
 - [Source: docs/architecture.md#Container-Pattern-CRITICAL] - Container pattern
 - [Source: src/components/ScriptGenerationModal/] - Modal pattern reference
 - [Source: src/hooks/useAudioGeneration.ts] - Hook to extend
-- [Source: src/containers/Main/CourseDetail/SortableLessonList/LessonRow/GenerateAudioButton/] - Button to update
+- [Source: src/containers/Main/CourseDetail/LessonList/LessonRow/GenerateAudioButton/] - Button to update
 - [Source: docs/sprint-artifacts/5-1-generate-audio-button-and-status.md] - Previous story learnings
 - [Source: docs/ux-design-specification.md#Button-Hierarchy] - Button styling
 

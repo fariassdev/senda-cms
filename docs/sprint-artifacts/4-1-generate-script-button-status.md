@@ -360,7 +360,7 @@ Claude Opus 4.5 (Preview)
 
 - Task 1: Created GenerateScriptButton component with primary/secondary variants based on lesson status
 - Task 2: Created LessonScriptGeneration container following project patterns (connect.ts, constants.ts, types.ts)
-- Task 3: Integrated button into LessonRow (primary lesson display component), added courseSlug prop to SortableLessonList
+- Task 3: Integrated button into LessonRow (primary lesson display component), added courseSlug prop to LessonList
 - Task 4: Implemented mutation using $api.useMutation with correct endpoint path `/api/courses/{slug}/lessons/{id}/generate-script`
 - Task 5: Added toast notifications - info on start, success/error handled by polling (Story 3.6)
 
@@ -385,8 +385,8 @@ Claude Opus 4.5 (Preview)
 **Modified files:**
 
 - `src/components/LessonRow.tsx` - Added GenerateScriptButton integration
-- `src/components/SortableLessonList.tsx` - Added courseSlug prop
-- `src/containers/Main/CourseDetail/index.tsx` - Pass courseSlug to SortableLessonList
+- `src/components/LessonList.tsx` - Added courseSlug prop
+- `src/containers/Main/CourseDetail/index.tsx` - Pass courseSlug to LessonList
 
 ---
 

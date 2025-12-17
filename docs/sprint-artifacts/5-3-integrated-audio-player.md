@@ -93,10 +93,10 @@ so that **I can preview the final meditation content**.
   - [x] 2.7 Ensure WCAG 2.1 AA accessibility (keyboard nav, aria-labels, focus indicators)
 
 - [x] **Task 3: Integrate "Play" Button in Lesson List** (AC: #1, #2)
-  - [x] 3.1 Create `src/containers/Main/CourseDetail/SortableLessonList/LessonRow/PlayButton/` directory with index.tsx, connect.ts, types.ts
+  - [x] 3.1 Create `src/containers/Main/CourseDetail/LessonList/LessonRow/PlayButton/` directory with index.tsx, connect.ts, types.ts
   - [x] 3.2 Connect to `useAudioPlayer` context to trigger playback
   - [x] 3.3 Show active playing state if currently playing this lesson (different icon/color)
-  - [x] 3.4 Modify `src/containers/Main/CourseDetail/SortableLessonList/LessonRow/index.tsx` to add PlayButton
+  - [x] 3.4 Modify `src/containers/Main/CourseDetail/LessonList/LessonRow/index.tsx` to add PlayButton
         **Button Order:** [StatusBadge] [Title] ... [PlayButton] [GenerateScriptButton] [GenerateAudioButton] [Edit] [Delete]
 
 - [x] **Task 4: Quality & Polish**
@@ -137,14 +137,14 @@ The `audio_url` is provided in the lesson object from the `useCourse` query:
 - `src/components/AudioPlayer/index.tsx` - Floating player UI
 - `src/components/AudioPlayer/types.ts` - Player types
 - `src/components/AudioPlayer/constants.ts` - Speed options, z-index
-- `src/containers/Main/CourseDetail/SortableLessonList/LessonRow/PlayButton/index.tsx` - Play trigger
-- `src/containers/Main/CourseDetail/SortableLessonList/LessonRow/PlayButton/connect.ts` - Play button logic
-- `src/containers/Main/CourseDetail/SortableLessonList/LessonRow/PlayButton/types.ts` - Button types
+- `src/containers/Main/CourseDetail/LessonList/LessonRow/PlayButton/index.tsx` - Play trigger
+- `src/containers/Main/CourseDetail/LessonList/LessonRow/PlayButton/connect.ts` - Play button logic
+- `src/containers/Main/CourseDetail/LessonList/LessonRow/PlayButton/types.ts` - Button types
 
 ### Files to Modify
 
 - `src/components/ClientLayout.tsx` - Add AudioPlayerProvider wrapper
-- `src/containers/Main/CourseDetail/SortableLessonList/LessonRow/index.tsx` - Add PlayButton to lesson row
+- `src/containers/Main/CourseDetail/LessonList/LessonRow/index.tsx` - Add PlayButton to lesson row
 
 ### Technical Specs
 
@@ -162,7 +162,7 @@ The `audio_url` is provided in the lesson object from the `useCourse` query:
 - [Source: src/hooks/useAudioGeneration.ts] - Hook pattern reference for audio-related state
 - [Source: src/hooks/useScriptGeneration.ts] - State management pattern reference
 - [Source: src/components/ClientLayout.tsx] - Provider integration location
-- [Source: src/containers/Main/CourseDetail/SortableLessonList/LessonRow/] - Lesson row integration point
+- [Source: src/containers/Main/CourseDetail/LessonList/LessonRow/] - Lesson row integration point
 
 ## Dev Agent Record
 
@@ -225,11 +225,11 @@ Claude claude-sonnet-4-20250514
 - src/components/AudioPlayer/connect.ts
 - src/components/AudioPlayer/types.ts
 - src/components/AudioPlayer/constants.ts
-- src/containers/Main/CourseDetail/SortableLessonList/LessonRow/PlayButton/index.tsx
-- src/containers/Main/CourseDetail/SortableLessonList/LessonRow/PlayButton/connect.ts
-- src/containers/Main/CourseDetail/SortableLessonList/LessonRow/PlayButton/types.ts
+- src/containers/Main/CourseDetail/LessonList/LessonRow/PlayButton/index.tsx
+- src/containers/Main/CourseDetail/LessonList/LessonRow/PlayButton/connect.ts
+- src/containers/Main/CourseDetail/LessonList/LessonRow/PlayButton/types.ts
 
 **Modified:**
 
 - src/components/ClientLayout.tsx (added AudioPlayerProvider and AudioPlayer)
-- src/containers/Main/CourseDetail/SortableLessonList/LessonRow/index.tsx (added PlayButton)
+- src/containers/Main/CourseDetail/LessonList/LessonRow/index.tsx (added PlayButton)
