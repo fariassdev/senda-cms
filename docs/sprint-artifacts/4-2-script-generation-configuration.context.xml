@@ -221,9 +221,9 @@
         <reason>Export new types and utilities</reason>
       </file>
       <file>
-        <path>src/components/SortableLessonItem.tsx</path>
+        <path>src/components/LessonRow.tsx</path>
         <kind>component</kind>
-        <symbol>SortableLessonItem</symbol>
+        <symbol>LessonRow</symbol>
         <lines>1-126</lines>
         <reason>Integration point - uses GenerateScriptButton, need to pass lesson data (duration, key_themes) to modal</reason>
       </file>

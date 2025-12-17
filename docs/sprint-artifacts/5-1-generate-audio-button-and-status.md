@@ -66,7 +66,7 @@ So that I can create the final meditation content.
   - [x] 1.8 Return `{ generateAudio, isGenerating }` from hook
 
 - [x] **Task 2: Create GenerateAudioButton Component** (AC: #1, #2, #3, #4, #5, #7) (Prerequisites: None - can run parallel with Task 1)
-  - [x] 2.1 Create `src/containers/Main/CourseDetail/SortableLessonList/SortableLessonItem/GenerateAudioButton/index.tsx`
+  - [x] 2.1 Create `src/containers/Main/CourseDetail/SortableLessonList/LessonRow/GenerateAudioButton/index.tsx`
   - [x] 2.2 Create `connect.ts` with button state logic (getButtonState)
   - [x] 2.3 Create `types.ts` with `GenerateAudioButtonProps` interface
   - [x] 2.4 Create `constants.ts` with AUDIO_BUTTON_STATES mapping
@@ -80,10 +80,10 @@ So that I can create the final meditation content.
   - [x] 2.7 Use `Volume2` icon from lucide-react (or `Headphones`)
   - [x] 2.8 Implement Shift+Click for quick generation (same pattern as GenerateScriptButton)
 
-- [x] **Task 3: Integrate into SortableLessonItem** (AC: #1, #2) (Prerequisites: Task 1, Task 2 complete)
-  - [x] 3.1 Import GenerateAudioButton into SortableLessonItem/index.tsx
+- [x] **Task 3: Integrate into LessonRow** (AC: #1, #2) (Prerequisites: Task 1, Task 2 complete)
+  - [x] 3.1 Import GenerateAudioButton into LessonRow/index.tsx
   - [x] 3.2 Add GenerateAudioButton to actions area (after GenerateScriptButton)
-  - [x] 3.3 Connect useAudioGeneration hook in SortableLessonItem/connect.ts
+  - [x] 3.3 Connect useAudioGeneration hook in LessonRow/connect.ts
   - [x] 3.4 Pass lesson, onGenerate, isGenerating props to GenerateAudioButton
 
 - [x] **Task 4: Verify StatusBadge for Audio States** (AC: #5, #6, #7) (Prerequisites: None - verification only)
@@ -119,7 +119,7 @@ This story introduces audio generation capability following the exact patterns e
 - **Hook Pattern**: Follow `useScriptGeneration` exactly for mutations and optimistic updates
 - **Button Pattern**: Mirror `GenerateScriptButton` component structure
 - **Polling Integration**: Leverage existing Story 3.6 polling for status updates
-- **Container Pattern**: Create button as nested component within SortableLessonItem
+- **Container Pattern**: Create button as nested component within LessonRow
 
 [Source: docs/architecture.md#API-Hook-Structure-Strict]
 [Source: docs/architecture.md#Container-Pattern-CRITICAL]
@@ -143,7 +143,7 @@ See hook implementation below (lines 176-276) for complete mutation details.
 src/hooks/
 ├── useAudioGeneration.ts              ← New hook for audio generation
 
-src/containers/Main/CourseDetail/SortableLessonList/SortableLessonItem/
+src/containers/Main/CourseDetail/SortableLessonList/LessonRow/
 ├── GenerateAudioButton/
 │   ├── index.tsx                      ← Button component
 │   ├── connect.ts                     ← Button state logic
@@ -154,7 +154,7 @@ src/containers/Main/CourseDetail/SortableLessonList/SortableLessonItem/
 **Files to Modify:**
 
 ```
-src/containers/Main/CourseDetail/SortableLessonList/SortableLessonItem/
+src/containers/Main/CourseDetail/SortableLessonList/LessonRow/
 ├── index.tsx                          ← Add GenerateAudioButton
 ├── connect.ts                         ← Add useAudioGeneration hook
 ├── types.ts                           ← Add audio-related props if needed
@@ -228,7 +228,7 @@ className={cn(
 ```
 
 **Complete pattern reference:**  
-[See: src/containers/Main/CourseDetail/SortableLessonList/SortableLessonItem/GenerateScriptButton/]
+[See: src/containers/Main/CourseDetail/SortableLessonList/LessonRow/GenerateScriptButton/]
 
 ### StatusBadge Verification
 
@@ -312,7 +312,7 @@ Per WCAG 2.1 Level AA compliance:
 **Component Hierarchy:**
 
 ```
-SortableLessonItem (parent)
+LessonRow (parent)
 ├── StatusBadge (existing)
 ├── GenerateScriptButton (existing - Story 4.1)
 ├── GenerateAudioButton (NEW - this story)
@@ -330,7 +330,7 @@ Place GenerateAudioButton after GenerateScriptButton in the actions cell, mainta
 - [Source: docs/architecture.md#Container-Pattern-CRITICAL] - Component structure
 - [Source: docs/ux-design-specification.md#Button-Hierarchy] - Button styling
 - [Source: src/hooks/useScriptGeneration.ts] - Hook pattern reference
-- [Source: src/containers/Main/CourseDetail/SortableLessonList/SortableLessonItem/GenerateScriptButton/] - Component pattern reference
+- [Source: src/containers/Main/CourseDetail/SortableLessonList/LessonRow/GenerateScriptButton/] - Component pattern reference
 - [Source: docs/sprint-artifacts/4-1-generate-script-button-status.md] - Previous story learnings
 - [Source: docs/project_context.md] - AI agent implementation rules
 
@@ -370,14 +370,14 @@ Gemini Antigravity (Claude-based)
 **New Files:**
 
 - `src/hooks/useAudioGeneration.ts`
-- `src/containers/Main/CourseDetail/SortableLessonList/SortableLessonItem/GenerateAudioButton/index.tsx`
-- `src/containers/Main/CourseDetail/SortableLessonList/SortableLessonItem/GenerateAudioButton/connect.ts`
-- `src/containers/Main/CourseDetail/SortableLessonList/SortableLessonItem/GenerateAudioButton/types.ts`
+- `src/containers/Main/CourseDetail/SortableLessonList/LessonRow/GenerateAudioButton/index.tsx`
+- `src/containers/Main/CourseDetail/SortableLessonList/LessonRow/GenerateAudioButton/connect.ts`
+- `src/containers/Main/CourseDetail/SortableLessonList/LessonRow/GenerateAudioButton/types.ts`
 
 **Modified Files:**
 
-- `src/containers/Main/CourseDetail/SortableLessonList/SortableLessonItem/index.tsx`
-- `src/containers/Main/CourseDetail/SortableLessonList/SortableLessonItem/connect.ts`
+- `src/containers/Main/CourseDetail/SortableLessonList/LessonRow/index.tsx`
+- `src/containers/Main/CourseDetail/SortableLessonList/LessonRow/connect.ts`
 - `docs/sprint-artifacts/sprint-status.yaml`
 
 ---
@@ -388,5 +388,5 @@ Gemini Antigravity (Claude-based)
 | ---------- | ----------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
 | 2025-12-14 | SM Agent (Bob)    | Ultimate context engine analysis - story created with comprehensive developer guide                                                                                                                                                                                                                                                                                                   |
 | 2025-12-14 | SM Agent (Bob)    | Validation review - applied 7 improvements: Added ApiError interface + onSuccess clarification (prevent toast duplication), made Task 4 verification-specific (StatusBadge already complete), optimized hook implementation (reduced 96→33 lines), replaced verbose constants with references, consolidated API section, added task dependencies, verified Shift+Click pattern exists |
-| 2025-12-14 | Dev Agent         | Implementation complete - Created useAudioGeneration hook, GenerateAudioButton component (4 files), integrated into SortableLessonItem. All typecheck and lint validations pass. Manual testing pending.                                                                                                                                                                              |
+| 2025-12-14 | Dev Agent         | Implementation complete - Created useAudioGeneration hook, GenerateAudioButton component (4 files), integrated into LessonRow. All typecheck and lint validations pass. Manual testing pending.                                                                                                                                                                                       |
 | 2025-12-14 | Dev (Code Review) | Code review fixes: (1) Fixed race condition in useAudioGeneration - onError now invalidates queries to refresh from server state instead of overwriting entire cache (prevents loss of legitimate polling updates). (2) Removed empty constants.ts file.                                                                                                                              |

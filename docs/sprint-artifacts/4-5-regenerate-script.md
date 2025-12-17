@@ -508,8 +508,8 @@ Anthropic Claude (Antigravity Agent)
 - `src/containers/Main/ScriptPreview/FixedActionBar/types.ts` - Updated onRegenerate type to accept MouseEvent
 - `src/containers/Main/ScriptPreview/ScriptHeader/index.tsx` - Added Version History placeholder
 - `src/containers/Main/CourseDetail/SortableLessonList/ScriptConfigModal/index.tsx` - Re-exports shared ScriptGenerationModal
-- `src/containers/Main/CourseDetail/SortableLessonList/SortableLessonItem/GenerateScriptButton/index.tsx` - Removed unused courseSlug prop
-- `src/containers/Main/CourseDetail/SortableLessonList/SortableLessonItem/GenerateScriptButton/types.ts` - Removed courseSlug from interface
+- `src/containers/Main/CourseDetail/SortableLessonList/LessonRow/GenerateScriptButton/index.tsx` - Removed unused courseSlug prop
+- `src/containers/Main/CourseDetail/SortableLessonList/LessonRow/GenerateScriptButton/types.ts` - Removed courseSlug from interface
 
 **Deleted Files:**
 

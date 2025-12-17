@@ -246,7 +246,7 @@ The polling mechanism must work correctly with the reorder feature from Story 3.
 **Files unchanged:**
 
 - `src/components/SortableLessonList.tsx` - Receives updated data via props
-- `src/components/SortableLessonItem.tsx` - Renders updated StatusBadge
+- `src/components/LessonRow.tsx` - Renders updated StatusBadge
 - `src/components/LessonListItem.tsx` - Uses StatusBadge for display
 
 ### Toast Notification Patterns

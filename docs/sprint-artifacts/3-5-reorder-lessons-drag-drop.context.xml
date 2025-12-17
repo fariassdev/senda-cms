@@ -38,8 +38,8 @@
         <subtask>3.9 Implement onError with rollback to previous lesson order</subtask>
         <subtask>3.10 Implement onSuccess with toast notification and clear pending order</subtask>
       </task>
-      <task id="4">Create SortableLessonItem component
-        <subtask>4.1 Create src/components/SortableLessonItem.tsx</subtask>
+      <task id="4">Create LessonRow component
+        <subtask>4.1 Create src/components/LessonRow.tsx</subtask>
         <subtask>4.2 Integrate useSortable hook from @dnd-kit/sortable</subtask>
         <subtask>4.3 Apply drag handle using attributes and listeners on GripVertical button</subtask>
         <subtask>4.4 Style dragging state (transform, opacity, elevated shadow)</subtask>
@@ -208,7 +208,7 @@
         <path>src/components/LessonListItem.tsx</path>
         <kind>component</kind>
         <symbol>LessonListItem</symbol>
-        <reason>Individual lesson row with GripVertical drag handle (currently disabled). Needs to be wrapped by SortableLessonItem for DnD functionality.</reason>
+        <reason>Individual lesson row with GripVertical drag handle (currently disabled). Needs to be wrapped by LessonRow for DnD functionality.</reason>
       </file>
       <file>
         <path>src/containers/Main/CourseDetail/connect.ts</path>
@@ -313,7 +313,7 @@
   </interfaces>
 
   <constraints>
-    <constraint type="pattern">Container Pattern: All reorder mutation logic goes in connect.ts. SortableLessonList and SortableLessonItem are presentational components receiving handlers as props.</constraint>
+    <constraint type="pattern">Container Pattern: All reorder mutation logic goes in connect.ts. SortableLessonList and LessonRow are presentational components receiving handlers as props.</constraint>
     <constraint type="pattern">OpenAPI-First: Use $api.useMutation from openapi-react-query. Never write manual fetch calls. Request body must match ReorderLessonsRequest schema exactly.</constraint>
     <constraint type="pattern">Optimistic Updates: Implement onMutate to capture previous state and update cache optimistically. Implement onError to rollback. Implement onSuccess for toast and optional cache invalidation.</constraint>
     <constraint type="accessibility">WCAG 2.1 AA: Full keyboard navigation for drag-and-drop. Tab to focus, Enter/Space to activate, Arrow keys to move, Enter to confirm, Escape to cancel. Screen reader announcements required.</constraint>

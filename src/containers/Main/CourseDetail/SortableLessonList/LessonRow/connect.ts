@@ -9,13 +9,13 @@ import useLessonActions from '@/hooks/useLessonActions';
 import useScriptGeneration from '@/hooks/useScriptGeneration';
 import { formatTimestamp } from '@/lib/utils';
 import type { LessonStatus } from '@/types/models';
-import type { SortableLessonItemProps } from './types';
+import type { LessonRowProps } from './types';
 
 export default function useConnect({
   lesson,
   courseSlug,
   disabled,
-}: SortableLessonItemProps) {
+}: LessonRowProps) {
   const {
     attributes,
     listeners,

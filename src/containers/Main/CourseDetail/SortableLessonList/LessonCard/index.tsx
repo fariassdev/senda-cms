@@ -11,9 +11,9 @@ import {
   TooltipContent,
   TooltipTrigger,
 } from '@/components/ui/tooltip';
-import { GenerateAudioButton } from '@/containers/Main/CourseDetail/SortableLessonList/SortableLessonItem/GenerateAudioButton';
-import { GenerateScriptButton } from '@/containers/Main/CourseDetail/SortableLessonList/SortableLessonItem/GenerateScriptButton';
-import { PlayButton } from '@/containers/Main/CourseDetail/SortableLessonList/SortableLessonItem/PlayButton';
+import { GenerateAudioButton } from '@/containers/Main/CourseDetail/SortableLessonList/LessonRow/GenerateAudioButton';
+import { GenerateScriptButton } from '@/containers/Main/CourseDetail/SortableLessonList/LessonRow/GenerateScriptButton';
+import { PlayButton } from '@/containers/Main/CourseDetail/SortableLessonList/LessonRow/PlayButton';
 
 import useConnect from './connect';
 import type { LessonCardProps } from './types';

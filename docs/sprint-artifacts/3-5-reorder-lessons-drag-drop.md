@@ -78,8 +78,8 @@ so that I can adjust the pedagogical flow easily.
   - [x] 3.9 Implement `onError` with rollback to previous lesson order
   - [x] 3.10 Implement `onSuccess` with toast notification and clear pending order
 
-- [x] **Task 4: Create SortableLessonItem component** (AC: #1, #2)
-  - [x] 4.1 Create `src/components/SortableLessonItem.tsx`
+- [x] **Task 4: Create LessonRow component** (AC: #1, #2)
+  - [x] 4.1 Create `src/components/LessonRow.tsx`
   - [x] 4.2 Integrate `useSortable` hook from @dnd-kit/sortable
   - [x] 4.3 Apply drag handle using `attributes` and `listeners` on GripVertical button
   - [x] 4.4 Style dragging state (transform, opacity, elevated shadow)
@@ -138,7 +138,7 @@ This story follows the established **Container Pattern** where:
 
 - Business logic for reorder mutation goes in container's `connect.ts`
 - `SortableLessonList` handles DnD context and coordination
-- `SortableLessonItem` wraps individual lesson rows with sortable behavior
+- `LessonRow` wraps individual lesson rows with sortable behavior
 
 **Manual Save Pattern (Updated):**
 
@@ -282,7 +282,7 @@ import { SortableContext, verticalListSortingStrategy } from '@dnd-kit/sortable'
   <SortableContext items={lessonIds} strategy={verticalListSortingStrategy}>
     <TableBody>
       {sortedLessons.map((lesson) => (
-        <SortableLessonItem key={lesson.id} lesson={lesson} ... />
+        <LessonRow key={lesson.id} lesson={lesson} ... />
       ))}
     </TableBody>
   </SortableContext>
@@ -293,7 +293,7 @@ import { SortableContext, verticalListSortingStrategy } from '@dnd-kit/sortable'
 ```
 
 ```typescript
-// SortableLessonItem.tsx
+// LessonRow.tsx
 import { useSortable } from '@dnd-kit/sortable';
 import { CSS } from '@dnd-kit/utilities';
 
@@ -400,7 +400,7 @@ CourseDetail (container)
 └── index.tsx
     ├── "Save Changes" button (visible when hasUnsavedChanges)
     ├── SortableLessonList (new - wraps DnD context)
-    │   └── SortableLessonItem (new - sortable wrapper)
+    │   └── LessonRow (new - sortable wrapper)
     │       └── LessonListItem (existing - presentation)
     ├── LessonCreate (existing)
     ├── LessonEdit (existing)
@@ -445,7 +445,7 @@ CourseDetail (container)
 - `src/containers/Main/LessonReorder/constants.ts` - Toast messages and unsaved changes modal text
 - `src/containers/Main/LessonReorder/index.ts` - Export barrel
 - `src/components/SortableLessonList.tsx` - DnD context wrapper for lesson table
-- `src/components/SortableLessonItem.tsx` - Sortable wrapper for lesson row
+- `src/components/LessonRow.tsx` - Sortable wrapper for lesson row
 
 **Files to modify:**
 
@@ -537,7 +537,7 @@ Claude Opus 4.5 (Preview)
 - Implemented drag-and-drop lesson reordering using @dnd-kit library
 - Created LessonReorder container with local state management for pending changes
 - Implemented manual save pattern: reorder updates local state, "Save Changes" button persists to API
-- Created SortableLessonItem component with useSortable hook integration
+- Created LessonRow component with useSortable hook integration
 - Created SortableLessonList component with DndContext, SortableContext, and DragOverlay
 - Full keyboard accessibility: Tab, Enter/Space, Arrow keys, Escape
 - Screen reader announcements for all drag states
@@ -556,7 +556,7 @@ Claude Opus 4.5 (Preview)
 - `src/containers/Main/LessonReorder/types.ts` - ReorderParams, LessonReorderState, and context types
 - `src/containers/Main/LessonReorder/constants.ts` - Toast messages and unsaved changes modal text
 - `src/containers/Main/LessonReorder/index.ts` - Export barrel
-- `src/components/SortableLessonItem.tsx` - Sortable lesson row with drag handle
+- `src/components/LessonRow.tsx` - Sortable lesson row with drag handle
 - `src/components/SortableLessonList.tsx` - DnD context wrapper for lesson table
 
 **Modified:**
@@ -603,7 +603,7 @@ None
 
 | AC#  | Description                                  | Status      | Evidence                                                                                                          |
 | ---- | -------------------------------------------- | ----------- | ----------------------------------------------------------------------------------------------------------------- |
-| AC1  | Drag handle interaction with visual feedback | IMPLEMENTED | `SortableLessonItem.tsx`: cursor changes, DragOverlay, elevated shadow                                            |
+| AC1  | Drag handle interaction with visual feedback | IMPLEMENTED | `LessonRow.tsx`: cursor changes, DragOverlay, elevated shadow                                                     |
 | AC2  | Drop zone indicators during drag             | PARTIAL     | `SortableLessonList.tsx`: closestCenter collision detection handles positioning, but no explicit visual indicator |
 | AC3  | Local reorder with Save Changes button       | IMPLEMENTED | `LessonReorder/connect.ts`: handleLocalReorder sets pendingOrder, button appears when hasUnsavedChanges           |
 | AC3b | Save Changes persists to backend             | IMPLEMENTED | `LessonReorder/connect.ts`: saveReorder mutation, toast on success, button disappears                             |
@@ -621,7 +621,7 @@ None
 | Task 1: Install @dnd-kit dependencies                | [x]       | VERIFIED COMPLETE | `package.json`: @dnd-kit/core@6.3.1, sortable@10.0.0, utilities@3.2.2         |
 | Task 2: Create LessonReorder container structure     | [x]       | VERIFIED COMPLETE | Files created: connect.ts, types.ts, constants.ts, index.ts                   |
 | Task 3: Implement reorder mutation with manual save  | [x]       | VERIFIED COMPLETE | `connect.ts`: useMutation, onMutate/onError/onSuccess, local state management |
-| Task 4: Create SortableLessonItem component          | [x]       | VERIFIED COMPLETE | `SortableLessonItem.tsx`: useSortable, drag handle, disabled state            |
+| Task 4: Create LessonRow component                   | [x]       | VERIFIED COMPLETE | `LessonRow.tsx`: useSortable, drag handle, disabled state                     |
 | Task 5: Create SortableLessonList component          | [x]       | VERIFIED COMPLETE | `SortableLessonList.tsx`: DndContext, SortableContext, DragOverlay            |
 | Task 6: Implement keyboard accessibility             | [x]       | VERIFIED COMPLETE | KeyboardSensor, announcements object with proper messages                     |
 | Task 7: Integrate with CourseDetail container        | [x]       | VERIFIED COMPLETE | `CourseDetail/connect.ts` & `index.tsx`: added reorder handlers and UI        |

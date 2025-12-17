@@ -17,7 +17,7 @@ import {
   TableRow,
 } from '@/components/ui/table';
 import { LessonCard } from './LessonCard';
-import { LessonDragOverlay, SortableLessonItem } from './SortableLessonItem';
+import { LessonDragOverlay, LessonRow } from './LessonRow';
 
 import useConnect from './connect';
 import type { SortableLessonListProps } from './types';
@@ -100,7 +100,7 @@ export function SortableLessonList({
               >
                 <TableBody>
                   {lessons.map((lesson) => (
-                    <SortableLessonItem
+                    <LessonRow
                       key={lesson.id}
                       lesson={lesson}
                       courseSlug={courseSlug}
