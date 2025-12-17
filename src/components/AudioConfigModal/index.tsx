@@ -115,7 +115,7 @@ export function AudioConfigModal({
             <Select value={voice} onValueChange={setVoice}>
               <SelectTrigger
                 id="voice-select"
-                className="w-full min-h-[42px] focus-visible:ring-[#7dcfff] focus-visible:ring-2 text-left [&>span]:w-full [&>span]:text-left"
+                className="w-full min-h-[42px] text-left [&>span]:w-full [&>span]:text-left"
               >
                 <SelectValue placeholder="Select a voice" />
               </SelectTrigger>
@@ -139,7 +139,7 @@ export function AudioConfigModal({
             <div className="flex items-center justify-between">
               <Label htmlFor="speech-rate">Speech Rate</Label>
               <span
-                className="text-sm font-medium text-[#7dcfff]"
+                className="text-sm font-medium text-primary"
                 aria-live="polite"
               >
                 {speed.toFixed(1)}x
@@ -154,7 +154,7 @@ export function AudioConfigModal({
               onValueChange={(values) =>
                 setSpeed(values[0] ?? SPEECH_RATE_CONFIG.default)
               }
-              className="w-full [&_[data-slot=slider-range]]:bg-[#7dcfff] [&_[data-slot=slider-thumb]]:border-[#7dcfff]"
+              className="w-full [&_[data-slot=slider-range]]:bg-primary [&_[data-slot=slider-thumb]]:border-primary"
               aria-label={`Speech rate: ${speed.toFixed(1)}x`}
             />
             <div className="flex justify-between text-xs text-muted-foreground">
@@ -170,7 +170,6 @@ export function AudioConfigModal({
             variant="outline"
             onClick={handleCancel}
             disabled={isGenerating}
-            className="border-[#7dcfff] text-[#7dcfff] hover:bg-[#7dcfff]/10"
           >
             Cancel
           </Button>
@@ -178,7 +177,6 @@ export function AudioConfigModal({
             type="button"
             onClick={handleSubmit}
             disabled={isGenerating}
-            className="bg-[#7dcfff] text-slate-900 hover:bg-[#7dcfff]/90"
             aria-busy={isGenerating}
           >
             {isGenerating && (

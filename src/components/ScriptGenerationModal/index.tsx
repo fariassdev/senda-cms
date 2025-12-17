@@ -135,15 +135,10 @@ export function ScriptGenerationModal({
               variant="outline"
               onClick={handleCancel}
               disabled={isLoading}
-              className="border-[#7dcfff] text-[#7dcfff] hover:bg-[#7dcfff]/10"
             >
               Cancel
             </Button>
-            <Button
-              type="submit"
-              disabled={isLoading}
-              className="bg-[#7dcfff] text-slate-900 hover:bg-[#7dcfff]/90"
-            >
+            <Button type="submit" disabled={isLoading}>
               {isLoading && (
                 <Loader2
                   className="mr-2 h-4 w-4 animate-spin"
