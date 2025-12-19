@@ -104,9 +104,9 @@ export function DeleteCourseModal(props: DeleteCourseModalProps) {
                 onChange={handleInputChange}
                 placeholder={DELETE_COURSE_MODAL.inputPlaceholder}
                 disabled={isDeleting}
-                className={
+                className={`pr-8 ${
                   isValid ? 'border-green-500 focus-visible:ring-green-500' : ''
-                }
+                }`}
                 aria-label="Confirmation text"
               />
               {isValid && (
