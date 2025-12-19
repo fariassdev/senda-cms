@@ -33,6 +33,8 @@ export default function useConnect(courseSlug: string) {
   const [isBatchModalOpen, setIsBatchModalOpen] = useState(false);
   const [batchModalInitialView, setBatchModalInitialView] =
     useState<BatchModalView>('selection');
+  // Delete course modal state
+  const [isDeleteCourseOpen, setIsDeleteCourseOpen] = useState(false);
 
   const [pendingNavigationUrl, setPendingNavigationUrl] = useState<
     string | null
@@ -327,6 +329,19 @@ export default function useConnect(courseSlug: string) {
     setPendingNavigationUrl(null);
   };
 
+  // Delete course modal handlers
+  const handleOpenDeleteCourse = () => {
+    setIsDeleteCourseOpen(true);
+  };
+
+  const handleCloseDeleteCourse = (open: boolean) => {
+    setIsDeleteCourseOpen(open);
+  };
+
+  const handleDeleteCourseSuccess = () => {
+    router.push('/courses');
+  };
+
   return {
     course,
     lessons,
@@ -382,5 +397,10 @@ export default function useConnect(courseSlug: string) {
           l.status as (typeof ELIGIBLE_STATUSES)[number],
         ),
       ).length ?? 0,
+    // Delete course modal
+    isDeleteCourseOpen,
+    handleOpenDeleteCourse,
+    handleCloseDeleteCourse,
+    handleDeleteCourseSuccess,
   };
 }

@@ -9,10 +9,12 @@ import {
   ImageIcon,
   Plus,
   Save,
+  Trash2Icon,
 } from 'lucide-react';
 import Image from 'next/image';
 import Link from 'next/link';
 
+import { DeleteCourseModal } from '@/components/DeleteCourseModal';
 import {
   AlertDialog,
   AlertDialogAction,
@@ -105,6 +107,11 @@ export default function CourseDetail({ courseSlug }: CourseDetailProps) {
     isGeneratingBatch,
     eligibleLessonCount,
     lessons,
+    // Delete course modal
+    isDeleteCourseOpen,
+    handleOpenDeleteCourse,
+    handleCloseDeleteCourse,
+    handleDeleteCourseSuccess,
   } = useConnect(courseSlug);
   if (isLoading) {
     return <CourseDetailSkeleton />;
@@ -133,11 +140,23 @@ export default function CourseDetail({ courseSlug }: CourseDetailProps) {
           <ArrowLeft className="mr-2 h-4 w-4" />
           Back to Courses
         </Button>
-        <div className="space-y-2">
-          <h1 className="text-3xl font-bold tracking-tight">Course Details</h1>
-          <p className="text-muted-foreground">
-            Edit course information and settings
-          </p>
+        <div className="flex items-center justify-between">
+          <div className="space-y-2">
+            <h1 className="text-3xl font-bold tracking-tight">
+              Course Details
+            </h1>
+            <p className="text-muted-foreground">
+              Edit course information and settings
+            </p>
+          </div>
+          <Button
+            variant="outline"
+            className="border-destructive text-destructive hover:bg-destructive/10"
+            onClick={handleOpenDeleteCourse}
+          >
+            <Trash2Icon className="mr-2 h-4 w-4" />
+            Delete Course
+          </Button>
         </div>
       </div>
 
@@ -527,6 +546,14 @@ export default function CourseDetail({ courseSlug }: CourseDetailProps) {
           </AlertDialogFooter>
         </AlertDialogContent>
       </AlertDialog>
+
+      {/* Delete Course Modal */}
+      <DeleteCourseModal
+        course={course}
+        open={isDeleteCourseOpen}
+        onOpenChange={handleCloseDeleteCourse}
+        onSuccess={handleDeleteCourseSuccess}
+      />
     </div>
   );
 }

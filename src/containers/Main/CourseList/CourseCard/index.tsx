@@ -1,6 +1,6 @@
 'use client';
 
-import { CalendarIcon, TagIcon, UserIcon } from 'lucide-react';
+import { CalendarIcon, TagIcon, Trash2Icon, UserIcon } from 'lucide-react';
 import Image from 'next/image';
 import Link from 'next/link';
 
@@ -13,13 +13,24 @@ import type { CourseCardProps } from './types';
 /**
  * CourseCard - Mobile/Tablet card component for displaying a single course
  */
-export function CourseCard({ course }: CourseCardProps) {
+export function CourseCard({ course, onDelete }: CourseCardProps) {
   const createdDate = course.createdAt
     ? new Date(course.createdAt).toLocaleDateString()
     : 'Unknown';
 
   return (
-    <Card>
+    <Card className="relative">
+      {/* Delete button in top-right corner */}
+      <Button
+        variant="ghost"
+        size="icon"
+        className="absolute top-2 right-2 h-8 w-8 text-muted-foreground hover:text-destructive hover:bg-destructive/10 z-10"
+        onClick={() => onDelete?.(course)}
+        aria-label={`Delete ${course.title}`}
+      >
+        <Trash2Icon className="h-4 w-4" />
+      </Button>
+
       <CardContent className="p-4">
         {/* Header: Image and Title */}
         <div className="flex gap-4 mb-3">
@@ -42,7 +53,7 @@ export function CourseCard({ course }: CourseCardProps) {
               />
             )}
           </div>
-          <div className="flex-1 min-w-0">
+          <div className="flex-1 min-w-0 pr-8">
             <div className="flex items-start justify-between gap-2 mb-1">
               <Link
                 href={`/courses/${course.slug}`}
