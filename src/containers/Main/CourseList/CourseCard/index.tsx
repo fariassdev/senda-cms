@@ -107,7 +107,7 @@ export function CourseCard({ course, onDelete }: CourseCardProps) {
 
         {/* Action */}
         <Button variant="outline" size="sm" className="w-full" asChild>
-          <Link href={`/courses/${course.slug}`}>View Course</Link>
+          <Link href={`/courses/${course.slug}`}>Edit Course</Link>
         </Button>
       </CardContent>
     </Card>

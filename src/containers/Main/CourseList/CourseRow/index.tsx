@@ -1,6 +1,12 @@
 'use client';
 
-import { CalendarIcon, TagIcon, Trash2Icon, UserIcon } from 'lucide-react';
+import {
+  CalendarIcon,
+  PencilIcon,
+  TagIcon,
+  Trash2Icon,
+  UserIcon,
+} from 'lucide-react';
 import Image from 'next/image';
 import Link from 'next/link';
 
@@ -96,8 +102,13 @@ export function CourseRow({ course, onDelete }: CourseRowProps) {
       </TableCell>
       <TableCell>
         <div className="flex items-center gap-1">
-          <Button variant="ghost" size="sm" asChild>
-            <Link href={`/courses/${course.slug}`}>View</Link>
+          <Button variant="ghost" size="icon" className="h-8 w-8" asChild>
+            <Link
+              href={`/courses/${course.slug}`}
+              aria-label={`Edit ${course.title}`}
+            >
+              <PencilIcon className="h-4 w-4" />
+            </Link>
           </Button>
           <Button
             variant="ghost"
