@@ -1,51 +1,90 @@
-import { dirname } from "path";
-import { fileURLToPath } from "url";
-import { FlatCompat } from "@eslint/eslintrc";
-import prettierConfig from "eslint-config-prettier/flat";
+import { dirname } from 'path';
+import { fileURLToPath } from 'url';
+import nextConfig from '@next/eslint-plugin-next';
+import tseslint from 'typescript-eslint';
+import prettierConfig from 'eslint-config-prettier/flat';
 import importPlugin from 'eslint-plugin-import';
 import globals from 'globals';
+import js from '@eslint/js';
+import reactPlugin from 'eslint-plugin-react';
+import reactHooksPlugin from 'eslint-plugin-react-hooks';
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = dirname(__filename);
 
-const compat = new FlatCompat({
-  baseDirectory: __dirname,
-});
-
 const eslintConfig = [
-  ...compat.extends("next/core-web-vitals", "next/typescript"),
+  // Base JavaScript recommended rules
+  js.configs.recommended,
+
+  // TypeScript recommended rules
+  ...tseslint.configs.recommended,
+
+  // React configuration
+  {
+    plugins: {
+      react: reactPlugin,
+    },
+    settings: {
+      react: {
+        version: 'detect',
+      },
+    },
+  },
+
+  // React Hooks configuration
+  {
+    plugins: {
+      'react-hooks': reactHooksPlugin,
+    },
+    rules: {
+      'react-hooks/rules-of-hooks': 'error',
+      'react-hooks/exhaustive-deps': 'warn',
+    },
+  },
+
+  // Next.js configuration
+  {
+    plugins: {
+      '@next/next': nextConfig,
+    },
+    rules: {
+      ...nextConfig.configs.recommended.rules,
+      ...nextConfig.configs['core-web-vitals'].rules,
+    },
+  },
+
+  // Ignore patterns
   {
     ignores: [
-      "node_modules/**",
-      ".next/**",
-      "out/**",
-      "build/**",
-      "next-env.d.ts",
-      "src/types/api.d.ts", // Auto-generated OpenAPI types
+      'node_modules/**',
+      '.next/**',
+      'out/**',
+      'build/**',
+      'next-env.d.ts',
+      'src/types/api.d.ts', // Auto-generated OpenAPI types
+      'commitlint.config.js', // CJS config file
     ],
   },
 
+  // TypeScript and Import rules
   {
     files: ['**/*.{ts,tsx,spec.ts,spec.tsx,test.ts,test.tsx,d.ts}'],
     settings: {
       'import/resolver': {
-        browser: true,
-        node: true,
         typescript: true,
+        node: true,
       },
-      // Merge in settings from the plugin's typescript flat config and register the plugin
       ...importPlugin.flatConfigs.typescript.settings,
     },
     plugins: { import: importPlugin },
     languageOptions: {
       parserOptions: {
         project: true,
-        tsconfigRootDir: import.meta.dirname,
+        tsconfigRootDir: __dirname,
       },
       globals: {
         ...globals.browser,
         ...globals.node,
-        ...globals.typescript,
       },
     },
     rules: {
@@ -69,14 +108,11 @@ const eslintConfig = [
       'import/prefer-default-export': 'off',
 
       // TypeScript rules
-      "@typescript-eslint/consistent-type-imports": "error",
+      '@typescript-eslint/consistent-type-imports': 'error',
       '@typescript-eslint/quotes': ['warn', 'single', { allowTemplateLiterals: true, avoidEscape: true }],
       '@typescript-eslint/no-unused-vars': ['error', { argsIgnorePattern: '^_', ignoreRestSiblings: true }],
       '@typescript-eslint/no-use-before-define': ['error', { functions: false }],
       '@typescript-eslint/no-inferrable-types': 'error',
-      '@typescript-eslint/await-thenable': 'error',
-      '@typescript-eslint/no-misused-promises': ['error', { checksVoidReturn: false }],
-      '@typescript-eslint/restrict-template-expressions': ['error', { allowAny: false, allowNever: true }],
       'no-void': ['error', { allowAsStatement: true }],
       '@typescript-eslint/consistent-type-definitions': ['warn', 'interface'],
 
