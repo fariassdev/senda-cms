@@ -41,13 +41,14 @@ bun install
 3. Set up environment variables:
 
 ```bash
-cp .env.example .env
+cp .env.local.example .env
 ```
 
 Configure the following environment variables:
 
 - `NEXT_PUBLIC_API_BASE_URL`: Senda API base URL
 - `NEXT_PUBLIC_BUILD`: Environment identifier (development/staging/production)
+- `JWT_SECRET`: JWT token secret (must match backend)
 
 ### Development
 
@@ -157,17 +158,55 @@ Built with shadcn/ui components and customized with styled-components:
 
 ## 🚀 Deployment
 
-The application is designed for deployment on Vercel with environment-specific configurations:
+The application is deployed on **Google Cloud Run** with automatic deployments from GitHub.
 
-- **Production**: `main` branch
-- **Staging**: `staging` branch
-- **Development**: `develop` branch
+### Production URLs
 
-### Environment Configuration
+- **CMS Application**: `https://senda-production-ofsz2twzra-uc.a.run.app`
+- **Health Check**: `https://senda-production-ofsz2twzra-uc.a.run.app/api/health`
 
-- Security headers configured in `next.config.ts`
-- Branch-based environment selection via `vercel.sh`
-- Optimized builds with Turbopack
+### Branch Strategy
+
+- **Production**: `main` branch → automatic deployment
+- **Preview**: Pull Requests → preview deployments
+- **Development**: Local development with `bun dev`
+
+### Environment Variables
+
+See [`.env.production.example`](./.env.production.example) for all required variables.
+
+| Variable                   | Description                                                   | Required |
+| -------------------------- | ------------------------------------------------------------- | -------- |
+| `NEXT_PUBLIC_API_BASE_URL` | Backend API URL                                               | ✅       |
+| `NEXT_PUBLIC_BUILD`        | Environment identifier (`production`/`preview`/`development`) | ✅       |
+| `JWT_SECRET`               | JWT token secret (must match backend)                         | ✅       |
+
+### Health Check Endpoint
+
+The application exposes a health check endpoint for monitoring:
+
+```bash
+curl https://your-deployment-url/api/health
+# Response: { "status": "ok", "timestamp": "2025-12-19T02:00:00.000Z", "version": "0.1.0" }
+```
+
+### Deployment Troubleshooting
+
+| Issue                              | Solution                                               |
+| ---------------------------------- | ------------------------------------------------------ |
+| Build fails with TypeScript errors | Run `bun typecheck` locally before pushing             |
+| Environment variables not working  | Ensure `NEXT_PUBLIC_` prefix for client-side variables |
+| API connection errors              | Verify `NEXT_PUBLIC_API_BASE_URL` is set correctly     |
+| CORS errors                        | Ensure backend allows requests from production domain  |
+
+### Local Production Build
+
+Test the production build locally:
+
+```bash
+bun run build
+bun start
+```
 
 ## 📚 Documentation
 

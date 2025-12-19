@@ -40,7 +40,7 @@ async function validateToken(token: string): Promise<boolean> {
  * - Redirects unauthenticated users from protected routes to login
  * - Redirects authenticated users from public routes to dashboard
  */
-export async function middleware(request: NextRequest) {
+export async function proxy(request: NextRequest) {
   // 2. Check if the current route is protected or public
   const path = request.nextUrl.pathname;
   const isProtectedRoute = protectedRoutes.some((route) =>
