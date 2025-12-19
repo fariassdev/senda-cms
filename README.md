@@ -41,13 +41,14 @@ bun install
 3. Set up environment variables:
 
 ```bash
-cp .env.example .env
+cp .env.local.example .env
 ```
 
 Configure the following environment variables:
 
 - `NEXT_PUBLIC_API_BASE_URL`: Senda API base URL
 - `NEXT_PUBLIC_BUILD`: Environment identifier (development/staging/production)
+- `JWT_SECRET`: JWT token secret (must match backend)
 
 ### Development
 
@@ -172,7 +173,7 @@ The application is deployed on **Google Cloud Run** with automatic deployments f
 
 ### Environment Variables
 
-See [`env.production.example`](./env.production.example) for all required variables.
+See [`.env.production.example`](./.env.production.example) for all required variables.
 
 | Variable                   | Description                                                   | Required |
 | -------------------------- | ------------------------------------------------------------- | -------- |
