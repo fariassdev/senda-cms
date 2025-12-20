@@ -1,4 +1,7 @@
+import { useCallback, useState } from 'react';
+
 import { $api } from '@/lib/api';
+import type { Course } from '@/types/models';
 
 /**
  * CourseList container connection hook
@@ -6,6 +9,10 @@ import { $api } from '@/lib/api';
  * Uses auto-generated openapi-react-query hooks for type-safe API integration
  */
 export default function useConnect() {
+  // Delete modal state
+  const [isDeleteOpen, setIsDeleteOpen] = useState(false);
+  const [courseToDelete, setCourseToDelete] = useState<Course | null>(null);
+
   // Use the auto-generated hook for fetching courses
   const coursesQuery = $api.useQuery('get', '/api/courses', {
     params: {
@@ -15,6 +22,19 @@ export default function useConnect() {
       },
     },
   });
+
+  // Delete modal handlers
+  const handleDeleteCourse = useCallback((course: Course) => {
+    setCourseToDelete(course);
+    setIsDeleteOpen(true);
+  }, []);
+
+  const handleCloseDelete = useCallback((open: boolean) => {
+    setIsDeleteOpen(open);
+    if (!open) {
+      setCourseToDelete(null);
+    }
+  }, []);
 
   return {
     // Course data and loading states
@@ -26,5 +46,11 @@ export default function useConnect() {
     // Query utilities
     refetch: coursesQuery.refetch,
     isFetching: coursesQuery.isFetching,
+
+    // Delete modal state and handlers
+    isDeleteOpen,
+    courseToDelete,
+    handleDeleteCourse,
+    handleCloseDelete,
   };
 }

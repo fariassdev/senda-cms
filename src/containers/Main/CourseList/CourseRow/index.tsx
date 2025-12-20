@@ -1,6 +1,12 @@
 'use client';
 
-import { CalendarIcon, TagIcon, UserIcon } from 'lucide-react';
+import {
+  CalendarIcon,
+  PencilIcon,
+  TagIcon,
+  Trash2Icon,
+  UserIcon,
+} from 'lucide-react';
 import Image from 'next/image';
 import Link from 'next/link';
 
@@ -13,7 +19,7 @@ import type { CourseRowProps } from './types';
 /**
  * CourseRow - Desktop table row component for displaying a single course
  */
-export function CourseRow({ course }: CourseRowProps) {
+export function CourseRow({ course, onDelete }: CourseRowProps) {
   const createdDate = course.createdAt
     ? new Date(course.createdAt).toLocaleDateString()
     : 'Unknown';
@@ -95,9 +101,25 @@ export function CourseRow({ course }: CourseRowProps) {
         </div>
       </TableCell>
       <TableCell>
-        <Button variant="ghost" size="sm" asChild>
-          <Link href={`/courses/${course.slug}`}>View</Link>
-        </Button>
+        <div className="flex items-center gap-1">
+          <Button variant="ghost" size="icon" className="h-8 w-8" asChild>
+            <Link
+              href={`/courses/${course.slug}`}
+              aria-label={`Edit ${course.title}`}
+            >
+              <PencilIcon className="h-4 w-4" />
+            </Link>
+          </Button>
+          <Button
+            variant="ghost"
+            size="icon"
+            className="h-8 w-8 text-muted-foreground hover:text-destructive hover:bg-destructive/10"
+            onClick={() => onDelete?.(course)}
+            aria-label={`Delete ${course.title}`}
+          >
+            <Trash2Icon className="h-4 w-4" />
+          </Button>
+        </div>
       </TableCell>
     </TableRow>
   );

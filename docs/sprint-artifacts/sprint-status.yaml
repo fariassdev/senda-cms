@@ -46,6 +46,7 @@ development_status:
   epic-2: done
   # Stories inferred from Epic 2 summary in epics.md
   2-1-course-discovery: done
+  2-7-delete-course: in-progress
   epic-2-retrospective: completed
 
   # Epic 3: Lesson Management (Completed)
