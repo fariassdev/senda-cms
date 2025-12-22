@@ -1,6 +1,6 @@
 # Senda CMS
 
-A modern content management system designed to streamline the creation and management of guided meditation courses. Built with Next.js 15, TypeScript, and powered by AI capabilities through the Senda API.
+A modern content management system designed to streamline the creation and management of guided meditation courses. Built with Next.js 16, TypeScript, and powered by AI capabilities through the Senda API.
 
 ## 🧘‍♀️ Overview
 
@@ -73,7 +73,7 @@ Open [http://localhost:3000](http://localhost:3000) to view the application in y
 
 ### Frontend
 
-- **Next.js 15** - React framework with App Router
+- **Next.js 16** - React framework with App Router
 - **TypeScript** - Type-safe development
 - **Tailwind CSS** - Utility-first CSS framework
 - **shadcn/ui** - Modern component library

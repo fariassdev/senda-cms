@@ -15,7 +15,7 @@ flowchart TB
     end
 
     subgraph Vercel["Vercel Platform"]
-        build["Build System<br/>(Next.js 15 + Turbopack)"]
+        build["Build System<br/>(Next.js 16 + Turbopack)"]
         prod["Production<br/>Environment"]
         preview["Preview<br/>Environments"]
     end
@@ -239,24 +239,22 @@ flowchart TB
 ### Recommended Branch Strategy
 
 ```mermaid
-gitgraph
-    commit id: "Initial"
-    branch develop
-    checkout develop
-    commit id: "Feature work"
-    branch "feature/lesson-audio"
-    checkout "feature/lesson-audio"
-    commit id: "Add audio"
-    commit id: "Fix controls"
-    checkout develop
-    merge "feature/lesson-audio" tag: "Preview"
-    checkout main
-    merge develop tag: "v0.2.0"
-    checkout develop
-    branch "feature/export"
-    commit id: "Export"
-    checkout develop
-    merge "feature/export" tag: "Preview"
+gitGraph
+  commit id: "Initial"
+  branch develop
+  commit id: "Feature work"
+  branch "feature/lesson-audio"
+  commit id: "Add audio player"
+  commit id: "Fix audio controls"
+  checkout develop
+  merge "feature/lesson-audio" id: "PR #41 merged" tag: "Preview deployed"
+  checkout main
+  merge develop id: "Release v0.2.0" tag: "Production deployed"
+  checkout develop
+  branch "feature/course-export"
+  commit id: "Export feature"
+  checkout develop
+  merge "feature/course-export" id: "PR #42 merged" tag: "Preview deployed"
 ```
 
 ### Deployment Rules
