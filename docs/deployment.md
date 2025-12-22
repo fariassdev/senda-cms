@@ -25,10 +25,6 @@ flowchart TB
         api_staging["Senda API<br/>Staging"]
     end
 
-    subgraph Storage["AWS"]
-        s3["S3<br/>(Media Storage)"]
-    end
-
     main -->|"Push to main"| build
     feature -->|"Create PR"| pr
     pr -->|"Triggers"| build
@@ -38,8 +34,6 @@ flowchart TB
 
     prod <-->|"API Calls"| api_prod
     preview <-->|"API Calls"| api_staging
-    prod -->|"Fetch Audios & Images"| s3
-    preview -->|"Fetch Audios & Images"| s3
 
     style prod fill:#10b981,color:#fff
     style preview fill:#6366f1,color:#fff
@@ -67,6 +61,7 @@ flowchart TB
 When code is merged to the `main` branch, Vercel automatically builds and deploys to the production environment.
 
 ```mermaid
+%%{init: {'theme':'base', 'themeVariables': { 'primaryColor':'#13ECA4', 'primaryTextColor':'#111816', 'primaryBorderColor':'#13ECA4', 'lineColor':'#9DB9B0', 'secondaryColor':'#1C2723', 'tertiaryColor':'#10221C', 'background':'#10221C', 'mainBkg':'#1C2723', 'secondBkg':'#10221C', 'labelBackground':'#1C2723', 'actorBorder':'#13ECA4', 'actorBkg':'#1C2723', 'actorTextColor':'#FFFFFF', 'actorLineColor':'#9DB9B0', 'signalColor':'#FFFFFF', 'signalTextColor':'#FFFFFF', 'labelBoxBkgColor':'#1C2723', 'labelBoxBorderColor':'#13ECA4', 'labelTextColor':'#FFFFFF', 'loopTextColor':'#FFFFFF', 'noteBorderColor':'#13ECA4', 'noteBkgColor':'#1C2723', 'noteTextColor':'#FFFFFF', 'activationBorderColor':'#13ECA4', 'activationBkgColor':'#13ECA4', 'sequenceNumberColor':'#111816'}}}%%
 sequenceDiagram
     autonumber
     participant Dev as Developer
@@ -109,6 +104,7 @@ Preview deployments are the cornerstone of Vercel's collaborative workflow. Ever
 ### Preview Deployment Flow
 
 ```mermaid
+%%{init: {'theme':'base', 'themeVariables': { 'primaryColor':'#13ECA4', 'primaryTextColor':'#111816', 'primaryBorderColor':'#13ECA4', 'lineColor':'#9DB9B0', 'secondaryColor':'#1C2723', 'tertiaryColor':'#10221C', 'background':'#10221C', 'mainBkg':'#1C2723', 'secondBkg':'#10221C', 'labelBackground':'#1C2723', 'actorBorder':'#13ECA4', 'actorBkg':'#1C2723', 'actorTextColor':'#FFFFFF', 'actorLineColor':'#9DB9B0', 'signalColor':'#FFFFFF', 'signalTextColor':'#FFFFFF', 'labelBoxBkgColor':'#1C2723', 'labelBoxBorderColor':'#13ECA4', 'labelTextColor':'#FFFFFF', 'loopTextColor':'#FFFFFF', 'noteBorderColor':'#13ECA4', 'noteBkgColor':'#1C2723', 'noteTextColor':'#FFFFFF', 'activationBorderColor':'#13ECA4', 'activationBkgColor':'#13ECA4', 'sequenceNumberColor':'#111816'}}}%%
 sequenceDiagram
     autonumber
     participant Dev as Developer
@@ -333,5 +329,4 @@ bun lint
 
 ---
 
-**Last Updated:** 2025-12-20
-**Author:** Technical Documentation
+**Last Updated:** 2025-12-22
