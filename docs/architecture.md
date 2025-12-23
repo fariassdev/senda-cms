@@ -55,7 +55,7 @@ The system is an Admin-only CMS focused on the lifecycle of meditation content:
 
 ### Technical Constraints & Dependencies
 
-- **Framework:** Next.js 15 (App Router).
+- **Framework:** Next.js 16 (App Router).
 - **API:** Must use `openapi-react-query` and `openapi-fetch` with generated types.
 - **State:** React Query for server state; Zustand _only_ for auth.
 - **Styling:** Tailwind CSS v4 with shadcn/ui.
@@ -80,7 +80,7 @@ Since this is an existing brownfield project, we are evaluating the **current co
 
 **Current Foundation (Senda CMS):**
 
-- **Framework:** Next.js 15.5.4 (App Router)
+- **Framework:** Next.js 16.5.4 (App Router)
 - **Language:** TypeScript 5.x (Strict)
 - **Styling:** Tailwind CSS 4.x + shadcn/ui
 - **State:** React Query 5.x + Zustand
@@ -89,7 +89,7 @@ Since this is an existing brownfield project, we are evaluating the **current co
 **Comparison with Market Starters:**
 The current stack aligns perfectly with modern "T3 Stack" or "Enterprise Next.js" patterns.
 
-- **Next.js 15:** Uses App Router and Server Components, aligning with the latest industry standard.
+- **Next.js 16:** Uses App Router and Server Components, aligning with the latest industry standard.
 - **Tailwind 4:** Cutting-edge styling engine (ahead of many starters still on v3).
 - **OpenAPI-first:** A superior architectural choice for type safety compared to manual fetch calls often found in basic starters.
 
@@ -99,7 +99,7 @@ The current stack aligns perfectly with modern "T3 Stack" or "Enterprise Next.js
 The existing codebase is built on a modern, robust, and type-safe foundation that exceeds the quality of most generic starter templates. It already implements:
 
 1.  **Strict Type Safety:** End-to-end type safety from database to UI via OpenAPI.
-2.  **Modern Performance:** Next.js 15 App Router with React Server Components.
+2.  **Modern Performance:** Next.js 16 App Router with React Server Components.
 3.  **Scalable State:** Separation of server state (React Query) and client state (Zustand).
 4.  **Maintainability:** "Container Pattern" for separation of concerns.
 
@@ -127,7 +127,7 @@ bun dev
 
 **Build Tooling:**
 
-- **Turbopack:** Next.js 15 native bundler for rapid HMR.
+- **Turbopack:** Next.js 16 native bundler for rapid HMR.
 
 **Code Organization:**
 
@@ -145,7 +145,7 @@ bun dev
 
 **Critical Decisions (Already Made):**
 
-- **Framework:** Next.js 15 (App Router)
+- **Framework:** Next.js 16 (App Router)
 - **API Pattern:** OpenAPI-first (Strict Contract)
 - **State Management:** React Query (Server) + Zustand (Auth)
 - **Styling:** Tailwind CSS 4
@@ -387,7 +387,7 @@ senda-cms/
 ### Coherence Validation ✅
 
 **Decision Compatibility:**
-The stack (Next.js 15 + Tailwind 4 + OpenAPI) is highly compatible. The decision to use `openapi-react-query` aligns perfectly with the "Server State" strategy, while Zustand handles the isolated "Auth State".
+The stack (Next.js 16 + Tailwind 4 + OpenAPI) is highly compatible. The decision to use `openapi-react-query` aligns perfectly with the "Server State" strategy, while Zustand handles the isolated "Auth State".
 
 **Pattern Consistency:**
 The strict "Container vs Component" rule is supported by the file structure. The "Hook Naming" convention (`useCourse` vs `useCourseActions`) ensures clear separation of concerns in the API layer.

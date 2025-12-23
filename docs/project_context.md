@@ -25,7 +25,7 @@ _This file contains critical rules and patterns that AI agents must follow when 
 
 ## Technology Stack & Versions
 
-- **Framework:** Next.js 15.5.4 (App Router)
+- **Framework:** Next.js 16.1.0 (App Router)
 - **Language:** TypeScript 5.x (Strict Mode)
 - **Styling:** Tailwind CSS 4.x + shadcn/ui
 - **State Management:** React Query 5.x (Server) + Zustand (Auth)
