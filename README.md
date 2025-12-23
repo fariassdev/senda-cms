@@ -1,6 +1,6 @@
 # Senda CMS
 
-A modern content management system designed to streamline the creation and management of guided meditation courses. Built with Next.js 15, TypeScript, and powered by AI capabilities through the Senda API.
+A modern content management system designed to streamline the creation and management of guided meditation courses. Built with Next.js 16, TypeScript, and powered by AI capabilities through the Senda API.
 
 ## 🧘‍♀️ Overview
 
@@ -73,7 +73,7 @@ Open [http://localhost:3000](http://localhost:3000) to view the application in y
 
 ### Frontend
 
-- **Next.js 15** - React framework with App Router
+- **Next.js 16** - React framework with App Router
 - **TypeScript** - Type-safe development
 - **Tailwind CSS** - Utility-first CSS framework
 - **shadcn/ui** - Modern component library
@@ -158,22 +158,22 @@ Built with shadcn/ui components and customized with styled-components:
 
 ## 🚀 Deployment
 
-The application is deployed on **Google Cloud Run** with automatic deployments from GitHub.
+The application is deployed on **Vercel** with automatic deployments from GitHub.
 
 ### Production URLs
 
-- **CMS Application**: `https://senda-production-ofsz2twzra-uc.a.run.app`
-- **Health Check**: `https://senda-production-ofsz2twzra-uc.a.run.app/api/health`
+- **CMS Application**: `https://senda-cms-tfg.vercel.app`
 
 ### Branch Strategy
 
-- **Production**: `main` branch → automatic deployment
+- **Production**: `main` branch → automatic deployment to production
+- **Staging**: `develop` branch → automatic deployment to staging
 - **Preview**: Pull Requests → preview deployments
-- **Development**: Local development with `bun dev`
+- **Development**: Local development with docker compose or `bun dev`
 
 ### Environment Variables
 
-See [`.env.production.example`](./.env.production.example) for all required variables.
+Required environment variables for deployment:
 
 | Variable                   | Description                                                   | Required |
 | -------------------------- | ------------------------------------------------------------- | -------- |
@@ -210,9 +210,9 @@ bun start
 
 ## 📚 Documentation
 
-- [Product Requirements Document](./docs/PRD.md) - Comprehensive project requirements
-- [API Integration Guide](./docs/api-integration.md) - API implementation details
-- [Project Checklist](./docs/project-checklist.md) - Development milestones
+- [UX Design Specification](./docs/ux-design-specification.md) - Complete UX and design guidelines
+- [Design System](./docs/design-system.md) - Component design system
+- [Deployment Guide](./docs/deployment.md) - Detailed deployment instructions
 
 ## 🤝 Contributing
 

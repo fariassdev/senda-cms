@@ -11,7 +11,7 @@
     "lint": "eslint",
     "lint:fix": "eslint --fix",
     "lint-staged": "lint-staged",
-    "test": "vitest",
+    "test:watch": "vitest",
     "test:run": "vitest run",
     "generate-types": "openapi-typescript http://localhost:8081/openapi.json -o src/types/api.d.ts"
   },

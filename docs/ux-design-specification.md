@@ -75,9 +75,9 @@ The "Generate with AI" moment - where user creativity meets AI capability. This 
    - Aligns perfectly with meditation content - calm, professional, not distracting
    - High contrast for accessibility
 
-2. **Vibrant Cyan Primary Action Color**
-   - Bright cyan/turquoise (#00D4FF) for CTAs - energetic but not aggressive
-   - Stands out dramatically against dark background
+2. **Vibrant Mint/Emerald Primary Action Color**
+   - Bright mint/emerald (#13ECA4) for CTAs - energetic but not aggressive
+   - Stands out dramatically against dark forest green background
    - Creates visual excitement without breaking the calm aesthetic
 
 3. **Rich Information Cards**
@@ -400,7 +400,7 @@ Based on PRD analysis and AI-first philosophy, five critical journeys defined:
 
 **Step 5: Save Course**
 
-- Primary action: "Publish Course" (cyan button)
+- Primary action: "Publish Course" (primary mint button)
 - Secondary action: "Save as Draft" (outline button)
 - On save:
   - Success toast: "Course created successfully!"
@@ -1011,7 +1011,7 @@ These patterns ensure predictable, cohesive behavior across the entire applicati
 **Keyboard Navigation**
 
 - All interactive elements: Accessible via Tab
-- Focus indicators: Visible cyan outline (2px, offset 2px)
+- Focus indicators: Visible mint/emerald outline (2px, offset 2px)
 - Skip links: "Skip to main content" for screen readers
 - Shortcuts: Documented in help (e.g., "Ctrl+K" for search)
 
@@ -1512,7 +1512,7 @@ Before marking UX implementation complete, validate:
 
 **UX Patterns:**
 
-- [ ] Button hierarchy clear (primary cyan, secondary outline, etc.)
+- [ ] Button hierarchy clear (primary mint/emerald, secondary outline, etc.)
 - [ ] Toasts appear for all success/error/info events
 - [ ] Forms validate on blur and show inline errors
 - [ ] Modals trap focus and dismiss correctly
@@ -1586,7 +1586,7 @@ Before marking UX implementation complete, validate:
 - Reduces eye strain for long editing sessions
 - Aligns with meditation content (calm, not aggressive)
 - High contrast maintains accessibility
-- Cyan primary is energetic without being loud
+- Mint/emerald primary is energetic without being loud
 
 **AI-First Workflows:**
 

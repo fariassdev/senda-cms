@@ -363,7 +363,7 @@
   <implementationNotes>
     <note title="Route Structure">
       Create nested dynamic route: src/app/courses/[slug]/lessons/[id]/script/page.tsx
-      Extract params with: const params = await props.params (Next.js 15 async params)
+      Extract params with: const params = await props.params (Next.js 16 async params)
     </note>
     <note title="Data Fetching Strategy">
       Fetch all lessons for the course, then find the specific lesson by ID.

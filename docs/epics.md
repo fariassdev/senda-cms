@@ -2,7 +2,7 @@
 
 **Author:** Rupo
 **Date:** 2025-11-28
-**Project Level:** Brownfield (Next.js 15 meditation course CMS)
+**Project Level:** Brownfield (Next.js 16 meditation course CMS)
 **Target Scale:** MVP - Admin-only meditation content management system
 
 ---
@@ -77,7 +77,7 @@ This document provides the complete epic and story breakdown for Senda CMS, deco
 
 **Implemented Features:**
 
-- Project setup with Next.js 15, TypeScript, Tailwind CSS
+- Project setup with Next.js 16, TypeScript, Tailwind CSS
 - Login form with email/password validation
 - JWT-based authentication with Zustand store
 - Route protection via Next.js middleware
