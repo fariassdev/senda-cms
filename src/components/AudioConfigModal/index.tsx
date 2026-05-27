@@ -1,6 +1,6 @@
 'use client';
 
-import { AlertTriangle, Loader2 } from 'lucide-react';
+import { AlertTriangle, Loader2, Volume2, Sparkles } from 'lucide-react';
 
 import { Button } from '@/components/ui/button';
 import {
@@ -11,35 +11,26 @@ import {
   DialogHeader,
   DialogTitle,
 } from '@/components/ui/dialog';
-import { Label } from '@/components/ui/label';
-import {
-  Select,
-  SelectContent,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
-} from '@/components/ui/select';
-import { Slider } from '@/components/ui/slider';
+import { cn } from '@/lib/utils';
 
+import { ChatterboxConfig } from './chatterbox/ChatterboxConfig';
 import useConnect from './connect';
-import {
-  MODAL_CONFIG,
-  SPEECH_RATE_CONFIG,
-  VOICE_OPTIONS,
-  WARNING_BANNER_TEXT,
-} from './constants';
+import { MODAL_CONFIG, WARNING_BANNER_TEXT } from './constants';
+import { KokoroConfig } from './kokoro/KokoroConfig';
 import type { AudioConfigModalProps } from './types';
 
 /**
  * AudioConfigModal Component
  * Configuration modal for audio generation settings.
- * Allows users to select voice and adjust speech rate before generation.
+ * Allows users to choose the audio provider (KokoroTTS or ChatterboxTTS),
+ * select voice, and adjust settings before generation.
  *
  * Features:
- * - Voice selection dropdown with descriptions
- * - Speech rate slider (0.7x - 1.3x)
- * - Regeneration warning banner
- * - Accessible with keyboard navigation and screen reader support
+ * - Provider switching tabs with modern micro-animations
+ * - KokoroTTS view with legacy voices and speed multiplier slider
+ * - ChatterboxTTS view with custom active voices loaded from the DB
+ * - Advanced parameters visualization for Chatterbox voices
+ * - WCAG accessible keyboard navigation and focus management
  */
 export function AudioConfigModal({
   open,
@@ -49,8 +40,18 @@ export function AudioConfigModal({
   isGenerating,
   isRegeneration = false,
 }: AudioConfigModalProps) {
-  const { voice, setVoice, speed, setSpeed, getConfig, resetToDefaults } =
-    useConnect();
+  const {
+    provider,
+    setProvider,
+    kokoroVoice,
+    setKokoroVoice,
+    kokoroSpeed,
+    setKokoroSpeed,
+    chatterboxVoice,
+    setChatterboxVoice,
+    getConfig,
+    resetToDefaults,
+  } = useConnect();
 
   const config = isRegeneration
     ? MODAL_CONFIG.regenerate
@@ -81,9 +82,13 @@ export function AudioConfigModal({
     return config.submitLabel;
   };
 
+  // Disable submit if generating or if Chatterbox has no voice selected yet
+  const isSubmitDisabled =
+    isGenerating || (provider === 'chatterbox' && !chatterboxVoice);
+
   return (
     <Dialog open={open} onOpenChange={handleOpenChange}>
-      <DialogContent className="sm:max-w-[450px] backdrop-blur-lg">
+      <DialogContent className="sm:max-w-[480px] backdrop-blur-lg">
         <DialogHeader>
           <DialogTitle>{config.title}</DialogTitle>
           <DialogDescription>
@@ -108,60 +113,55 @@ export function AudioConfigModal({
           </div>
         )}
 
-        <div className="space-y-6 py-4">
-          {/* Voice Selection */}
-          <div className="space-y-2">
-            <Label htmlFor="voice-select">Voice</Label>
-            <Select value={voice} onValueChange={setVoice}>
-              <SelectTrigger
-                id="voice-select"
-                className="w-full min-h-[42px] text-left [&>span]:w-full [&>span]:text-left"
-              >
-                <SelectValue placeholder="Select a voice" />
-              </SelectTrigger>
-              <SelectContent>
-                {VOICE_OPTIONS.map((option) => (
-                  <SelectItem key={option.value} value={option.value}>
-                    <div className="flex flex-col items-start text-left">
-                      <span className="font-medium">{option.label}</span>
-                      <span className="text-xs text-muted-foreground">
-                        {option.description}
-                      </span>
-                    </div>
-                  </SelectItem>
-                ))}
-              </SelectContent>
-            </Select>
-          </div>
+        {/* Custom Premium Tabs for Provider selection */}
+        <div className="flex border-b border-muted mt-2">
+          <button
+            type="button"
+            onClick={() => setProvider('chatterbox')}
+            className={cn(
+              'flex-1 flex items-center justify-center gap-2 py-3 text-sm font-semibold border-b-2 transition-all duration-200 outline-none focus-visible:ring-2 focus-visible:ring-primary rounded-t-md',
+              provider === 'chatterbox'
+                ? 'border-primary text-primary bg-primary/[0.02]'
+                : 'border-transparent text-muted-foreground hover:text-foreground hover:bg-muted/30',
+            )}
+            aria-selected={provider === 'chatterbox'}
+            role="tab"
+          >
+            <Sparkles className="h-4 w-4" />
+            ChatterboxTTS
+          </button>
+          <button
+            type="button"
+            onClick={() => setProvider('kokoro')}
+            className={cn(
+              'flex-1 flex items-center justify-center gap-2 py-3 text-sm font-semibold border-b-2 transition-all duration-200 outline-none focus-visible:ring-2 focus-visible:ring-primary rounded-t-md',
+              provider === 'kokoro'
+                ? 'border-primary text-primary bg-primary/[0.02]'
+                : 'border-transparent text-muted-foreground hover:text-foreground hover:bg-muted/30',
+            )}
+            aria-selected={provider === 'kokoro'}
+            role="tab"
+          >
+            <Volume2 className="h-4 w-4" />
+            KokoroTTS
+          </button>
+        </div>
 
-          {/* Speech Rate Slider */}
-          <div className="space-y-3">
-            <div className="flex items-center justify-between">
-              <Label htmlFor="speech-rate">Speech Rate</Label>
-              <span
-                className="text-sm font-medium text-primary"
-                aria-live="polite"
-              >
-                {speed.toFixed(1)}x
-              </span>
-            </div>
-            <Slider
-              id="speech-rate"
-              min={SPEECH_RATE_CONFIG.min}
-              max={SPEECH_RATE_CONFIG.max}
-              step={SPEECH_RATE_CONFIG.step}
-              value={[speed]}
-              onValueChange={(values) =>
-                setSpeed(values[0] ?? SPEECH_RATE_CONFIG.default)
-              }
-              className="w-full [&_[data-slot=slider-range]]:bg-primary [&_[data-slot=slider-thumb]]:border-primary"
-              aria-label={`Speech rate: ${speed.toFixed(1)}x`}
+        {/* Dynamic Provider Views */}
+        <div className="space-y-6 py-4 min-h-[220px] flex flex-col justify-center">
+          {provider === 'kokoro' ? (
+            <KokoroConfig
+              voice={kokoroVoice}
+              onVoiceChange={setKokoroVoice}
+              speed={kokoroSpeed}
+              onSpeedChange={setKokoroSpeed}
             />
-            <div className="flex justify-between text-xs text-muted-foreground">
-              <span>0.7x (Slower)</span>
-              <span>1.3x (Faster)</span>
-            </div>
-          </div>
+          ) : (
+            <ChatterboxConfig
+              selectedVoice={chatterboxVoice}
+              onVoiceChange={setChatterboxVoice}
+            />
+          )}
         </div>
 
         <DialogFooter className="gap-3 sm:gap-2">
@@ -176,7 +176,7 @@ export function AudioConfigModal({
           <Button
             type="button"
             onClick={handleSubmit}
-            disabled={isGenerating}
+            disabled={isSubmitDisabled}
             aria-busy={isGenerating}
           >
             {isGenerating && (

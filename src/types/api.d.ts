@@ -11,8 +11,33 @@ export interface paths {
             path?: never;
             cookie?: never;
         };
-        /** Health Check */
+        /**
+         * Health Check
+         * @description Health check endpoint for Cloud Run liveness and startup probes.
+         *     Returns application status, version, and basic health information.
+         */
         get: operations["health_check_api_health_check_get"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/health-check/ready": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /**
+         * Readiness Check
+         * @description Readiness check endpoint for Cloud Run.
+         *     Can be extended to check database connectivity, external services, etc.
+         */
+        get: operations["readiness_check_api_health_check_ready_get"];
         put?: never;
         post?: never;
         delete?: never;
@@ -525,6 +550,78 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
+    "/api/voices": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /**
+         * List Voices
+         * @description List available cataloged voices.
+         *
+         *     Only accessible by administrators.
+         */
+        get: operations["list_voices_api_voices_get"];
+        put?: never;
+        /**
+         * Create Voice
+         * @description Create a new voice in the catalog with a reference WAV upload.
+         *
+         *     Only accessible by administrators. Sinks the reference to Modal Volume.
+         */
+        post: operations["create_voice_api_voices_post"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/voices/{voice_slug}": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /**
+         * Get Voice
+         * @description Retrieve details of a specific voice by slug.
+         *
+         *     Only accessible by administrators.
+         */
+        get: operations["get_voice_api_voices__voice_slug__get"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/voices/{voice_id}": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        /**
+         * Update Voice
+         * @description Update settings of an existing voice.
+         *
+         *     Only accessible by administrators.
+         */
+        put: operations["update_voice_api_voices__voice_id__put"];
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
 }
 export type webhooks = Record<string, never>;
 export interface components {
@@ -688,6 +785,42 @@ export interface components {
              * @description Optional list of lesson IDs to generate scripts for. If not provided, generates for all eligible lessons. If empty list, generates nothing.
              */
             lesson_ids?: number[] | null;
+        };
+        /** Body_create_voice_api_voices_post */
+        Body_create_voice_api_voices_post: {
+            /**
+             * Reference Wav
+             * Format: binary
+             */
+            reference_wav: string;
+            /** Name */
+            name: string;
+            /** Slug */
+            slug: string;
+            /** Gender */
+            gender: string;
+            /**
+             * Language
+             * @default es
+             */
+            language: string;
+            /**
+             * Exaggeration
+             * @default 0.3
+             */
+            exaggeration: number;
+            /**
+             * Cfg Weight
+             * @default 0.5
+             */
+            cfg_weight: number;
+            /**
+             * Temperature
+             * @default 0.4
+             */
+            temperature: number;
+            /** Description */
+            description?: string | null;
         };
         /**
          * CourseAudiosGenerationResponse
@@ -1265,6 +1398,23 @@ export interface components {
         UpdateLessonRequest: {
             lesson: components["schemas"]["UpdateLessonData"];
         };
+        /** UpdateVoiceData */
+        UpdateVoiceData: {
+            /** Exaggeration */
+            exaggeration?: number | null;
+            /** Cfg Weight */
+            cfg_weight?: number | null;
+            /** Temperature */
+            temperature?: number | null;
+            /** Is Active */
+            is_active?: boolean | null;
+            /** Description */
+            description?: string | null;
+        };
+        /** UpdateVoiceRequest */
+        UpdateVoiceRequest: {
+            voice: components["schemas"]["UpdateVoiceData"];
+        };
         /** UpdatedUserData */
         UpdatedUserData: {
             /** Email */
@@ -1361,6 +1511,54 @@ export interface components {
             /** Error Type */
             type: string;
         };
+        /** VoiceData */
+        VoiceData: {
+            /**
+             * Id
+             * Format: uuid
+             */
+            id: string;
+            /** Name */
+            name: string;
+            /** Slug */
+            slug: string;
+            /** Description */
+            description?: string | null;
+            /** Language */
+            language: string;
+            /** Gender */
+            gender: string;
+            /** References3Key */
+            referenceS3Key: string;
+            /** Samples3Key */
+            sampleS3Key?: string | null;
+            /** Exaggeration */
+            exaggeration: number;
+            /** Cfgweight */
+            cfgWeight: number;
+            /** Temperature */
+            temperature: number;
+            /** Isactive */
+            isActive: boolean;
+            /** Issyncedtomodal */
+            isSyncedToModal: boolean;
+            /** Modalsyncerror */
+            modalSyncError?: string | null;
+            /**
+             * Createdat
+             * Format: date-time
+             */
+            createdAt: string;
+            /**
+             * Updatedat
+             * Format: date-time
+             */
+            updatedAt: string;
+        };
+        /** VoiceResponse */
+        VoiceResponse: {
+            voice: components["schemas"]["VoiceData"];
+        };
         /** CourseAuthorData */
         senda__api__schemas__responses__course__CourseAuthorData: {
             /** Username */
@@ -1396,6 +1594,26 @@ export interface components {
 export type $defs = Record<string, never>;
 export interface operations {
     health_check_api_health_check_get: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": Record<string, never>;
+                };
+            };
+        };
+    };
+    readiness_check_api_health_check_ready_get: {
         parameters: {
             query?: never;
             header?: never;
@@ -2403,6 +2621,136 @@ export interface operations {
                 };
                 content: {
                     "application/json": components["schemas"]["AudioGenerationStatusResponse"];
+                };
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
+    list_voices_api_voices_get: {
+        parameters: {
+            query?: {
+                active_only?: boolean;
+            };
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["VoiceResponse"][];
+                };
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
+    create_voice_api_voices_post: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "multipart/form-data": components["schemas"]["Body_create_voice_api_voices_post"];
+            };
+        };
+        responses: {
+            /** @description Successful Response */
+            201: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["VoiceResponse"];
+                };
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
+    get_voice_api_voices__voice_slug__get: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                voice_slug: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["VoiceResponse"];
+                };
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
+    update_voice_api_voices__voice_id__put: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                voice_id: string;
+            };
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["UpdateVoiceRequest"];
+            };
+        };
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["VoiceResponse"];
                 };
             };
             /** @description Validation Error */

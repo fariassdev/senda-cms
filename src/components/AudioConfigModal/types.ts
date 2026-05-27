@@ -2,6 +2,8 @@
  * Types for AudioConfigModal component
  */
 
+export type AudioProvider = 'kokoro' | 'chatterbox';
+
 export interface AudioConfig {
   voice: string;
   speed: number;
