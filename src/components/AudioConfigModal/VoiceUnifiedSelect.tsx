@@ -111,7 +111,9 @@ export function VoiceUnifiedSelect({
 
             <SelectContent
               position="popper"
-              className="z-[100] max-h-[250px] rounded-xl p-1.5"
+              hideScrollButtons
+              viewportClassName="max-h-[250px] p-1.5"
+              className="z-[100] max-h-[250px] rounded-xl"
             >
               {voices.map((v) => (
                 <VoiceSelectOption
