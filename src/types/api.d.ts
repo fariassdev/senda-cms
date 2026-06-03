@@ -805,20 +805,10 @@ export interface components {
              */
             language: string;
             /**
-             * Exaggeration
-             * @default 0.3
+             * Tts Provider
+             * @default chatterbox
              */
-            exaggeration: number;
-            /**
-             * Cfg Weight
-             * @default 0.5
-             */
-            cfg_weight: number;
-            /**
-             * Temperature
-             * @default 0.4
-             */
-            temperature: number;
+            tts_provider: string;
             /** Description */
             description?: string | null;
         };
@@ -1400,12 +1390,8 @@ export interface components {
         };
         /** UpdateVoiceData */
         UpdateVoiceData: {
-            /** Exaggeration */
-            exaggeration?: number | null;
-            /** Cfg Weight */
-            cfg_weight?: number | null;
-            /** Temperature */
-            temperature?: number | null;
+            /** Tts Provider */
+            tts_provider?: string | null;
             /** Is Active */
             is_active?: boolean | null;
             /** Description */
@@ -1528,16 +1514,12 @@ export interface components {
             language: string;
             /** Gender */
             gender: string;
-            /** References3Key */
-            referenceS3Key: string;
-            /** Samples3Key */
-            sampleS3Key?: string | null;
-            /** Exaggeration */
-            exaggeration: number;
-            /** Cfgweight */
-            cfgWeight: number;
-            /** Temperature */
-            temperature: number;
+            /** Referenceaudiourl */
+            referenceAudioUrl: string;
+            /** Sampleaudiourl */
+            sampleAudioUrl?: string | null;
+            /** Ttsprovider */
+            ttsProvider: string;
             /** Isactive */
             isActive: boolean;
             /** Issyncedtomodal */

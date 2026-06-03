@@ -1,52 +1,68 @@
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 
-import { SPEECH_RATE_CONFIG, VOICE_OPTIONS } from './constants';
-import type { AudioConfig, AudioProvider } from './types';
+import useVoices from '@/hooks/useVoices';
+import { SPEECH_RATE_CONFIG } from './constants';
+import type { AudioConfig } from './types';
 
 /**
  * Hook for AudioConfigModal local state management
- * Manages provider selection, voice selection, and speech rate slider state
+ * Manages unified voice selection and speech rate slider state
  */
 export default function useConnect() {
-  const [provider, setProvider] = useState<AudioProvider>('chatterbox');
-  const [kokoroVoice, setKokoroVoice] = useState<string>(
-    VOICE_OPTIONS[0].value,
-  );
-  const [kokoroSpeed, setKokoroSpeed] = useState<number>(
-    SPEECH_RATE_CONFIG.default,
-  );
-  const [chatterboxVoice, setChatterboxVoice] = useState<string>('');
+  // Query all active voices from database
+  const { voices, loading: isLoading, error } = useVoices({ activeOnly: true });
+
+  const [selectedVoiceSlug, setSelectedVoiceSlug] = useState<string>('');
+  const [speed, setSpeed] = useState<number>(SPEECH_RATE_CONFIG.default);
+
+  // Automatically select default voice once loaded
+  useEffect(() => {
+    if (voices.length > 0 && !selectedVoiceSlug) {
+      // Find the first synced voice if possible, or just the first voice
+      const defaultVoice =
+        voices.find((v) => v.voice.isSyncedToModal) || voices[0];
+      if (defaultVoice?.voice?.slug) {
+        setSelectedVoiceSlug(defaultVoice.voice.slug);
+      }
+    }
+  }, [voices, selectedVoiceSlug]);
+
+  const selectedVoiceObj = voices.find(
+    (v) => v.voice.slug === selectedVoiceSlug,
+  )?.voice;
+
+  const isKokoro = selectedVoiceObj?.ttsProvider === 'kokoro';
 
   const getConfig = (): AudioConfig => {
-    if (provider === 'kokoro') {
-      return {
-        voice: kokoroVoice,
-        speed: kokoroSpeed,
-      };
-    } else {
-      return {
-        voice: chatterboxVoice,
-        speed: 1.0, // Speed rate is fixed at 1.0 default for Chatterbox as per requirements
-      };
-    }
+    return {
+      voice: selectedVoiceSlug,
+      speed: isKokoro ? speed : 1.0,
+    };
   };
 
   const resetToDefaults = () => {
-    setProvider('chatterbox');
-    setKokoroVoice(VOICE_OPTIONS[0].value);
-    setKokoroSpeed(SPEECH_RATE_CONFIG.default);
-    setChatterboxVoice('');
+    setSpeed(SPEECH_RATE_CONFIG.default);
+    if (voices.length > 0) {
+      const defaultVoice =
+        voices.find((v) => v.voice.isSyncedToModal) || voices[0];
+      if (defaultVoice?.voice?.slug) {
+        setSelectedVoiceSlug(defaultVoice.voice.slug);
+      }
+    } else {
+      setSelectedVoiceSlug('');
+    }
   };
 
   return {
-    provider,
-    setProvider,
-    kokoroVoice,
-    setKokoroVoice,
-    kokoroSpeed,
-    setKokoroSpeed,
-    chatterboxVoice,
-    setChatterboxVoice,
+    voices,
+    isLoading,
+    error,
+    selectedVoiceSlug,
+    setSelectedVoiceSlug,
+    selectedVoiceObj,
+    speed,
+    setSpeed,
+    isKokoro,
     getConfig,
     resetToDefaults,
   };
