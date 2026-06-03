@@ -38,5 +38,9 @@ export type User = components['schemas']['AuthenticatedUserData'];
 export type LoggedInUser = components['schemas']['LoggedInUserData'];
 export type RegisteredUser = components['schemas']['RegisteredUserData'];
 
+// Voice / TTS types
+export type Voice = components['schemas']['VoiceData'];
+export type TtsProvider = components['schemas']['TtsProvider'];
+
 // Other types
 export type DifficultyLevel = components['schemas']['DifficultyLevel'];

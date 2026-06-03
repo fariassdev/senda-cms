@@ -63,33 +63,46 @@ export const FixedActionBar = ({
                 </TooltipContent>
               </Tooltip>
 
-              <Tooltip>
-                <TooltipTrigger asChild>
-                  <span>
-                    <Button
-                      variant="outline"
-                      size="sm"
-                      onClick={handleAudioClick}
-                      disabled={!canGenerateAudio || isGeneratingAudio}
-                      aria-busy={isGeneratingAudio}
-                    >
-                      {isGeneratingAudio ? (
-                        <Loader2 className="h-4 w-4 animate-spin" />
-                      ) : (
-                        <Volume2 className="h-4 w-4" />
-                      )}
-                      {audioButtonLabel}
-                    </Button>
-                  </span>
-                </TooltipTrigger>
-                <TooltipContent>
-                  {!canGenerateAudio ? (
+              {!canGenerateAudio ? (
+                <Tooltip>
+                  <TooltipTrigger asChild>
+                    <span>
+                      <Button
+                        variant="outline"
+                        size="sm"
+                        onClick={handleAudioClick}
+                        disabled
+                        aria-busy={isGeneratingAudio}
+                      >
+                        {isGeneratingAudio ? (
+                          <Loader2 className="h-4 w-4 animate-spin" />
+                        ) : (
+                          <Volume2 className="h-4 w-4" />
+                        )}
+                        {audioButtonLabel}
+                      </Button>
+                    </span>
+                  </TooltipTrigger>
+                  <TooltipContent>
                     <p>Audio can only be generated when script is completed</p>
+                  </TooltipContent>
+                </Tooltip>
+              ) : (
+                <Button
+                  variant="outline"
+                  size="sm"
+                  onClick={handleAudioClick}
+                  disabled={isGeneratingAudio}
+                  aria-busy={isGeneratingAudio}
+                >
+                  {isGeneratingAudio ? (
+                    <Loader2 className="h-4 w-4 animate-spin" />
                   ) : (
-                    <p>Hold Shift for quick generation with defaults</p>
+                    <Volume2 className="h-4 w-4" />
                   )}
-                </TooltipContent>
-              </Tooltip>
+                  {audioButtonLabel}
+                </Button>
+              )}
 
               <Button variant="default" onClick={onEdit}>
                 <Edit className="h-4 w-4" />

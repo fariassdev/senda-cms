@@ -4,9 +4,8 @@ import { useQueryClient } from '@tanstack/react-query';
 import { useRouter } from 'next/navigation';
 import { useEffect, useMemo, useRef, useState } from 'react';
 import { toast } from 'sonner';
-import useAudioGeneration, {
-  type AudioConfigRequest,
-} from '@/hooks/useAudioGeneration';
+import type { AudioConfig } from '@/components/AudioConfigModal';
+import useAudioGeneration from '@/hooks/useAudioGeneration';
 import useLessonActions from '@/hooks/useLessonActions';
 import useScriptGeneration from '@/hooks/useScriptGeneration';
 import { $api } from '@/lib/api';
@@ -303,7 +302,7 @@ export default function useConnect({
     router.push(`/courses/${courseSlug}`);
   };
 
-  const handleGenerateAudio = (config?: AudioConfigRequest) => {
+  const handleGenerateAudio = (config: AudioConfig) => {
     generateAudio(config);
   };
 

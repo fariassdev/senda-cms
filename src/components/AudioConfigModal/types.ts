@@ -2,10 +2,10 @@
  * Types for AudioConfigModal component
  */
 
-export interface AudioConfig {
-  voice: string;
-  speed: number;
-}
+import type { components } from '@/types/api';
+
+/** Matches API `AudioConfigRequest` (voice_id required; speed optional). */
+export type AudioConfig = components['schemas']['AudioConfigRequest'];
 
 export interface AudioConfigModalProps {
   open: boolean;

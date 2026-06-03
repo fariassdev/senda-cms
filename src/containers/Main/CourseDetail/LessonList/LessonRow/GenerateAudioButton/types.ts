@@ -3,7 +3,7 @@ import type { Lesson } from '@/types/models';
 
 export interface GenerateAudioButtonProps {
   lesson: Lesson;
-  onGenerate: (config?: AudioConfig) => void;
+  onGenerate: (config: AudioConfig) => void;
   isGenerating?: boolean;
   className?: string;
 }

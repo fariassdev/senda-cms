@@ -3,26 +3,24 @@ import { useEffect, useState } from 'react';
 import useVoices from '@/hooks/useVoices';
 import { SPEECH_RATE_CONFIG } from './constants';
 import type { AudioConfig } from './types';
+import { getDefaultVoiceSlug } from './utils';
+import { supportsSpeechRate } from './voiceDisplay';
 
 /**
  * Hook for AudioConfigModal local state management
  * Manages unified voice selection and speech rate slider state
  */
 export default function useConnect() {
-  // Query all active voices from database
   const { voices, loading: isLoading, error } = useVoices({ activeOnly: true });
 
   const [selectedVoiceSlug, setSelectedVoiceSlug] = useState<string>('');
   const [speed, setSpeed] = useState<number>(SPEECH_RATE_CONFIG.default);
 
-  // Automatically select default voice once loaded
   useEffect(() => {
     if (voices.length > 0 && !selectedVoiceSlug) {
-      // Find the first synced voice if possible, or just the first voice
-      const defaultVoice =
-        voices.find((v) => v.voice.isSyncedToModal) || voices[0];
-      if (defaultVoice?.voice?.slug) {
-        setSelectedVoiceSlug(defaultVoice.voice.slug);
+      const slug = getDefaultVoiceSlug(voices);
+      if (slug) {
+        setSelectedVoiceSlug(slug);
       }
     }
   }, [voices, selectedVoiceSlug]);
@@ -31,26 +29,24 @@ export default function useConnect() {
     (v) => v.voice.slug === selectedVoiceSlug,
   )?.voice;
 
-  const isKokoro = selectedVoiceObj?.ttsProvider === 'kokoro';
+  const supportsSpeechRateControl = selectedVoiceObj
+    ? supportsSpeechRate(selectedVoiceObj.ttsProvider)
+    : false;
 
   const getConfig = (): AudioConfig => {
-    return {
-      voice: selectedVoiceSlug,
-      speed: isKokoro ? speed : 1.0,
-    };
+    if (!selectedVoiceObj?.id) {
+      throw new Error('No voice selected for audio generation');
+    }
+    const config: AudioConfig = { voice_id: selectedVoiceObj.id };
+    if (supportsSpeechRateControl && speed !== SPEECH_RATE_CONFIG.default) {
+      config.speed = speed;
+    }
+    return config;
   };
 
   const resetToDefaults = () => {
     setSpeed(SPEECH_RATE_CONFIG.default);
-    if (voices.length > 0) {
-      const defaultVoice =
-        voices.find((v) => v.voice.isSyncedToModal) || voices[0];
-      if (defaultVoice?.voice?.slug) {
-        setSelectedVoiceSlug(defaultVoice.voice.slug);
-      }
-    } else {
-      setSelectedVoiceSlug('');
-    }
+    setSelectedVoiceSlug(getDefaultVoiceSlug(voices));
   };
 
   return {
@@ -62,7 +58,7 @@ export default function useConnect() {
     selectedVoiceObj,
     speed,
     setSpeed,
-    isKokoro,
+    supportsSpeechRateControl,
     getConfig,
     resetToDefaults,
   };

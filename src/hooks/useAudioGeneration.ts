@@ -82,11 +82,8 @@ const useAudioGeneration = ({
     },
   );
 
-  /**
-   * Trigger audio generation with optional configuration
-   * @param config - Optional voice and speed settings
-   */
-  const generateAudio = (config?: AudioConfigRequest) => {
+  /** Trigger audio generation */
+  const generateAudio = (config: AudioConfigRequest) => {
     generateMutation.mutate({
       params: {
         path: {
@@ -94,7 +91,7 @@ const useAudioGeneration = ({
           id: lessonId,
         },
       },
-      body: config ? { audio_config: config } : undefined,
+      body: { audio_config: config },
     });
   };
 

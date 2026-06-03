@@ -15,7 +15,7 @@ const useCourse = ({ slug }: { slug?: string }) => {
     },
     {
       enabled: !!slug,
-    }
+    },
   );
 
   const course = useMemo(() => data?.course, [data]);

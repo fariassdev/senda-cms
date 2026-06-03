@@ -493,7 +493,7 @@ export interface paths {
          * Generate Lesson Audio
          * @description Generate audio for a specific lesson.
          *
-         *     Optionally accepts audio configuration (voice, speed).
+         *     Requires ``audio_config.voice_id`` referencing an active catalog voice.
          */
         post: operations["generate_lesson_audio_api_courses__slug__lessons__id__generate_audio_post"];
         delete?: never;
@@ -519,7 +519,7 @@ export interface paths {
          *     - If lesson_ids is []: generates nothing
          *     - If lesson_ids is [1, 2, 3]: generates only for those specific lessons
          *
-         *     Optionally accepts audio configuration (voice, speed) applied to all lessons.
+         *     Requires ``audio_config.voice_id`` applied to all lessons in the batch.
          *
          *     Returns successful generations and any errors that occurred.
          */
@@ -567,9 +567,17 @@ export interface paths {
         put?: never;
         /**
          * Create Voice
-         * @description Create a new voice in the catalog with a reference WAV upload.
+         * @description Create a voice in the catalog with a reference WAV file.
          *
-         *     Only accessible by administrators. Sinks the reference to Modal Volume.
+         *     **Pipeline order:** Modal volume sync → TTS sample → S3 reference → S3 sample → DB insert.
+         *
+         *     **On success:** ``201`` with the new voice; the row exists only after all steps succeed.
+         *
+         *     **On failure:** No catalog row is created. Modal/S3 may hold data keyed by ``slug``;
+         *     retries with the same slug overwrite those objects (see ``voice_provisioning`` module).
+         *
+         *     **Errors:** ``400`` if ``tts_provider`` is not ``chatterbox``; ``409`` if the slug
+         *     already exists; ``502`` if Modal or S3 fails.
          */
         post: operations["create_voice_api_voices_post"];
         delete?: never;
@@ -616,7 +624,14 @@ export interface paths {
          */
         put: operations["update_voice_api_voices__voice_id__put"];
         post?: never;
-        delete?: never;
+        /**
+         * Delete Voice
+         * @description Delete a voice from the catalog, Modal volume, and S3.
+         *
+         *     Returns ``204`` on success. Returns ``409`` if any lesson still references this
+         *     voice, ``404`` if the voice does not exist.
+         */
+        delete: operations["delete_voice_api_voices__voice_id__delete"];
         options?: never;
         head?: never;
         patch?: never;
@@ -679,16 +694,16 @@ export interface components {
          */
         AudioConfigRequest: {
             /**
-             * Voice
-             * @description Voice to use for TTS (e.g., 'af_nicole', 'af_bella'). If not provided, uses the default voice.
+             * Voice Id
+             * Format: uuid
+             * @description Catalog voice id to use for TTS (required).
              */
-            voice?: string | null;
+            voice_id: string;
             /**
              * Speed
-             * @description Speech rate multiplier (0.5 to 2.0, default 1.0).
-             * @default 1
+             * @description Speech rate multiplier (0.5 to 2.0). Defaults to 1.0 when omitted.
              */
-            speed: number;
+            speed?: number | null;
         };
         /**
          * AudioGenerationResponse
@@ -775,8 +790,8 @@ export interface components {
              * @description Optional list of lesson IDs to generate audio for. If not provided, generates for all eligible lessons. If empty list, generates nothing.
              */
             lesson_ids?: number[] | null;
-            /** @description Optional audio configuration (voice, speed). */
-            audio_config?: components["schemas"]["AudioConfigRequest"] | null;
+            /** @description Audio configuration (catalog voice_id and speed). */
+            audio_config: components["schemas"]["AudioConfigRequest"];
         };
         /** BatchScriptGenerationRequest */
         BatchScriptGenerationRequest: {
@@ -807,8 +822,10 @@ export interface components {
             /**
              * Tts Provider
              * @default chatterbox
+             * @constant
+             * @enum {string}
              */
-            tts_provider: string;
+            tts_provider: "chatterbox";
             /** Description */
             description?: string | null;
         };
@@ -1340,14 +1357,20 @@ export interface components {
          * @description Request body for single lesson audio generation.
          */
         SingleAudioGenerationRequest: {
-            /** @description Optional audio configuration (voice, speed). */
-            audio_config?: components["schemas"]["AudioConfigRequest"] | null;
+            /** @description Audio configuration (catalog voice_id and speed). */
+            audio_config: components["schemas"]["AudioConfigRequest"];
         };
         /** TagsResponse */
         TagsResponse: {
             /** Tags */
             tags: string[];
         };
+        /**
+         * TtsProvider
+         * @description Supported text-to-speech backends.
+         * @enum {string}
+         */
+        TtsProvider: "chatterbox" | "kokoro";
         /** UpdateCourseData */
         UpdateCourseData: {
             /** Title */
@@ -1518,14 +1541,9 @@ export interface components {
             referenceAudioUrl: string;
             /** Sampleaudiourl */
             sampleAudioUrl?: string | null;
-            /** Ttsprovider */
-            ttsProvider: string;
+            ttsProvider: components["schemas"]["TtsProvider"];
             /** Isactive */
             isActive: boolean;
-            /** Issyncedtomodal */
-            isSyncedToModal: boolean;
-            /** Modalsyncerror */
-            modalSyncError?: string | null;
             /**
              * Createdat
              * Format: date-time
@@ -2523,9 +2541,9 @@ export interface operations {
             };
             cookie?: never;
         };
-        requestBody?: {
+        requestBody: {
             content: {
-                "application/json": components["schemas"]["SingleAudioGenerationRequest"] | null;
+                "application/json": components["schemas"]["SingleAudioGenerationRequest"];
             };
         };
         responses: {
@@ -2734,6 +2752,35 @@ export interface operations {
                 content: {
                     "application/json": components["schemas"]["VoiceResponse"];
                 };
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
+    delete_voice_api_voices__voice_id__delete: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                voice_id: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Successful Response */
+            204: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
             };
             /** @description Validation Error */
             422: {
