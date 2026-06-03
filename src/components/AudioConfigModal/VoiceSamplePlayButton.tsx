@@ -1,6 +1,7 @@
 'use client';
 
 import { Play, Volume2 } from 'lucide-react';
+import { useRef } from 'react';
 
 import { cn } from '@/lib/utils';
 
@@ -28,6 +29,15 @@ const playIconClasses: Record<VoiceSamplePlayButtonSize, string> = {
   md: 'h-3.5 w-3.5',
 };
 
+/**
+ * Radix Select selects items on pointerup (not click). Stop that event from
+ * bubbling so preview works without closing the menu. Do not preventDefault on
+ * pointerdown — it can suppress the click event entirely.
+ */
+function stopSelectItemSelection(e: React.SyntheticEvent) {
+  e.stopPropagation();
+}
+
 export function VoiceSamplePlayButton({
   voiceSlug,
   sampleAudioUrl,
@@ -35,6 +45,8 @@ export function VoiceSamplePlayButton({
   onToggle,
   size = 'md',
 }: VoiceSamplePlayButtonProps) {
+  const activatedByPointerRef = useRef(false);
+
   if (!sampleAudioUrl) {
     return (
       <div
@@ -53,12 +65,31 @@ export function VoiceSamplePlayButton({
     );
   }
 
+  const handleActivate = (e: React.MouseEvent | React.PointerEvent) => {
+    stopSelectItemSelection(e);
+    onToggle(e as React.MouseEvent, voiceSlug, sampleAudioUrl);
+  };
+
   return (
     <button
       type="button"
-      onClick={(e) => onToggle(e, voiceSlug, sampleAudioUrl)}
+      onPointerDown={stopSelectItemSelection}
+      onPointerUp={(e) => {
+        stopSelectItemSelection(e);
+        activatedByPointerRef.current = true;
+        handleActivate(e);
+      }}
+      onClick={(e) => {
+        stopSelectItemSelection(e);
+        if (activatedByPointerRef.current) {
+          activatedByPointerRef.current = false;
+          return;
+        }
+        handleActivate(e);
+      }}
       className={cn(
-        'flex items-center justify-center rounded-full border transition-all duration-200',
+        'pointer-events-auto flex items-center justify-center rounded-full border transition-all duration-200',
+        '[&_svg]:pointer-events-auto',
         sizeClasses[size],
         isPlaying
           ? 'bg-primary/20 border-primary text-primary hover:bg-primary/30'
