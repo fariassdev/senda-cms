@@ -4,8 +4,17 @@
 
 import type { TtsProvider } from '@/types/models';
 
+export const PROVIDER_CONFIG = {
+  kokoro: {
+    supportsSpeed: true,
+  },
+  chatterbox: {
+    supportsSpeed: false,
+  },
+} as const;
+
 export function supportsSpeechRate(provider: TtsProvider): boolean {
-  return provider === 'kokoro';
+  return PROVIDER_CONFIG[provider]?.supportsSpeed ?? false;
 }
 
 export const SPEECH_RATE_CONFIG = {
