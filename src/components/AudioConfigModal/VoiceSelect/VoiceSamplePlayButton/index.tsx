@@ -63,6 +63,7 @@ export function VoiceSamplePlayButton({
             : 'bg-secondary hover:bg-secondary-foreground/10 border-border text-muted-foreground hover:text-foreground',
       )}
       title={isPlaying ? 'Pause sample' : 'Play sample preview'}
+      aria-label={isPlaying ? 'Pause sample' : 'Play sample preview'}
     >
       {isPlaying ? (
         <div
