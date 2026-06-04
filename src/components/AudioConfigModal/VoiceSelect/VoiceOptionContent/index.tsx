@@ -2,17 +2,9 @@
 
 import { Badge } from '@/components/ui/badge';
 import { cn } from '@/lib/utils';
-import type { Voice } from '@/types/models';
 
-import {
-  getProviderBadgeClassName,
-  type VoiceBadgeVariant,
-} from './voiceDisplay';
-
-interface VoiceOptionContentProps {
-  voice: Voice;
-  variant?: VoiceBadgeVariant;
-}
+import { getProviderBadgeClassName } from './constants';
+import type { VoiceOptionContentProps } from './types';
 
 export function VoiceOptionContent({
   voice,

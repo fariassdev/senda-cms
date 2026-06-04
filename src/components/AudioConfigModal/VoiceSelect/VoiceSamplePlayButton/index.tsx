@@ -5,29 +5,8 @@ import { useRef } from 'react';
 
 import { cn } from '@/lib/utils';
 
-type VoiceSamplePlayButtonSize = 'sm' | 'md';
-
-interface VoiceSamplePlayButtonProps {
-  voiceSlug: string;
-  sampleAudioUrl?: string | null;
-  isPlaying: boolean;
-  onToggle: (
-    e: React.MouseEvent,
-    voiceSlug: string,
-    sampleAudioUrl: string | null | undefined,
-  ) => void;
-  size?: VoiceSamplePlayButtonSize;
-}
-
-const sizeClasses: Record<VoiceSamplePlayButtonSize, string> = {
-  sm: 'size-7',
-  md: 'size-8',
-};
-
-const playIconClasses: Record<VoiceSamplePlayButtonSize, string> = {
-  sm: 'h-3 w-3',
-  md: 'h-3.5 w-3.5',
-};
+import { PLAY_ICON_CLASSES, SIZE_CLASSES } from './constants';
+import type { VoiceSamplePlayButtonProps } from './types';
 
 /**
  * Radix Select selects items on pointerup (not click). Stop that event from
@@ -52,7 +31,7 @@ export function VoiceSamplePlayButton({
       <div
         className={cn(
           'rounded-full bg-secondary/20 flex items-center justify-center',
-          sizeClasses[size],
+          SIZE_CLASSES[size],
         )}
       >
         <Volume2
@@ -90,7 +69,7 @@ export function VoiceSamplePlayButton({
       className={cn(
         'pointer-events-auto flex items-center justify-center rounded-full border transition-all duration-200',
         '[&_svg]:pointer-events-auto',
-        sizeClasses[size],
+        SIZE_CLASSES[size],
         isPlaying
           ? 'bg-primary/20 border-primary text-primary hover:bg-primary/30'
           : size === 'md'
@@ -109,7 +88,7 @@ export function VoiceSamplePlayButton({
           <span className="bar-4" />
         </div>
       ) : (
-        <Play className={cn(playIconClasses[size], 'fill-current ml-0.5')} />
+        <Play className={cn(PLAY_ICON_CLASSES[size], 'fill-current ml-0.5')} />
       )}
     </button>
   );

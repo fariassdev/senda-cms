@@ -1,7 +1,8 @@
 'use client';
 
-import { useEffect, useState } from 'react';
+import { AlertCircle, Loader2, MicOff } from 'lucide-react';
 
+import { Button } from '@/components/ui/button';
 import { Label } from '@/components/ui/label';
 import {
   Select,
@@ -10,64 +11,28 @@ import {
   SelectValue,
 } from '@/components/ui/select';
 import { cn } from '@/lib/utils';
-import type { Voice } from '@/types/models';
 
-import {
-  VoiceCatalogEmpty,
-  VoiceCatalogError,
-  VoiceCatalogLoading,
-} from './VoiceCatalogFeedback';
 import { VoiceOptionContent } from './VoiceOptionContent';
 import { VoiceSamplePlayButton } from './VoiceSamplePlayButton';
 import { VoiceSelectOption } from './VoiceSelectOption';
-import type { VoiceResponse } from './utils';
+import useConnect from './connect';
+import { TRIGGER_CLASS_NAME } from './constants';
+import type { VoiceSelectProps } from './types';
 
-export interface VoiceUnifiedSelectProps {
-  voices: VoiceResponse[];
-  isLoading: boolean;
-  isError: boolean;
-  error: unknown;
-  onRetry: () => void;
-  selectedVoiceSlug: string;
-  onSelectVoiceSlug: (slug: string) => void;
-  selectedVoiceObj?: Voice;
-  playingVoiceSlug: string | null;
-  onTogglePlay: (
-    e: React.MouseEvent,
-    voiceSlug: string,
-    sampleAudioUrl: string | null | undefined,
-  ) => void;
-  /** When false (e.g. parent dialog closed), closes the select panel. */
-  containerOpen?: boolean;
-}
+export function VoiceSelect(props: VoiceSelectProps) {
+  const {
+    voices,
+    isLoading,
+    isError,
+    onRetry,
+    selectedVoiceSlug,
+    onSelectVoiceSlug,
+    selectedVoiceObj,
+    playingVoiceSlug,
+    onTogglePlay,
+  } = props;
 
-const triggerClassName = cn(
-  'w-full min-h-[58px] h-auto px-3.5 py-2.5 rounded-xl bg-card hover:bg-secondary/20',
-  'border-border shadow-sm text-left',
-  'data-[placeholder]:text-muted-foreground',
-  '[&>span]:w-full [&>span]:line-clamp-none',
-);
-
-export function VoiceUnifiedSelect({
-  voices,
-  isLoading,
-  isError,
-  error,
-  onRetry,
-  selectedVoiceSlug,
-  onSelectVoiceSlug,
-  selectedVoiceObj,
-  playingVoiceSlug,
-  onTogglePlay,
-  containerOpen = true,
-}: VoiceUnifiedSelectProps) {
-  const [selectOpen, setSelectOpen] = useState(false);
-
-  useEffect(() => {
-    if (!containerOpen) {
-      setSelectOpen(false);
-    }
-  }, [containerOpen]);
+  const { selectOpen, setSelectOpen, catalogErrorMessage } = useConnect(props);
 
   return (
     <div className="space-y-2">
@@ -79,11 +44,11 @@ export function VoiceUnifiedSelect({
       </Label>
 
       {isLoading ? (
-        <VoiceCatalogLoading />
+        <Loading />
       ) : isError ? (
-        <VoiceCatalogError error={error} onRetry={onRetry} />
+        <Error errorMessage={catalogErrorMessage} onRetry={onRetry} />
       ) : voices.length === 0 ? (
-        <VoiceCatalogEmpty />
+        <EmptyState />
       ) : (
         <div className="relative w-full">
           <Select
@@ -95,7 +60,7 @@ export function VoiceUnifiedSelect({
             <SelectTrigger
               id="voice-unified-select"
               className={cn(
-                triggerClassName,
+                TRIGGER_CLASS_NAME,
                 selectOpen && 'border-primary ring-2 ring-primary/30',
               )}
             >
@@ -144,6 +109,67 @@ export function VoiceUnifiedSelect({
           )}
         </div>
       )}
+    </div>
+  );
+}
+
+function Loading() {
+  return (
+    <div className="flex items-center gap-2.5 px-3 py-3 border border-border bg-secondary/30 rounded-xl text-muted-foreground text-sm">
+      <Loader2 className="h-4 w-4 animate-spin text-primary" />
+      <span>Loading active voices catalog...</span>
+    </div>
+  );
+}
+
+interface ErrorProps {
+  errorMessage: string;
+  onRetry: () => void;
+}
+
+function Error({ errorMessage, onRetry }: ErrorProps) {
+  return (
+    <div
+      role="alert"
+      className="rounded-xl bg-destructive/10 border border-destructive/20 p-3.5 space-y-3"
+    >
+      <div className="flex items-start gap-2.5">
+        <AlertCircle className="h-4 w-4 flex-shrink-0 mt-0.5 text-destructive" />
+        <div className="space-y-1 text-xs">
+          <p className="font-semibold text-destructive">
+            Failed to load voice catalog
+          </p>
+          <p className="text-muted-foreground leading-normal">{errorMessage}</p>
+        </div>
+      </div>
+      <Button
+        type="button"
+        variant="outline"
+        size="sm"
+        className="h-8 text-xs"
+        onClick={onRetry}
+      >
+        Try again
+      </Button>
+    </div>
+  );
+}
+
+function EmptyState() {
+  return (
+    <div className="rounded-xl bg-amber-500/10 border border-amber-500/25 p-3.5 text-xs space-y-1">
+      <div className="flex items-start gap-2.5">
+        <MicOff className="h-4 w-4 flex-shrink-0 mt-0.5 text-amber-600 dark:text-amber-400" />
+        <div className="space-y-1">
+          <p className="font-semibold text-amber-700 dark:text-amber-300">
+            No active voices available
+          </p>
+          <p className="text-muted-foreground leading-normal">
+            The voice catalog has no active entries. Add or activate voices in
+            the admin catalog before generating audio.
+          </p>
+        </div>
+      </div>
     </div>
   );
 }

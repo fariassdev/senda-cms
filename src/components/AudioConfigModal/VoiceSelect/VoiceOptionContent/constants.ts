@@ -2,10 +2,6 @@ import type { TtsProvider } from '@/types/models';
 
 export type VoiceBadgeVariant = 'trigger' | 'list';
 
-export function supportsSpeechRate(provider: TtsProvider): boolean {
-  return provider === 'kokoro';
-}
-
 export function getProviderBadgeClassName(
   provider: TtsProvider,
   variant: VoiceBadgeVariant,

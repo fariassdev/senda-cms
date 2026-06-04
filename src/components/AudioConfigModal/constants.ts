@@ -2,6 +2,12 @@
  * Constants for AudioConfigModal component
  */
 
+import type { TtsProvider } from '@/types/models';
+
+export function supportsSpeechRate(provider: TtsProvider): boolean {
+  return provider === 'kokoro';
+}
+
 export const SPEECH_RATE_CONFIG = {
   min: 0.7,
   max: 1.3,

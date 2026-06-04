@@ -4,20 +4,10 @@ import * as SelectPrimitive from '@radix-ui/react-select';
 import { CheckIcon } from 'lucide-react';
 
 import { cn } from '@/lib/utils';
-import type { Voice } from '@/types/models';
 
-import { VoiceOptionContent } from './VoiceOptionContent';
-import { VoiceSamplePlayButton } from './VoiceSamplePlayButton';
-
-interface VoiceSelectOptionProps {
-  voice: Voice;
-  playingVoiceSlug: string | null;
-  onTogglePlay: (
-    e: React.MouseEvent,
-    voiceSlug: string,
-    sampleAudioUrl: string | null | undefined,
-  ) => void;
-}
+import { VoiceOptionContent } from '../VoiceOptionContent';
+import { VoiceSamplePlayButton } from '../VoiceSamplePlayButton';
+import type { VoiceSelectOptionProps } from './types';
 
 /**
  * Radix Select item with preview control outside ItemText so play clicks

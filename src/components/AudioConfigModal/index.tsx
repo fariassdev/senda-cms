@@ -1,6 +1,6 @@
 'use client';
 
-import { AlertTriangle, Loader2, Gauge } from 'lucide-react';
+import { AlertTriangle, Gauge, Loader2 } from 'lucide-react';
 
 import { Button } from '@/components/ui/button';
 import { Card, CardContent } from '@/components/ui/card';
@@ -15,27 +15,17 @@ import {
 import { Label } from '@/components/ui/label';
 import { Slider } from '@/components/ui/slider';
 
-import { VoiceUnifiedSelect } from './VoiceUnifiedSelect';
+import { VoiceSelect } from './VoiceSelect';
 import useConnect from './connect';
-import {
-  MODAL_CONFIG,
-  WARNING_BANNER_TEXT,
-  SPEECH_RATE_CONFIG,
-} from './constants';
+import { SPEECH_RATE_CONFIG, WARNING_BANNER_TEXT } from './constants';
 import type { AudioConfigModalProps } from './types';
-import { useVoiceSamplePreview } from './useVoiceSamplePreview';
 
 /**
  * AudioConfigModal — configuration for audio generation (all TTS providers).
  */
-export function AudioConfigModal({
-  open,
-  onOpenChange,
-  lessonTitle,
-  onGenerate,
-  isGenerating,
-  isRegeneration = false,
-}: AudioConfigModalProps) {
+export function AudioConfigModal(props: AudioConfigModalProps) {
+  const { open, lessonTitle, isGenerating, isRegeneration = false } = props;
+
   const {
     voices,
     isLoading,
@@ -48,41 +38,15 @@ export function AudioConfigModal({
     speed,
     setSpeed,
     supportsSpeechRateControl,
-    getConfig,
-    resetToDefaults,
-  } = useConnect();
-
-  const { playingVoiceSlug, togglePlay } = useVoiceSamplePreview(open);
-
-  const config = isRegeneration
-    ? MODAL_CONFIG.regenerate
-    : MODAL_CONFIG.generate;
-
-  const handleSubmit = () => {
-    onGenerate(getConfig());
-    onOpenChange(false);
-  };
-
-  const handleCancel = () => {
-    resetToDefaults();
-    onOpenChange(false);
-  };
-
-  const handleOpenChange = (newOpen: boolean) => {
-    if (!newOpen) {
-      resetToDefaults();
-    }
-    onOpenChange(newOpen);
-  };
-
-  const getSubmitButtonLabel = () => {
-    if (isGenerating) {
-      return isRegeneration ? 'Regenerating...' : 'Generating...';
-    }
-    return config.submitLabel;
-  };
-
-  const isSubmitDisabled = isGenerating || !selectedVoiceObj?.id;
+    playingVoiceSlug,
+    togglePlay,
+    config,
+    handleSubmit,
+    handleCancel,
+    handleOpenChange,
+    getSubmitButtonLabel,
+    isSubmitDisabled,
+  } = useConnect(props);
 
   return (
     <Dialog open={open} onOpenChange={handleOpenChange}>
@@ -115,7 +79,7 @@ export function AudioConfigModal({
         )}
 
         <div className="space-y-5 py-3">
-          <VoiceUnifiedSelect
+          <VoiceSelect
             voices={voices}
             isLoading={isLoading}
             isError={isError}
