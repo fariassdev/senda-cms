@@ -1,6 +1,5 @@
 'use client';
 
-import { Loader2 } from 'lucide-react';
 import { useEffect, useState } from 'react';
 
 import { Label } from '@/components/ui/label';
@@ -13,6 +12,11 @@ import {
 import { cn } from '@/lib/utils';
 import type { Voice } from '@/types/models';
 
+import {
+  VoiceCatalogEmpty,
+  VoiceCatalogError,
+  VoiceCatalogLoading,
+} from './VoiceCatalogFeedback';
 import { VoiceOptionContent } from './VoiceOptionContent';
 import { VoiceSamplePlayButton } from './VoiceSamplePlayButton';
 import { VoiceSelectOption } from './VoiceSelectOption';
@@ -21,7 +25,9 @@ import type { VoiceResponse } from './utils';
 export interface VoiceUnifiedSelectProps {
   voices: VoiceResponse[];
   isLoading: boolean;
+  isError: boolean;
   error: unknown;
+  onRetry: () => void;
   selectedVoiceSlug: string;
   onSelectVoiceSlug: (slug: string) => void;
   selectedVoiceObj?: Voice;
@@ -45,7 +51,9 @@ const triggerClassName = cn(
 export function VoiceUnifiedSelect({
   voices,
   isLoading,
+  isError,
   error,
+  onRetry,
   selectedVoiceSlug,
   onSelectVoiceSlug,
   selectedVoiceObj,
@@ -71,17 +79,11 @@ export function VoiceUnifiedSelect({
       </Label>
 
       {isLoading ? (
-        <div className="flex items-center gap-2.5 px-3 py-3 border border-border bg-secondary/30 rounded-xl text-muted-foreground text-sm">
-          <Loader2 className="h-4 w-4 animate-spin text-primary" />
-          <span>Loading active voices catalog...</span>
-        </div>
-      ) : error || voices.length === 0 ? (
-        <div className="rounded-xl bg-destructive/10 border border-destructive/20 p-3.5 text-destructive text-xs space-y-1">
-          <p className="font-semibold">No active voices found</p>
-          <p className="text-muted-foreground">
-            Verify the system&apos;s voice database catalog is configured.
-          </p>
-        </div>
+        <VoiceCatalogLoading />
+      ) : isError ? (
+        <VoiceCatalogError error={error} onRetry={onRetry} />
+      ) : voices.length === 0 ? (
+        <VoiceCatalogEmpty />
       ) : (
         <div className="relative w-full">
           <Select

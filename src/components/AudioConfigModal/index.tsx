@@ -39,7 +39,9 @@ export function AudioConfigModal({
   const {
     voices,
     isLoading,
+    isError,
     error,
+    refetchVoices,
     selectedVoiceSlug,
     setSelectedVoiceSlug,
     selectedVoiceObj,
@@ -116,7 +118,9 @@ export function AudioConfigModal({
           <VoiceUnifiedSelect
             voices={voices}
             isLoading={isLoading}
+            isError={isError}
             error={error}
+            onRetry={refetchVoices}
             selectedVoiceSlug={selectedVoiceSlug}
             onSelectVoiceSlug={setSelectedVoiceSlug}
             selectedVoiceObj={selectedVoiceObj}

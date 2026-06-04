@@ -11,7 +11,15 @@ import { supportsSpeechRate } from './voiceDisplay';
  * Manages unified voice selection and speech rate slider state
  */
 export default function useConnect() {
-  const { voices, loading: isLoading, error } = useVoices({ activeOnly: true });
+  const {
+    voices,
+    loading: isLoading,
+    isError,
+    error,
+    refetch,
+  } = useVoices({
+    activeOnly: true,
+  });
 
   const [selectedVoiceSlug, setSelectedVoiceSlug] = useState<string>('');
   const [speed, setSpeed] = useState<number>(SPEECH_RATE_CONFIG.default);
@@ -52,7 +60,9 @@ export default function useConnect() {
   return {
     voices,
     isLoading,
+    isError,
     error,
+    refetchVoices: refetch,
     selectedVoiceSlug,
     setSelectedVoiceSlug,
     selectedVoiceObj,
