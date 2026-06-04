@@ -1,7 +1,6 @@
 'use client';
 
 import { Play, Volume2 } from 'lucide-react';
-import { useRef } from 'react';
 
 import { cn } from '@/lib/utils';
 
@@ -24,8 +23,6 @@ export function VoiceSamplePlayButton({
   onToggle,
   size = 'md',
 }: VoiceSamplePlayButtonProps) {
-  const activatedByPointerRef = useRef(false);
-
   if (!sampleAudioUrl) {
     return (
       <div
@@ -44,28 +41,17 @@ export function VoiceSamplePlayButton({
     );
   }
 
-  const handleActivate = (e: React.MouseEvent | React.PointerEvent) => {
-    stopSelectItemSelection(e);
-    onToggle(e as React.MouseEvent, voiceSlug, sampleAudioUrl);
+  const handleActivate = (e: React.MouseEvent) => {
+    e.stopPropagation();
+    onToggle(e, voiceSlug, sampleAudioUrl);
   };
 
   return (
     <button
       type="button"
       onPointerDown={stopSelectItemSelection}
-      onPointerUp={(e) => {
-        stopSelectItemSelection(e);
-        activatedByPointerRef.current = true;
-        handleActivate(e);
-      }}
-      onClick={(e) => {
-        stopSelectItemSelection(e);
-        if (activatedByPointerRef.current) {
-          activatedByPointerRef.current = false;
-          return;
-        }
-        handleActivate(e);
-      }}
+      onPointerUp={stopSelectItemSelection}
+      onClick={handleActivate}
       className={cn(
         'pointer-events-auto flex items-center justify-center rounded-full border transition-all duration-200',
         '[&_svg]:pointer-events-auto',
