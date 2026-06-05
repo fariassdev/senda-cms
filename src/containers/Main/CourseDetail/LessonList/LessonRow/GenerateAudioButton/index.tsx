@@ -31,25 +31,14 @@ export function GenerateAudioButton({
   const status = lesson.status as LessonStatus;
   const buttonState = getButtonState(status, isGenerating);
 
-  const handleClick = useCallback(
-    (e: React.MouseEvent) => {
-      if (buttonState.disabled) return;
-
-      // Shift+Click for quick generation (bypass modal, use defaults)
-      if (e.shiftKey) {
-        onGenerate();
-      } else {
-        // Normal click opens modal for configuration
-        setIsModalOpen(true);
-      }
-    },
-    [onGenerate, buttonState.disabled, setIsModalOpen],
-  );
+  const handleClick = useCallback(() => {
+    if (buttonState.disabled) return;
+    setIsModalOpen(true);
+  }, [buttonState.disabled, setIsModalOpen]);
 
   const handleGenerateFromModal = useCallback(
     (config: AudioConfig) => {
-      // Convert modal config to API format
-      onGenerate({ voice: config.voice, speed: config.speed });
+      onGenerate(config);
     },
     [onGenerate],
   );
@@ -72,10 +61,7 @@ export function GenerateAudioButton({
       disabled={buttonState.disabled}
       aria-label={`${buttonState.label} for ${lesson.title}`}
       aria-busy={isGenerating || status === 'AUDIO_GENERATING'}
-      title={
-        buttonState.tooltip ||
-        'Hold Shift and click for quick generation with defaults'
-      }
+      title={buttonState.tooltip ?? undefined}
     >
       {buttonState.icon === 'spinner' ? (
         <Loader2 className="h-4 w-4 animate-spin" aria-hidden="true" />

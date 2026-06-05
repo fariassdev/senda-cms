@@ -2,18 +2,20 @@
  * Constants for AudioConfigModal component
  */
 
-export const VOICE_OPTIONS = [
-  {
-    value: 'af_nicole',
-    label: 'Anah',
-    description: 'Calm, soothing female voice',
+import type { TtsProvider } from '@/types/models';
+
+export const PROVIDER_CONFIG = {
+  kokoro: {
+    supportsSpeed: true,
   },
-  {
-    value: 'af_bella',
-    label: 'Bella',
-    description: 'Warm, grounding female voice',
+  chatterbox: {
+    supportsSpeed: false,
   },
-] as const;
+} as const;
+
+export function supportsSpeechRate(provider: TtsProvider): boolean {
+  return PROVIDER_CONFIG[provider]?.supportsSpeed ?? false;
+}
 
 export const SPEECH_RATE_CONFIG = {
   min: 0.7,

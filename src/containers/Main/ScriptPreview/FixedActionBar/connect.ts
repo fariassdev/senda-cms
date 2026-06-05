@@ -5,7 +5,7 @@ import type { AudioConfig } from '@/components/AudioConfigModal';
 import type { SaveState } from './types';
 
 interface UseConnectProps {
-  onGenerateAudio?: (config?: AudioConfig) => void;
+  onGenerateAudio?: (config: AudioConfig) => void;
   canGenerateAudio?: boolean;
   isGeneratingAudio?: boolean;
   isAudioRegeneration?: boolean;
@@ -42,26 +42,14 @@ export default function useConnect({
     return isAudioRegeneration ? 'Regenerate Audio' : 'Generate Audio';
   }
 
-  // Handle audio button click - Shift+Click for quick generation
-  const handleAudioClick = useCallback(
-    (e: React.MouseEvent) => {
-      if (!canGenerateAudio || isGeneratingAudio) return;
+  const handleAudioClick = useCallback(() => {
+    if (!canGenerateAudio || isGeneratingAudio) return;
+    setIsAudioModalOpen(true);
+  }, [canGenerateAudio, isGeneratingAudio]);
 
-      if (e.shiftKey) {
-        // Quick generation with defaults
-        onGenerateAudio?.();
-      } else {
-        // Open modal for configuration
-        setIsAudioModalOpen(true);
-      }
-    },
-    [canGenerateAudio, isGeneratingAudio, onGenerateAudio],
-  );
-
-  // Handle generation from modal
   const handleGenerateFromModal = useCallback(
     (config: AudioConfig) => {
-      onGenerateAudio?.({ voice: config.voice, speed: config.speed });
+      onGenerateAudio?.(config);
     },
     [onGenerateAudio],
   );
