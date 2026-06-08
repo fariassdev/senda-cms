@@ -36,6 +36,8 @@ export interface UseAudioPlayerConnectResult {
   playbackError: string | null;
   /** Whether audio is currently loading */
   isLoading: boolean;
+  /** Whether the active stream is a live in-progress generation */
+  isLiveGenerating: boolean;
 
   // Derived values
   /** Progress as percentage (0-100) */
@@ -48,8 +50,6 @@ export interface UseAudioPlayerConnectResult {
   containerHeight: string;
   /** Aria label for the player region */
   ariaLabel: string;
-  /** Whether download is in progress */
-  isDownloading: boolean;
 
   // Controls
   togglePlay: () => void;
@@ -65,6 +65,4 @@ export interface UseAudioPlayerConnectResult {
   handleProgressChange: (value: number[]) => void;
   handleVolumeChange: (value: number[]) => void;
   handleSpeedChange: (value: string) => void;
-  /** Handle download of the current audio file */
-  handleDownload: () => void;
 }

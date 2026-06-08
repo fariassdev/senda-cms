@@ -5,6 +5,7 @@ import { useEffect, useMemo, useRef, useState } from 'react';
 import { useForm } from 'react-hook-form';
 import { toast } from 'sonner';
 
+import { audioGenerationJobQueryKey } from '@/hooks/useAudioJobPolling';
 import useBatchScriptGeneration from '@/hooks/useBatchScriptGeneration';
 import useLessonReorder from '@/hooks/useLessonReorder';
 import { $api } from '@/lib/api';
@@ -122,6 +123,9 @@ export default function useConnect(courseSlug: string) {
           toast.success(`Script ready for ${lesson.title}`);
         }
         if (wasGenerating && lesson.status === 'AUDIO_COMPLETED') {
+          queryClient.removeQueries({
+            queryKey: audioGenerationJobQueryKey(lesson.id),
+          });
           toast.success(`Audio ready for ${lesson.title}`);
         }
         if (
@@ -135,7 +139,7 @@ export default function useConnect(courseSlug: string) {
     }
 
     previousLessonsRef.current = lessons;
-  }, [lessons]);
+  }, [lessons, queryClient]);
 
   // Update form when course data is loaded
   useEffect(() => {

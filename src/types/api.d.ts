@@ -491,7 +491,10 @@ export interface paths {
         put?: never;
         /**
          * Generate Lesson Audio
-         * @description Generate audio for a specific lesson.
+         * @description Start async HLS audio generation for a specific lesson.
+         *
+         *     Returns immediately with a job id and live playlist URL. Poll
+         *     ``GET /api/jobs/{job_id}/status`` for segment progress.
          *
          *     Requires ``audio_config.voice_id`` referencing an active catalog voice.
          */
@@ -542,6 +545,26 @@ export interface paths {
          * @description Get the current audio generation status for a lesson.
          */
         get: operations["get_lesson_audio_status_api_courses__slug__lessons__id__audio_status_get"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/jobs/{job_id}/status": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /**
+         * Get Audio Generation Job Status
+         * @description Poll operational status for an HLS audio generation job.
+         */
+        get: operations["get_audio_generation_job_status_api_jobs__job_id__status_get"];
         put?: never;
         post?: never;
         delete?: never;
@@ -626,10 +649,17 @@ export interface paths {
         post?: never;
         /**
          * Delete Voice
-         * @description Delete a voice from the catalog, Modal volume, and S3.
+         * @description Delete a voice from the catalog, remote provider store, and S3.
          *
-         *     Returns ``204`` on success. Returns ``409`` if any lesson still references this
-         *     voice, ``404`` if the voice does not exist.
+         *     **Pipeline order:** remote delete → S3 reference → S3 sample → DB delete.
+         *
+         *     **On success:** ``204``; the catalog row is removed only after all prior steps succeed.
+         *
+         *     **On failure:** The catalog row remains. Remote/S3 deletes are idempotent, so retries
+         *     are safe (see ``voice_provisioning`` module).
+         *
+         *     **Errors:** ``409`` if any lesson references this voice, ``404`` if the voice does
+         *     not exist, ``502`` if remote or S3 deletion fails.
          */
         delete: operations["delete_voice_api_voices__voice_id__delete"];
         options?: never;
@@ -706,13 +736,58 @@ export interface components {
             speed?: number | null;
         };
         /**
-         * AudioGenerationResponse
-         * @description Response for audio generation request.
+         * AudioGenerationJobStatusResponse
+         * @description Response for polling an HLS audio generation job.
          * @example {
-         *       "audio_url": "https://senda-ai.s3.amazonaws.com/audio/1_welcome_to_senda_abc123.mp3",
-         *       "file_size_bytes": 524288,
+         *       "job_id": "3fa85f64-5717-4562-b3fc-2c963f66afa6",
+         *       "playlist_url": "https://cdn.senda.com/meditations/1/job-id/playlist.m3u8",
+         *       "segments_available": 3,
+         *       "status": "GENERATING"
+         *     }
+         */
+        AudioGenerationJobStatusResponse: {
+            /**
+             * Job Id
+             * Format: uuid
+             * @description ID of the audio generation job
+             */
+            job_id: string;
+            /**
+             * Status
+             * @description Current job status
+             */
+            status: string;
+            /**
+             * Segments Available
+             * @description Number of HLS segments uploaded so far
+             */
+            segments_available: number;
+            /**
+             * Playlist Url
+             * @description Live or final HLS playlist URL
+             */
+            playlist_url: string;
+            /**
+             * Lesson Audio Id
+             * @description Published lesson_audio id when generation completes
+             */
+            lesson_audio_id?: string | null;
+            /**
+             * Error Message
+             * @description Error details when status is FAILED
+             */
+            error_message?: string | null;
+        };
+        /**
+         * AudioGenerationResponse
+         * @description Response for completed batch/synchronous audio generation.
+         * @example {
+         *       "duration_ms": 300000,
          *       "generation_time_seconds": 15.34,
-         *       "lesson_id": 1
+         *       "job_id": "3fa85f64-5717-4562-b3fc-2c963f66afa6",
+         *       "lesson_id": 1,
+         *       "playlist_url": "https://cdn.senda.com/meditations/1/job-id/playlist.m3u8",
+         *       "segment_count": 12
          *     }
          */
         AudioGenerationResponse: {
@@ -722,24 +797,35 @@ export interface components {
              */
             lesson_id: number;
             /**
-             * Audio Url
-             * @description Public URL of the generated audio file
+             * Job Id
+             * Format: uuid
+             * @description ID of the completed generation job
              */
-            audio_url: string;
+            job_id: string;
+            /**
+             * Playlist Url
+             * @description Final HLS playlist URL
+             */
+            playlist_url: string;
+            /**
+             * Segment Count
+             * @description Total number of HLS segments
+             */
+            segment_count: number;
+            /**
+             * Duration Ms
+             * @description Total audio duration in milliseconds
+             */
+            duration_ms: number;
             /**
              * Generation Time Seconds
              * @description Time taken to generate the audio
              */
             generation_time_seconds: number;
-            /**
-             * File Size Bytes
-             * @description Size of the audio file in bytes
-             */
-            file_size_bytes: number;
         };
         /**
          * AudioGenerationStatusResponse
-         * @description Response for audio generation status check.
+         * @description Response for lesson-level audio generation status check.
          * @example {
          *       "lesson_id": 1,
          *       "status": "AUDIO_GENERATING"
@@ -757,10 +843,10 @@ export interface components {
              */
             status: string;
             /**
-             * Audio Url
-             * @description Audio URL if generation complete
+             * Playlist Url
+             * @description HLS playlist URL if audio is available
              */
-            audio_url?: string | null;
+            playlist_url?: string | null;
         };
         /** AuthenticatedUserData */
         AuthenticatedUserData: {
@@ -842,10 +928,12 @@ export interface components {
          *       ],
          *       "generated_audios": [
          *         {
-         *           "audio_url": "https://senda-ai.s3.amazonaws.com/audio/1_welcome_abc123.mp3",
-         *           "file_size_bytes": 524288,
+         *           "duration_ms": 300000,
          *           "generation_time_seconds": 15.34,
-         *           "lesson_id": 1
+         *           "job_id": "3fa85f64-5717-4562-b3fc-2c963f66afa6",
+         *           "lesson_id": 1,
+         *           "playlist_url": "https://cdn.senda.com/meditations/1/job-id/playlist.m3u8",
+         *           "segment_count": 12
          *         }
          *       ],
          *       "successful_generations": 1,
@@ -1131,8 +1219,8 @@ export interface components {
             status: string;
             /** Script */
             script?: components["schemas"]["ScriptPartResponse"][] | null;
-            /** Audiourl */
-            audioUrl: string | null;
+            /** Playlisturl */
+            playlistUrl: string | null;
             /** Scriptgeneratedat */
             scriptGeneratedAt: string | null;
             /** Audiogeneratedat */
@@ -1360,6 +1448,39 @@ export interface components {
             /** @description Audio configuration (catalog voice_id and speed). */
             audio_config: components["schemas"]["AudioConfigRequest"];
         };
+        /**
+         * StartAudioGenerationResponse
+         * @description Response for async HLS audio generation start (HTTP 202).
+         * @example {
+         *       "job_id": "3fa85f64-5717-4562-b3fc-2c963f66afa6",
+         *       "lesson_id": 1,
+         *       "playlist_url": "https://cdn.senda.com/meditations/1/job-id/playlist.m3u8",
+         *       "status": "PENDING"
+         *     }
+         */
+        StartAudioGenerationResponse: {
+            /**
+             * Job Id
+             * Format: uuid
+             * @description ID of the audio generation job
+             */
+            job_id: string;
+            /**
+             * Lesson Id
+             * @description ID of the lesson
+             */
+            lesson_id: number;
+            /**
+             * Status
+             * @description Current job status
+             */
+            status: string;
+            /**
+             * Playlist Url
+             * @description Live HLS playlist URL for playback
+             */
+            playlist_url: string;
+        };
         /** TagsResponse */
         TagsResponse: {
             /** Tags */
@@ -1404,8 +1525,6 @@ export interface components {
             status?: string | null;
             /** Script */
             script?: components["schemas"]["ScriptPartDTO"][] | null;
-            /** Audio Url */
-            audio_url?: string | null;
         };
         /** UpdateLessonRequest */
         UpdateLessonRequest: {
@@ -1413,8 +1532,6 @@ export interface components {
         };
         /** UpdateVoiceData */
         UpdateVoiceData: {
-            /** Tts Provider */
-            tts_provider?: string | null;
             /** Is Active */
             is_active?: boolean | null;
             /** Description */
@@ -2548,12 +2665,12 @@ export interface operations {
         };
         responses: {
             /** @description Successful Response */
-            200: {
+            202: {
                 headers: {
                     [name: string]: unknown;
                 };
                 content: {
-                    "application/json": components["schemas"]["AudioGenerationResponse"];
+                    "application/json": components["schemas"]["StartAudioGenerationResponse"];
                 };
             };
             /** @description Validation Error */
@@ -2621,6 +2738,38 @@ export interface operations {
                 };
                 content: {
                     "application/json": components["schemas"]["AudioGenerationStatusResponse"];
+                };
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
+    get_audio_generation_job_status_api_jobs__job_id__status_get: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                /** @description Audio generation job ID */
+                job_id: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["AudioGenerationJobStatusResponse"];
                 };
             };
             /** @description Validation Error */

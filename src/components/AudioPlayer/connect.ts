@@ -1,11 +1,9 @@
-import { useCallback, useEffect, useState } from 'react';
-import { toast } from 'sonner';
+import { useCallback, useEffect } from 'react';
 
 import {
   type PlaybackSpeed,
   useAudioPlayer,
 } from '@/contexts/AudioPlayerContext';
-import { sanitizeFilename } from '@/lib/utils';
 
 import {
   KEYBOARD_SHORTCUTS,
@@ -50,6 +48,7 @@ const useConnect = (): UseAudioPlayerConnectResult => {
     isMinimized,
     playbackError,
     isLoading,
+    isLiveGenerating,
     togglePlay,
     seek,
     setVolume,
@@ -60,32 +59,26 @@ const useConnect = (): UseAudioPlayerConnectResult => {
     retryPlayback,
   } = useAudioPlayer();
 
-  // Local state for download
-  const [isDownloading, setIsDownloading] = useState(false);
-
-  // Calculate derived values
   const progressPercent = duration > 0 ? (progress / duration) * 100 : 0;
   const formattedCurrentTime = formatTime(progress);
   const formattedDuration = formatTime(duration);
 
-  // Determine container height based on state (using constants)
   const containerHeight = playbackError
     ? 'auto'
     : isMinimized
       ? `${PLAYER_HEIGHT.minimized}px`
       : `${PLAYER_HEIGHT.expanded}px`;
 
-  // Aria label for the player region
   const ariaLabel = playbackError
     ? 'Audio player error'
     : isMinimized
       ? 'Audio player minimized'
-      : 'Audio player';
+      : isLiveGenerating
+        ? 'Audio player generating live stream'
+        : 'Audio player';
 
-  // Handle keyboard shortcuts
   const handleKeyDown = useCallback(
     (event: KeyboardEvent) => {
-      // Don't handle shortcuts if focused on input elements
       const target = event.target as HTMLElement;
       if (
         target.tagName === 'INPUT' ||
@@ -126,16 +119,13 @@ const useConnect = (): UseAudioPlayerConnectResult => {
     [togglePlay, seek, progress, duration, toggleMute, setVolume, volume],
   );
 
-  // Attach keyboard listener when player is active and functional
   useEffect(() => {
-    // Don't attach listener if no lesson or player is in error state
     if (!currentLesson || playbackError) return;
 
     window.addEventListener('keydown', handleKeyDown);
     return () => window.removeEventListener('keydown', handleKeyDown);
   }, [currentLesson, playbackError, handleKeyDown]);
 
-  // Handle progress bar change
   const handleProgressChange = useCallback(
     (value: number[]) => {
       const newProgress = ((value[0] ?? 0) / 100) * duration;
@@ -144,7 +134,6 @@ const useConnect = (): UseAudioPlayerConnectResult => {
     [duration, seek],
   );
 
-  // Handle volume change
   const handleVolumeChange = useCallback(
     (value: number[]) => {
       setVolume((value[0] ?? 0) / 100);
@@ -152,7 +141,6 @@ const useConnect = (): UseAudioPlayerConnectResult => {
     [setVolume],
   );
 
-  // Handle speed change
   const handleSpeedChange = useCallback(
     (value: string) => {
       setSpeed(parseFloat(value) as PlaybackSpeed);
@@ -160,52 +148,7 @@ const useConnect = (): UseAudioPlayerConnectResult => {
     [setSpeed],
   );
 
-  // Handle download of the current audio file
-  const handleDownload = useCallback(async () => {
-    if (!currentLesson?.audioUrl) return;
-
-    setIsDownloading(true);
-
-    try {
-      // Fetch the audio file as a blob
-      const response = await fetch(currentLesson.audioUrl);
-
-      if (!response.ok) {
-        throw new Error(`HTTP error! status: ${response.status}`);
-      }
-
-      const blob = await response.blob();
-
-      // Generate filename: [order]_[title].mp3
-      const orderPadded = String(currentLesson.lessonNumber).padStart(2, '0');
-      const sanitizedTitle = sanitizeFilename(currentLesson.title);
-      const filename = `${orderPadded}_${sanitizedTitle}.mp3`;
-
-      // Create a temporary URL for the blob
-      const blobUrl = URL.createObjectURL(blob);
-
-      // Create a temporary anchor element to trigger download
-      const anchor = document.createElement('a');
-      anchor.href = blobUrl;
-      anchor.download = filename;
-
-      // Append to body, click, and remove
-      document.body.appendChild(anchor);
-      anchor.click();
-      document.body.removeChild(anchor);
-
-      // Revoke the blob URL to free memory
-      URL.revokeObjectURL(blobUrl);
-    } catch (error) {
-      console.error('Download error:', error);
-      toast.error('Download failed. Please try again.');
-    } finally {
-      setIsDownloading(false);
-    }
-  }, [currentLesson]);
-
   return {
-    // State
     isPlaying,
     currentLesson,
     progress,
@@ -216,16 +159,12 @@ const useConnect = (): UseAudioPlayerConnectResult => {
     isMinimized,
     playbackError,
     isLoading,
-
-    // Derived values
+    isLiveGenerating,
     progressPercent,
     formattedCurrentTime,
     formattedDuration,
     containerHeight,
     ariaLabel,
-    isDownloading,
-
-    // Controls
     togglePlay,
     seek,
     setVolume,
@@ -234,12 +173,9 @@ const useConnect = (): UseAudioPlayerConnectResult => {
     toggleMinimized,
     closePlayer,
     retryPlayback,
-
-    // Handlers
     handleProgressChange,
     handleVolumeChange,
     handleSpeedChange,
-    handleDownload,
   };
 };
 

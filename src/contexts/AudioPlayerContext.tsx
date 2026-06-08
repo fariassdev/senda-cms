@@ -1,14 +1,22 @@
 'use client';
 
+import { useQueryClient } from '@tanstack/react-query';
 import {
   createContext,
   useCallback,
   useContext,
+  useEffect,
   useMemo,
   useRef,
   useState,
 } from 'react';
 
+import {
+  audioGenerationJobQueryKey,
+  type AudioGenerationJobCache,
+  useAudioJobPolling,
+} from '@/hooks/useAudioJobPolling';
+import { useHlsPlayer } from '@/hooks/useHlsPlayer';
 import type { Lesson } from '@/types/models';
 
 /**
@@ -16,6 +24,11 @@ import type { Lesson } from '@/types/models';
  */
 export const PLAYBACK_SPEEDS = [0.75, 1.0, 1.25, 1.5, 2.0] as const;
 export type PlaybackSpeed = (typeof PLAYBACK_SPEEDS)[number];
+
+export interface SetCurrentLessonOptions {
+  /** Active generation job id when playing a live HLS stream */
+  jobId?: string;
+}
 
 /**
  * Audio player state managed by the context
@@ -25,6 +38,10 @@ interface AudioPlayerState {
   isPlaying: boolean;
   /** Currently loaded lesson (null if no audio loaded) */
   currentLesson: Lesson | null;
+  /** HLS playlist URL for the active lesson */
+  playlistUrl: string | null;
+  /** Whether the stream is still being generated (live HLS) */
+  isLiveGenerating: boolean;
   /** Current playback progress in seconds */
   progress: number;
   /** Total duration of current audio in seconds */
@@ -39,7 +56,7 @@ interface AudioPlayerState {
   isMinimized: boolean;
   /** Playback error message if any */
   playbackError: string | null;
-  /** Whether audio is currently loading */
+  /** Whether audio is currently loading or buffering */
   isLoading: boolean;
 }
 
@@ -48,7 +65,7 @@ interface AudioPlayerState {
  */
 interface AudioPlayerControls {
   /** Set the current lesson and start playback */
-  setCurrentLesson: (lesson: Lesson) => void;
+  setCurrentLesson: (lesson: Lesson, options?: SetCurrentLessonOptions) => void;
   /** Toggle play/pause */
   togglePlay: () => void;
   /** Play audio */
@@ -91,11 +108,13 @@ interface AudioPlayerProviderProps {
  * Must be placed in ClientLayout.tsx to ensure single audio source across navigation
  */
 export function AudioPlayerProvider({ children }: AudioPlayerProviderProps) {
+  const queryClient = useQueryClient();
   const audioRef = useRef<HTMLAudioElement | null>(null);
 
-  // Player state
   const [isPlaying, setIsPlaying] = useState(false);
   const [currentLesson, setCurrentLessonState] = useState<Lesson | null>(null);
+  const [activeJobId, setActiveJobId] = useState<string | undefined>();
+  const [playlistUrl, setPlaylistUrl] = useState<string | null>(null);
   const [progress, setProgress] = useState(0);
   const [duration, setDuration] = useState(0);
   const [volume, setVolumeState] = useState(1);
@@ -104,19 +123,84 @@ export function AudioPlayerProvider({ children }: AudioPlayerProviderProps) {
   const [isMinimized, setIsMinimized] = useState(false);
   const [playbackError, setPlaybackError] = useState<string | null>(null);
   const [isLoading, setIsLoading] = useState(false);
+  const [playbackKey, setPlaybackKey] = useState(0);
 
-  // Store previous volume for unmute
   const previousVolumeRef = useRef(1);
 
-  const setCurrentLesson = useCallback((lesson: Lesson) => {
-    setCurrentLessonState(lesson);
-    setPlaybackError(null);
-    setProgress(0);
-    setIsLoading(true);
-    setIsMinimized(false);
+  const isLiveGenerating = currentLesson?.status === 'AUDIO_GENERATING';
 
-    // Audio will start playing via onCanPlay event
+  const {
+    segmentsReady,
+    isFailed: isJobFailed,
+    errorMessage: jobErrorMessage,
+    playlistUrl: polledPlaylistUrl,
+  } = useAudioJobPolling({
+    jobId: activeJobId,
+    enabled: isLiveGenerating && !!activeJobId,
+  });
+
+  const resolvedPlaylistUrl =
+    polledPlaylistUrl ?? playlistUrl ?? currentLesson?.playlistUrl ?? undefined;
+
+  const waitForSegments = isLiveGenerating && !!activeJobId && !segmentsReady;
+
+  const handleHlsReady = useCallback(() => {
+    setIsLoading(false);
+
+    const audio = audioRef.current;
+    if (!audio) return;
+
+    audio.volume = volume;
+    audio.muted = isMuted;
+    audio.playbackRate = speed;
+
+    audio.play().catch((error) => {
+      console.error('Auto-play error:', error);
+    });
+  }, [volume, isMuted, speed]);
+
+  const handleHlsFatalError = useCallback((message: string) => {
+    setIsLoading(false);
+    setIsPlaying(false);
+    setPlaybackError(message);
   }, []);
+
+  const handleBufferingChange = useCallback((buffering: boolean) => {
+    setIsLoading(buffering);
+  }, []);
+
+  useHlsPlayer({
+    audioRef,
+    playlistUrl: resolvedPlaylistUrl,
+    enabled: !!currentLesson && !playbackError,
+    waitForSegments,
+    onReady: handleHlsReady,
+    onFatalError: handleHlsFatalError,
+    onBufferingChange: handleBufferingChange,
+  });
+
+  const setCurrentLesson = useCallback(
+    (lesson: Lesson, options?: SetCurrentLessonOptions) => {
+      const cachedJob = queryClient.getQueryData<AudioGenerationJobCache>(
+        audioGenerationJobQueryKey(lesson.id),
+      );
+
+      const jobId = options?.jobId ?? cachedJob?.jobId;
+      const nextPlaylistUrl =
+        lesson.playlistUrl ?? cachedJob?.playlistUrl ?? null;
+
+      setCurrentLessonState(lesson);
+      setActiveJobId(jobId);
+      setPlaylistUrl(nextPlaylistUrl);
+      setPlaybackError(null);
+      setProgress(0);
+      setDuration(0);
+      setIsLoading(true);
+      setIsMinimized(false);
+      setPlaybackKey((key) => key + 1);
+    },
+    [queryClient],
+  );
 
   const togglePlay = useCallback(() => {
     const audio = audioRef.current;
@@ -166,7 +250,6 @@ export function AudioPlayerProvider({ children }: AudioPlayerProviderProps) {
       audio.volume = clampedVolume;
     }
 
-    // If setting volume above 0, unmute
     if (clampedVolume > 0) {
       setIsMuted(false);
       if (audio) {
@@ -211,27 +294,28 @@ export function AudioPlayerProvider({ children }: AudioPlayerProviderProps) {
     }
 
     setCurrentLessonState(null);
+    setActiveJobId(undefined);
+    setPlaylistUrl(null);
     setIsPlaying(false);
     setProgress(0);
     setDuration(0);
     setPlaybackError(null);
     setIsMinimized(false);
+    setIsLoading(false);
   }, []);
 
   const retryPlayback = useCallback(() => {
     if (!currentLesson) return;
 
-    // Clear the error - this will cause the audio element to re-render
-    // in the normal (non-error) state, which will trigger a fresh load
     setPlaybackError(null);
     setIsLoading(true);
+    setPlaybackKey((key) => key + 1);
   }, [currentLesson]);
 
   const clearError = useCallback(() => {
     setPlaybackError(null);
   }, []);
 
-  // Audio event handlers (will be attached to audio element in AudioPlayer component)
   const handleTimeUpdate = useCallback(() => {
     const audio = audioRef.current;
     if (audio) {
@@ -241,31 +325,14 @@ export function AudioPlayerProvider({ children }: AudioPlayerProviderProps) {
 
   const handleLoadedMetadata = useCallback(() => {
     const audio = audioRef.current;
-    if (audio) {
+    if (audio && Number.isFinite(audio.duration)) {
       setDuration(audio.duration);
     }
   }, []);
 
-  const handleCanPlay = useCallback(() => {
-    const audio = audioRef.current;
-    setIsLoading(false);
-
-    if (audio) {
-      // Apply current settings
-      audio.volume = volume;
-      audio.muted = isMuted;
-      audio.playbackRate = speed;
-
-      // Auto-play when audio is ready
-      audio.play().catch((error) => {
-        console.error('Auto-play error:', error);
-        // Don't set error for auto-play fail, user can click play
-      });
-    }
-  }, [volume, isMuted, speed]);
-
   const handlePlay = useCallback(() => {
     setIsPlaying(true);
+    setIsLoading(false);
   }, []);
 
   const handlePause = useCallback(() => {
@@ -274,7 +341,6 @@ export function AudioPlayerProvider({ children }: AudioPlayerProviderProps) {
 
   const handleEnded = useCallback(() => {
     setIsPlaying(false);
-    // Keep player open for replay
   }, []);
 
   const handleError = useCallback(() => {
@@ -283,16 +349,12 @@ export function AudioPlayerProvider({ children }: AudioPlayerProviderProps) {
     setPlaybackError('Unable to play audio. Please try again.');
   }, []);
 
-  const handleLoadStart = useCallback(() => {
-    setIsLoading(true);
-    setPlaybackError(null);
-  }, []);
-
   const value = useMemo<AudioPlayerContextValue>(
     () => ({
-      // State
       isPlaying,
       currentLesson,
+      playlistUrl: resolvedPlaylistUrl ?? null,
+      isLiveGenerating,
       progress,
       duration,
       volume,
@@ -300,9 +362,8 @@ export function AudioPlayerProvider({ children }: AudioPlayerProviderProps) {
       speed,
       isMinimized,
       playbackError,
-      isLoading,
+      isLoading: isLoading || waitForSegments,
       audioRef,
-      // Controls
       setCurrentLesson,
       togglePlay,
       play,
@@ -315,19 +376,12 @@ export function AudioPlayerProvider({ children }: AudioPlayerProviderProps) {
       closePlayer,
       retryPlayback,
       clearError,
-      // Event handlers exposed for AudioPlayer component
-      _handleTimeUpdate: handleTimeUpdate,
-      _handleLoadedMetadata: handleLoadedMetadata,
-      _handleCanPlay: handleCanPlay,
-      _handlePlay: handlePlay,
-      _handlePause: handlePause,
-      _handleEnded: handleEnded,
-      _handleError: handleError,
-      _handleLoadStart: handleLoadStart,
     }),
     [
       isPlaying,
       currentLesson,
+      resolvedPlaylistUrl,
+      isLiveGenerating,
       progress,
       duration,
       volume,
@@ -336,6 +390,7 @@ export function AudioPlayerProvider({ children }: AudioPlayerProviderProps) {
       isMinimized,
       playbackError,
       isLoading,
+      waitForSegments,
       setCurrentLesson,
       togglePlay,
       play,
@@ -348,37 +403,32 @@ export function AudioPlayerProvider({ children }: AudioPlayerProviderProps) {
       closePlayer,
       retryPlayback,
       clearError,
-      handleTimeUpdate,
-      handleLoadedMetadata,
-      handleCanPlay,
-      handlePlay,
-      handlePause,
-      handleEnded,
-      handleError,
-      handleLoadStart,
     ],
   );
 
-  // Get audio URL from current lesson
-  const audioUrl = currentLesson?.audioUrl ?? undefined;
+  useEffect(() => {
+    if (isJobFailed && isLiveGenerating && jobErrorMessage && !playbackError) {
+      setPlaybackError(jobErrorMessage);
+      setIsLoading(false);
+      setIsPlaying(false);
+    }
+  }, [isJobFailed, isLiveGenerating, jobErrorMessage, playbackError]);
 
   return (
     <AudioPlayerContext.Provider value={value}>
       {children}
-      {/* Audio element rendered in Provider to persist across navigation */}
       {currentLesson && !playbackError && (
         <audio
+          key={playbackKey}
           ref={audioRef}
-          src={audioUrl}
           onTimeUpdate={handleTimeUpdate}
           onLoadedMetadata={handleLoadedMetadata}
-          onCanPlay={handleCanPlay}
+          onDurationChange={handleLoadedMetadata}
           onPlay={handlePlay}
           onPause={handlePause}
           onEnded={handleEnded}
           onError={handleError}
-          onLoadStart={handleLoadStart}
-          preload="metadata"
+          preload="auto"
           style={{ display: 'none' }}
         />
       )}
@@ -400,18 +450,4 @@ export function useAudioPlayer(): AudioPlayerContextValue {
   }
 
   return context;
-}
-
-/**
- * Type for internal event handlers (used by AudioPlayer component)
- */
-export interface AudioPlayerEventHandlers {
-  _handleTimeUpdate: () => void;
-  _handleLoadedMetadata: () => void;
-  _handleCanPlay: () => void;
-  _handlePlay: () => void;
-  _handlePause: () => void;
-  _handleEnded: () => void;
-  _handleError: () => void;
-  _handleLoadStart: () => void;
 }

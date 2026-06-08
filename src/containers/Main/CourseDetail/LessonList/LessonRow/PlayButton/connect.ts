@@ -1,13 +1,14 @@
 import { useCallback, useMemo } from 'react';
 
 import { useAudioPlayer } from '@/contexts/AudioPlayerContext';
+import { useLessonAudioJob } from '@/hooks/useAudioJobPolling';
 
 import type { PlayButtonProps, UsePlayButtonConnectResult } from './types';
 
 /**
- * Statuses that indicate audio is available for playback
+ * Statuses that indicate audio may be available for HLS playback
  */
-const PLAYABLE_STATUSES = ['AUDIO_COMPLETED'] as const;
+const PLAYABLE_STATUSES = ['AUDIO_COMPLETED', 'AUDIO_GENERATING'] as const;
 
 /**
  * Hook to manage PlayButton state and behavior
@@ -18,36 +19,41 @@ const useConnect = ({
   const { currentLesson, isPlaying, setCurrentLesson, togglePlay } =
     useAudioPlayer();
 
-  // Check if this lesson can be played (has audio)
+  const activeJob = useLessonAudioJob(lesson.id);
+
+  const playlistUrl = lesson.playlistUrl ?? activeJob?.playlistUrl ?? null;
+
   const canPlay = useMemo(
     () =>
       PLAYABLE_STATUSES.includes(
         lesson.status as (typeof PLAYABLE_STATUSES)[number],
-      ) && !!lesson.audioUrl,
-    [lesson.status, lesson.audioUrl],
+      ) && !!playlistUrl,
+    [lesson.status, playlistUrl],
   );
 
-  // Check if this is the currently playing lesson
   const isCurrentlyPlaying = useMemo(
     () => currentLesson?.id === lesson.id && isPlaying,
     [currentLesson?.id, lesson.id, isPlaying],
   );
 
-  // Check if this lesson is loaded (but maybe paused)
   const isCurrentLesson = currentLesson?.id === lesson.id;
 
-  // Handle click: start playing or toggle play/pause
   const handleClick = useCallback(() => {
     if (isCurrentLesson) {
-      // Already loaded, toggle play/pause
       togglePlay();
-    } else {
-      // Load and play this lesson
-      setCurrentLesson(lesson);
+      return;
     }
-  }, [isCurrentLesson, togglePlay, setCurrentLesson, lesson]);
 
-  // Dynamic labels based on state
+    setCurrentLesson({ ...lesson, playlistUrl }, { jobId: activeJob?.jobId });
+  }, [
+    isCurrentLesson,
+    togglePlay,
+    setCurrentLesson,
+    lesson,
+    playlistUrl,
+    activeJob?.jobId,
+  ]);
+
   const ariaLabel = useMemo(() => {
     if (!canPlay) {
       return `No audio available for ${lesson.title}`;
@@ -63,7 +69,9 @@ const useConnect = ({
 
   const tooltipText = useMemo(() => {
     if (!canPlay) {
-      return 'Generate audio first';
+      return lesson.status === 'AUDIO_GENERATING'
+        ? 'Waiting for first audio segment'
+        : 'Generate audio first';
     }
     if (isCurrentlyPlaying) {
       return 'Pause';
@@ -71,8 +79,11 @@ const useConnect = ({
     if (isCurrentLesson) {
       return 'Resume';
     }
+    if (lesson.status === 'AUDIO_GENERATING') {
+      return 'Play live preview';
+    }
     return 'Play audio';
-  }, [canPlay, isCurrentlyPlaying, isCurrentLesson]);
+  }, [canPlay, isCurrentlyPlaying, isCurrentLesson, lesson.status]);
 
   return {
     canPlay,

@@ -30,6 +30,15 @@ export type ScriptGenerationResponse =
   components['schemas']['ScriptGenerationResponse'];
 export type AudioGenerationResponse =
   components['schemas']['AudioGenerationResponse'];
+export type StartAudioGenerationResponse =
+  components['schemas']['StartAudioGenerationResponse'];
+export type AudioGenerationJobStatusResponse =
+  components['schemas']['AudioGenerationJobStatusResponse'];
+export type AudioGenerationJobStatus =
+  | 'PENDING'
+  | 'GENERATING'
+  | 'COMPLETED'
+  | 'FAILED';
 export type BatchScriptResponse =
   components['schemas']['CourseScriptsGenerationResponse'];
 

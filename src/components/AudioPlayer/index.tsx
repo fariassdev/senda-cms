@@ -2,7 +2,6 @@
 
 import {
   AlertCircle,
-  Download,
   Loader2,
   Maximize2,
   Minimize2,
@@ -47,12 +46,12 @@ export function AudioPlayer() {
     isMinimized,
     playbackError,
     isLoading,
+    isLiveGenerating,
     progressPercent,
     formattedCurrentTime,
     formattedDuration,
     containerHeight,
     ariaLabel,
-    isDownloading,
     togglePlay,
     toggleMute,
     toggleMinimized,
@@ -61,7 +60,6 @@ export function AudioPlayer() {
     handleProgressChange,
     handleVolumeChange,
     handleSpeedChange,
-    handleDownload,
   } = useConnect();
 
   // Don't render if no lesson is loaded
@@ -147,9 +145,16 @@ export function AudioPlayer() {
                 )}
               </Button>
 
-              <span className="text-sm font-medium text-foreground truncate max-w-[200px] sm:max-w-[300px]">
-                {currentLesson.title}
-              </span>
+              <div className="flex flex-col min-w-0">
+                <span className="text-sm font-medium text-foreground truncate max-w-[200px] sm:max-w-[300px]">
+                  {currentLesson.title}
+                </span>
+                {isLiveGenerating ? (
+                  <span className="text-xs text-muted-foreground">
+                    Generating live stream...
+                  </span>
+                ) : null}
+              </div>
             </div>
 
             <div className="flex items-center gap-2">
@@ -208,9 +213,16 @@ export function AudioPlayer() {
         <div className="flex items-center justify-between">
           {/* Left: Title + Keyboard Shortcuts Hint Icon */}
           <div className="flex items-center gap-2 flex-1 min-w-0 mr-4">
-            <h3 className="text-sm font-medium text-foreground truncate">
-              {currentLesson.title}
-            </h3>
+            <div className="min-w-0">
+              <h3 className="text-sm font-medium text-foreground truncate">
+                {currentLesson.title}
+              </h3>
+              {isLiveGenerating ? (
+                <p className="text-xs text-muted-foreground">
+                  Generating live stream...
+                </p>
+              ) : null}
+            </div>
             <Tooltip>
               <TooltipTrigger asChild>
                 <button
@@ -299,22 +311,6 @@ export function AudioPlayer() {
                 ))}
               </SelectContent>
             </Select>
-
-            {/* Download Button */}
-            <Button
-              variant="ghost"
-              size="icon"
-              onClick={handleDownload}
-              disabled={isDownloading}
-              className="h-8 w-8"
-              aria-label="Download audio"
-            >
-              {isDownloading ? (
-                <Loader2 className="h-4 w-4 animate-spin" />
-              ) : (
-                <Download className="h-4 w-4" />
-              )}
-            </Button>
 
             {/* Minimize Button */}
             <Button
