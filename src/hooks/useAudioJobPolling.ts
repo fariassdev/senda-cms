@@ -41,30 +41,36 @@ export function useAudioJobPolling({
   jobId: string | undefined;
   enabled: boolean;
 }) {
-  const { data, isError } = $api.useQuery('get', '/api/jobs/{job_id}/status', {
-    params: {
-      path: {
-        job_id: jobId ?? '',
+  const { data, isError } = $api.useQuery(
+    'get',
+    '/api/jobs/{job_id}/status',
+    {
+      params: {
+        path: {
+          job_id: jobId ?? '',
+        },
       },
     },
-    enabled: enabled && !!jobId,
-    refetchInterval: (query: {
-      state: { data?: JobStatusResponse | undefined };
-    }) => {
-      const status = query.state.data?.status;
-      const segments = query.state.data?.segments_available ?? 0;
+    {
+      enabled: enabled && !!jobId,
+      refetchInterval: (query: {
+        state: { data?: JobStatusResponse | undefined };
+      }) => {
+        const status = query.state.data?.status;
+        const segments = query.state.data?.segments_available ?? 0;
 
-      if (!status || status === 'FAILED' || status === 'COMPLETED') {
-        return false;
-      }
+        if (!status || status === 'FAILED' || status === 'COMPLETED') {
+          return false;
+        }
 
-      if (segments >= 1) {
-        return false;
-      }
+        if (segments >= 1) {
+          return false;
+        }
 
-      return 2000;
+        return 2000;
+      },
     },
-  });
+  );
 
   const segmentsAvailable = data?.segments_available ?? 0;
   const status = data?.status;

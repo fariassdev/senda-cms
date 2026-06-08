@@ -85,19 +85,25 @@ export default function useConnect(courseSlug: string) {
     isLoading: isLessonsLoading,
     isError: isLessonsError,
     refetch: refetchLessons,
-  } = $api.useQuery('get', '/api/courses/{slug}/lessons', {
-    params: {
-      path: {
-        slug: courseSlug,
+  } = $api.useQuery(
+    'get',
+    '/api/courses/{slug}/lessons',
+    {
+      params: {
+        path: {
+          slug: courseSlug,
+        },
       },
     },
-    refetchInterval: (query: {
-      state: { data?: { lessons?: Lesson[] } | undefined };
-    }) => {
-      const lessonsData = query.state.data?.lessons;
-      return hasGeneratingLessons(lessonsData) ? POLLING_INTERVAL : false;
+    {
+      refetchInterval: (query: {
+        state: { data?: { lessons?: Lesson[] } | undefined };
+      }) => {
+        const lessonsData = query.state.data?.lessons;
+        return hasGeneratingLessons(lessonsData) ? POLLING_INTERVAL : false;
+      },
     },
-  });
+  );
 
   const lessons: Lesson[] | undefined = lessonsResponse?.lessons;
 
