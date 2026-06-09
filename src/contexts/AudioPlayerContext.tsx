@@ -17,6 +17,11 @@ import {
   useAudioJobPolling,
 } from '@/hooks/useAudioJobPolling';
 import { useHlsPlayer } from '@/hooks/useHlsPlayer';
+import {
+  getBufferedEnd,
+  getFiniteDuration,
+  getMaxSeekTime,
+} from '@/lib/audioPlayback';
 import type { Lesson } from '@/types/models';
 
 /**
@@ -126,6 +131,7 @@ export function AudioPlayerProvider({ children }: AudioPlayerProviderProps) {
   const [playbackKey, setPlaybackKey] = useState(0);
 
   const previousVolumeRef = useRef(1);
+  const hasAutoPlayedRef = useRef(false);
 
   const isLiveGenerating = currentLesson?.status === 'AUDIO_GENERATING';
 
@@ -154,10 +160,20 @@ export function AudioPlayerProvider({ children }: AudioPlayerProviderProps) {
     audio.muted = isMuted;
     audio.playbackRate = speed;
 
+    if (hasAutoPlayedRef.current) {
+      return;
+    }
+
+    hasAutoPlayedRef.current = true;
+
+    if (isLiveGenerating) {
+      audio.currentTime = 0;
+    }
+
     audio.play().catch((error) => {
       console.error('Auto-play error:', error);
     });
-  }, [volume, isMuted, speed]);
+  }, [volume, isMuted, speed, isLiveGenerating]);
 
   const handleHlsFatalError = useCallback((message: string) => {
     setIsLoading(false);
@@ -173,11 +189,16 @@ export function AudioPlayerProvider({ children }: AudioPlayerProviderProps) {
     audioRef,
     playlistUrl: resolvedPlaylistUrl,
     enabled: !!currentLesson && !playbackError,
+    isGenerating: isLiveGenerating,
     waitForSegments,
     onReady: handleHlsReady,
     onFatalError: handleHlsFatalError,
     onBufferingChange: handleBufferingChange,
   });
+
+  useEffect(() => {
+    hasAutoPlayedRef.current = false;
+  }, [playbackKey]);
 
   const setCurrentLesson = useCallback(
     (lesson: Lesson, options?: SetCurrentLessonOptions) => {
@@ -232,14 +253,22 @@ export function AudioPlayerProvider({ children }: AudioPlayerProviderProps) {
     audio.pause();
   }, []);
 
-  const seek = useCallback((time: number) => {
-    const audio = audioRef.current;
-    if (!audio) return;
+  const seek = useCallback(
+    (time: number) => {
+      const audio = audioRef.current;
+      if (!audio) return;
 
-    const clampedTime = Math.max(0, Math.min(time, audio.duration || 0));
-    audio.currentTime = clampedTime;
-    setProgress(clampedTime);
-  }, []);
+      const maxTime = getMaxSeekTime(audio, isLiveGenerating);
+      if (maxTime <= 0) {
+        return;
+      }
+
+      const clampedTime = Math.max(0, Math.min(time, maxTime));
+      audio.currentTime = clampedTime;
+      setProgress(clampedTime);
+    },
+    [isLiveGenerating],
+  );
 
   const setVolume = useCallback((newVolume: number) => {
     const audio = audioRef.current;
@@ -318,17 +347,41 @@ export function AudioPlayerProvider({ children }: AudioPlayerProviderProps) {
 
   const handleTimeUpdate = useCallback(() => {
     const audio = audioRef.current;
-    if (audio) {
-      setProgress(audio.currentTime);
+    if (!audio) return;
+
+    setProgress(audio.currentTime);
+
+    if (isLiveGenerating) {
+      const seekableEnd = getBufferedEnd(audio);
+      if (seekableEnd > 0) {
+        setDuration(seekableEnd);
+      }
+      return;
     }
-  }, []);
+
+    const finiteDuration = getFiniteDuration(audio);
+    if (finiteDuration > 0) {
+      setDuration(finiteDuration);
+    }
+  }, [isLiveGenerating]);
 
   const handleLoadedMetadata = useCallback(() => {
     const audio = audioRef.current;
-    if (audio && Number.isFinite(audio.duration)) {
-      setDuration(audio.duration);
+    if (!audio) return;
+
+    if (isLiveGenerating) {
+      const seekableEnd = getBufferedEnd(audio);
+      if (seekableEnd > 0) {
+        setDuration(seekableEnd);
+      }
+      return;
     }
-  }, []);
+
+    const finiteDuration = getFiniteDuration(audio);
+    if (finiteDuration > 0) {
+      setDuration(finiteDuration);
+    }
+  }, [isLiveGenerating]);
 
   const handlePlay = useCallback(() => {
     setIsPlaying(true);

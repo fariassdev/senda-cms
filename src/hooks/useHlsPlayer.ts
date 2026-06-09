@@ -16,6 +16,8 @@ export interface UseHlsPlayerOptions {
   audioRef: React.RefObject<HTMLAudioElement | null>;
   playlistUrl: string | undefined;
   enabled: boolean;
+  /** Growing HLS event playlist while audio is still being generated */
+  isGenerating?: boolean;
   waitForSegments?: boolean;
   onReady?: () => void;
   onFatalError?: (message: string) => void;
@@ -29,6 +31,7 @@ export function useHlsPlayer({
   audioRef,
   playlistUrl,
   enabled,
+  isGenerating = false,
   waitForSegments = false,
   onReady,
   onFatalError,
@@ -66,17 +69,28 @@ export function useHlsPlayer({
     audio.addEventListener('canplay', handleCanPlay);
 
     if (isHlsSupported()) {
-      const hls = createHlsPlayer({
-        enableWorker: true,
-        lowLatencyMode: true,
-        liveDurationInfinity: true,
-      });
+      const hls = createHlsPlayer(
+        isGenerating
+          ? {
+              enableWorker: true,
+              lowLatencyMode: false,
+              liveDurationInfinity: false,
+              startPosition: 0,
+              backBufferLength: Infinity,
+            }
+          : {
+              enableWorker: true,
+            },
+      );
 
       hlsRef.current = hls;
       hls.attachMedia(audio);
       hls.loadSource(playlistUrl);
 
       hls.on(Events.MANIFEST_PARSED, () => {
+        if (isGenerating) {
+          hls.startLoad(0);
+        }
         onReadyRef.current?.();
       });
 
@@ -87,7 +101,7 @@ export function useHlsPlayer({
 
         switch (data.type) {
           case ErrorTypes.NETWORK_ERROR:
-            hls.startLoad();
+            hls.startLoad(isGenerating ? 0 : -1);
             break;
           case ErrorTypes.MEDIA_ERROR:
             hls.recoverMediaError();
@@ -128,5 +142,5 @@ export function useHlsPlayer({
       audio.removeAttribute('src');
       audio.load();
     };
-  }, [audioRef, enabled, playlistUrl, waitForSegments]);
+  }, [audioRef, enabled, playlistUrl, waitForSegments, isGenerating]);
 }
