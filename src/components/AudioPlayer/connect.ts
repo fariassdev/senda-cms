@@ -5,10 +5,7 @@ import {
   useAudioPlayer,
 } from '@/contexts/AudioPlayerContext';
 
-import {
-  getEstimatedTotalDuration,
-  getTimelineTotalDuration,
-} from '@/lib/audioPlayback';
+import { getTimelineTotalDuration } from '@/lib/audioPlayback';
 
 import {
   KEYBOARD_SHORTCUTS,
@@ -54,6 +51,7 @@ const useConnect = (): UseAudioPlayerConnectResult => {
     playbackError,
     isLoading,
     isLiveGenerating,
+    estimatedTotalDuration,
     togglePlay,
     seek,
     setVolume,
@@ -65,7 +63,6 @@ const useConnect = (): UseAudioPlayerConnectResult => {
   } = useAudioPlayer();
 
   const availableDuration = duration;
-  const estimatedTotalDuration = getEstimatedTotalDuration(currentLesson);
   const totalDuration = getTimelineTotalDuration(
     isLiveGenerating,
     availableDuration,

@@ -124,13 +124,8 @@ export function useAudioJobPolling({
         state: { data?: AudioGenerationJobStatusResponse | undefined };
       }) => {
         const status = query.state.data?.status;
-        const segments = query.state.data?.segments_available ?? 0;
 
         if (!status || status === 'FAILED' || status === 'COMPLETED') {
-          return false;
-        }
-
-        if (segments >= 1) {
           return false;
         }
 
@@ -145,6 +140,8 @@ export function useAudioJobPolling({
   return {
     segmentsReady: segmentsAvailable >= 1,
     segmentsAvailable,
+    availableDurationMs: data?.available_duration_ms ?? 0,
+    estimatedTotalDurationMs: data?.estimated_total_duration_ms ?? 0,
     jobStatus: status,
     playlistUrl: data?.playlist_url,
     errorMessage: data?.error_message,

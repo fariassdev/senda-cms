@@ -739,6 +739,8 @@ export interface components {
          * AudioGenerationJobStatusResponse
          * @description Response for polling an HLS audio generation job.
          * @example {
+         *       "available_duration_ms": 18000,
+         *       "estimated_total_duration_ms": 643000,
          *       "job_id": "3fa85f64-5717-4562-b3fc-2c963f66afa6",
          *       "playlist_url": "https://cdn.senda.com/audio/1/job-id/playlist.m3u8",
          *       "segments_available": 3,
@@ -762,6 +764,16 @@ export interface components {
              * @description Number of HLS segments uploaded so far
              */
             segments_available: number;
+            /**
+             * Available Duration Ms
+             * @description Milliseconds of audio available in the uploaded HLS playlist
+             */
+            available_duration_ms: number;
+            /**
+             * Estimated Total Duration Ms
+             * @description Estimated final audio duration from the lesson script
+             */
+            estimated_total_duration_ms: number;
             /**
              * Playlist Url
              * @description Live or final HLS playlist URL
@@ -816,6 +828,8 @@ export interface components {
          * @description Response for lesson-level audio generation status check.
          * @example {
          *       "active_job_id": "3fa85f64-5717-4562-b3fc-2c963f66afa6",
+         *       "available_duration_ms": 18000,
+         *       "estimated_total_duration_ms": 643000,
          *       "lesson_id": 1,
          *       "playlist_url": "https://cdn.senda.com/audio/1/job-id/playlist.m3u8",
          *       "status": "AUDIO_GENERATING"
@@ -842,6 +856,16 @@ export interface components {
              * @description Active generation job id while status is AUDIO_GENERATING
              */
             active_job_id?: string | null;
+            /**
+             * Available Duration Ms
+             * @description Milliseconds of audio available while generation is in progress
+             */
+            available_duration_ms?: number | null;
+            /**
+             * Estimated Total Duration Ms
+             * @description Estimated final audio duration while generation is in progress
+             */
+            estimated_total_duration_ms?: number | null;
         };
         /** AuthenticatedUserData */
         AuthenticatedUserData: {

@@ -25,11 +25,38 @@ export function getFiniteDuration(audio: HTMLAudioElement): number {
 export function getMaxSeekTime(
   audio: HTMLAudioElement,
   isLiveGenerating: boolean,
+  availableDurationSeconds = 0,
 ): number {
   if (isLiveGenerating) {
+    if (availableDurationSeconds > 0) {
+      return availableDurationSeconds;
+    }
     return getBufferedEnd(audio);
   }
   return getFiniteDuration(audio);
+}
+
+/** Prefer API-provided generated duration, then element buffer/duration. */
+export function getGeneratedDurationSeconds(
+  availableDurationMs: number,
+  fallbackDurationSeconds: number,
+): number {
+  const fromApi = availableDurationMs > 0 ? availableDurationMs / 1000 : 0;
+  if (fromApi > 0) {
+    return Math.max(fromApi, fallbackDurationSeconds);
+  }
+  return fallbackDurationSeconds;
+}
+
+/** Prefer API-provided estimate, then lesson metadata fallback. */
+export function getEstimatedTotalDurationSeconds(
+  estimatedTotalDurationMs: number,
+  lessonFallbackSeconds: number,
+): number {
+  if (estimatedTotalDurationMs > 0) {
+    return estimatedTotalDurationMs / 1000;
+  }
+  return lessonFallbackSeconds;
 }
 
 /** Estimated full audio length from lesson metadata (seconds). */

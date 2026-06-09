@@ -32,6 +32,12 @@ describe('audioPlayback', () => {
     expect(getMaxSeekTime(audio, true)).toBe(42.5);
   });
 
+  it('prefers API available duration while generating', () => {
+    const audio = createAudioStub({ bufferedRanges: [[0, 18]] });
+
+    expect(getMaxSeekTime(audio, true, 72)).toBe(72);
+  });
+
   it('uses finite duration for completed playback', () => {
     const audio = createAudioStub({
       duration: 120,

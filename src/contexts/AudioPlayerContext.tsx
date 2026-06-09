@@ -19,7 +19,10 @@ import {
 import { useHlsPlayer } from '@/hooks/useHlsPlayer';
 import {
   getBufferedEnd,
+  getEstimatedTotalDuration,
+  getEstimatedTotalDurationSeconds,
   getFiniteDuration,
+  getGeneratedDurationSeconds,
   getMaxSeekTime,
 } from '@/lib/audioPlayback';
 import type { Lesson } from '@/types/models';
@@ -49,8 +52,10 @@ interface AudioPlayerState {
   isLiveGenerating: boolean;
   /** Current playback progress in seconds */
   progress: number;
-  /** Total duration of current audio in seconds */
+  /** Generated audio available so far in seconds */
   duration: number;
+  /** Estimated full audio length in seconds while generating */
+  estimatedTotalDuration: number;
   /** Volume level 0-1 */
   volume: number;
   /** Whether audio is muted */
@@ -140,6 +145,8 @@ export function AudioPlayerProvider({ children }: AudioPlayerProviderProps) {
     isFailed: isJobFailed,
     errorMessage: jobErrorMessage,
     playlistUrl: polledPlaylistUrl,
+    availableDurationMs,
+    estimatedTotalDurationMs,
   } = useAudioJobPolling({
     jobId: activeJobId,
     enabled: isLiveGenerating && !!activeJobId,
@@ -149,6 +156,15 @@ export function AudioPlayerProvider({ children }: AudioPlayerProviderProps) {
     polledPlaylistUrl ?? playlistUrl ?? currentLesson?.playlistUrl ?? undefined;
 
   const waitForSegments = isLiveGenerating && !!activeJobId && !segmentsReady;
+
+  const estimatedTotalDuration = useMemo(
+    () =>
+      getEstimatedTotalDurationSeconds(
+        estimatedTotalDurationMs,
+        getEstimatedTotalDuration(currentLesson),
+      ),
+    [estimatedTotalDurationMs, currentLesson],
+  );
 
   const handleHlsReady = useCallback(() => {
     setIsLoading(false);
@@ -258,7 +274,15 @@ export function AudioPlayerProvider({ children }: AudioPlayerProviderProps) {
       const audio = audioRef.current;
       if (!audio) return;
 
-      const maxTime = getMaxSeekTime(audio, isLiveGenerating);
+      const availableDurationSeconds = getGeneratedDurationSeconds(
+        availableDurationMs,
+        getBufferedEnd(audio),
+      );
+      const maxTime = getMaxSeekTime(
+        audio,
+        isLiveGenerating,
+        availableDurationSeconds,
+      );
       if (maxTime <= 0) {
         return;
       }
@@ -267,7 +291,7 @@ export function AudioPlayerProvider({ children }: AudioPlayerProviderProps) {
       audio.currentTime = clampedTime;
       setProgress(clampedTime);
     },
-    [isLiveGenerating],
+    [isLiveGenerating, availableDurationMs],
   );
 
   const setVolume = useCallback((newVolume: number) => {
@@ -352,9 +376,12 @@ export function AudioPlayerProvider({ children }: AudioPlayerProviderProps) {
     setProgress(audio.currentTime);
 
     if (isLiveGenerating) {
-      const seekableEnd = getBufferedEnd(audio);
-      if (seekableEnd > 0) {
-        setDuration(seekableEnd);
+      const generatedDuration = getGeneratedDurationSeconds(
+        availableDurationMs,
+        getBufferedEnd(audio),
+      );
+      if (generatedDuration > 0) {
+        setDuration(generatedDuration);
       }
       return;
     }
@@ -363,16 +390,19 @@ export function AudioPlayerProvider({ children }: AudioPlayerProviderProps) {
     if (finiteDuration > 0) {
       setDuration(finiteDuration);
     }
-  }, [isLiveGenerating]);
+  }, [isLiveGenerating, availableDurationMs]);
 
   const handleLoadedMetadata = useCallback(() => {
     const audio = audioRef.current;
     if (!audio) return;
 
     if (isLiveGenerating) {
-      const seekableEnd = getBufferedEnd(audio);
-      if (seekableEnd > 0) {
-        setDuration(seekableEnd);
+      const generatedDuration = getGeneratedDurationSeconds(
+        availableDurationMs,
+        getBufferedEnd(audio),
+      );
+      if (generatedDuration > 0) {
+        setDuration(generatedDuration);
       }
       return;
     }
@@ -381,7 +411,17 @@ export function AudioPlayerProvider({ children }: AudioPlayerProviderProps) {
     if (finiteDuration > 0) {
       setDuration(finiteDuration);
     }
-  }, [isLiveGenerating]);
+  }, [isLiveGenerating, availableDurationMs]);
+
+  useEffect(() => {
+    if (!isLiveGenerating || availableDurationMs <= 0) {
+      return;
+    }
+
+    setDuration((current) =>
+      getGeneratedDurationSeconds(availableDurationMs, current),
+    );
+  }, [isLiveGenerating, availableDurationMs]);
 
   const handlePlay = useCallback(() => {
     setIsPlaying(true);
@@ -410,6 +450,7 @@ export function AudioPlayerProvider({ children }: AudioPlayerProviderProps) {
       isLiveGenerating,
       progress,
       duration,
+      estimatedTotalDuration,
       volume,
       isMuted,
       speed,
@@ -437,6 +478,7 @@ export function AudioPlayerProvider({ children }: AudioPlayerProviderProps) {
       isLiveGenerating,
       progress,
       duration,
+      estimatedTotalDuration,
       volume,
       isMuted,
       speed,
