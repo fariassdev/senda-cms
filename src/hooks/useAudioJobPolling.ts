@@ -143,6 +143,7 @@ export function useAudioJobPolling({
     availableDurationMs: data?.available_duration_ms ?? 0,
     estimatedTotalDurationMs: data?.estimated_total_duration_ms ?? 0,
     jobStatus: status,
+    isJobCompleted: status === 'COMPLETED',
     playlistUrl: data?.playlist_url,
     errorMessage: data?.error_message,
     isFailed: status === 'FAILED',

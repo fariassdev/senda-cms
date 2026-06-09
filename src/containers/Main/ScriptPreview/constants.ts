@@ -22,9 +22,9 @@ export const AUDIO_GENERATION_ELIGIBLE_STATUSES: LessonStatus[] = [
 ];
 
 /**
- * Words per minute for meditation pace (slower than normal reading)
+ * Words per minute for script duration estimates (aligned with TTS output pace)
  */
-export const MEDITATION_WORDS_PER_MINUTE = 113;
+export const MEDITATION_WORDS_PER_MINUTE = 126;
 
 /**
  * Empty state messages based on lesson status

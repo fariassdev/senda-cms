@@ -48,6 +48,7 @@ export function useHlsPlayer({
 
   useEffect(() => {
     const audio = audioRef.current;
+    const generatingAtMount = isGenerating;
 
     if (!enabled || !audio || !playlistUrl || waitForSegments) {
       return;
@@ -70,7 +71,7 @@ export function useHlsPlayer({
 
     if (isHlsSupported()) {
       const hls = createHlsPlayer(
-        isGenerating
+        generatingAtMount
           ? {
               enableWorker: true,
               lowLatencyMode: false,
@@ -88,7 +89,7 @@ export function useHlsPlayer({
       hls.loadSource(playlistUrl);
 
       hls.on(Events.MANIFEST_PARSED, () => {
-        if (isGenerating) {
+        if (generatingAtMount) {
           hls.startLoad(0);
         }
         onReadyRef.current?.();
@@ -101,7 +102,7 @@ export function useHlsPlayer({
 
         switch (data.type) {
           case ErrorTypes.NETWORK_ERROR:
-            hls.startLoad(isGenerating ? 0 : -1);
+            hls.startLoad(generatingAtMount ? 0 : -1);
             break;
           case ErrorTypes.MEDIA_ERROR:
             hls.recoverMediaError();
@@ -142,5 +143,8 @@ export function useHlsPlayer({
       audio.removeAttribute('src');
       audio.load();
     };
-  }, [audioRef, enabled, playlistUrl, waitForSegments, isGenerating]);
+    // isGenerating is intentionally omitted: capture at mount so completion does not
+    // destroy/recreate hls.js while the manifest transitions to VOD.
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [audioRef, enabled, playlistUrl, waitForSegments]);
 }

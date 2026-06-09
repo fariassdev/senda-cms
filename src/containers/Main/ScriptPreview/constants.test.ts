@@ -16,10 +16,10 @@ describe('calculateScriptMetrics', () => {
     expect(result.wordCount).toBe(9); // 6 + 3 words
     expect(result.charCount).toBe(47); // 26 + 21 characters (including spaces)
     expect(result.totalPauseSeconds).toBe(5); // 3 + 2 seconds
-    // 9 words / 113 wpm * 60 = 4.78s reading + 5s pause = 9.78s ≈ 10s total
-    expect(result.totalDurationSeconds).toBe(10);
-    // Pause percentage: 5/10 * 100 = 50%
-    expect(result.pausePercentage).toBe(50);
+    // 9 words / 126 wpm * 60 = 4.29s reading + 5s pause = 9.29s ≈ 9s total
+    expect(result.totalDurationSeconds).toBe(9);
+    // Pause percentage: 5/9 * 100 ≈ 56%
+    expect(result.pausePercentage).toBe(56);
     expect(result.targetDurationMinutes).toBe(10);
   });
 
@@ -49,8 +49,8 @@ describe('calculateScriptMetrics', () => {
     expect(result.wordCount).toBe(13);
     expect(result.charCount).toBe(72);
     expect(result.totalPauseSeconds).toBe(0);
-    // 13 words / 113 wpm * 60 = 6.9s ≈ 7s
-    expect(result.totalDurationSeconds).toBe(7);
+    // 13 words / 126 wpm * 60 = 6.19s ≈ 6s
+    expect(result.totalDurationSeconds).toBe(6);
     expect(result.pausePercentage).toBe(0);
     expect(result.targetDurationMinutes).toBe(8);
   });
@@ -98,8 +98,8 @@ describe('calculateScriptMetrics', () => {
     const result = calculateScriptMetrics(script, 5);
 
     expect(result.wordCount).toBe(200);
-    // 200 words / 113 wpm * 60 = 106s
-    expect(result.totalDurationSeconds).toBe(106);
+    // 200 words / 126 wpm * 60 = 95.24s ≈ 95s
+    expect(result.totalDurationSeconds).toBe(95);
   });
 
   it('handles target duration comparison highlighting', () => {
@@ -111,7 +111,7 @@ describe('calculateScriptMetrics', () => {
     const result = calculateScriptMetrics(script, 3); // target = 3 min = 180s
 
     expect(result.targetDurationMinutes).toBe(3);
-    // 2 words / 113 wpm * 60 = 1.06s ≈ 1s
+    // 2 words / 126 wpm * 60 = 0.95s ≈ 1s
     expect(result.totalDurationSeconds).toBe(1);
     // The difference is > 60s, so isDurationOffTarget should be true
     expect(result.isDurationOffTarget).toBe(true);
@@ -119,16 +119,16 @@ describe('calculateScriptMetrics', () => {
 
   it('rounds pause percentage correctly', () => {
     const script = [
-      { type: 'speak', content: 'word '.repeat(150), duration: null }, // 150 words = 60s reading
+      { type: 'speak', content: 'word '.repeat(150), duration: null }, // 150 words ≈ 71s reading
       { type: 'pause', content: null, duration: 18 }, // 18 seconds
     ];
 
     const result = calculateScriptMetrics(script, 5);
 
     expect(result.totalPauseSeconds).toBe(18);
-    // 150 words / 113 wpm * 60 = 79.6s reading + 18s pause = 97.6s ≈ 98s
-    expect(result.totalDurationSeconds).toBe(98);
-    // Pause percentage: 18/98 * 100 ≈ 18%
-    expect(result.pausePercentage).toBe(18);
+    // 150 words / 126 wpm * 60 = 71.4s reading + 18s pause = 89.4s ≈ 89s
+    expect(result.totalDurationSeconds).toBe(89);
+    // Pause percentage: 18/89 * 100 ≈ 20%
+    expect(result.pausePercentage).toBe(20);
   });
 });

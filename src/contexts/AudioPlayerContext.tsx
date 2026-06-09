@@ -137,20 +137,24 @@ export function AudioPlayerProvider({ children }: AudioPlayerProviderProps) {
 
   const previousVolumeRef = useRef(1);
   const hasAutoPlayedRef = useRef(false);
+  const hasHandledJobCompletionRef = useRef(false);
 
-  const isLiveGenerating = currentLesson?.status === 'AUDIO_GENERATING';
+  const isLessonGenerating = currentLesson?.status === 'AUDIO_GENERATING';
 
   const {
     segmentsReady,
     isFailed: isJobFailed,
+    isJobCompleted,
     errorMessage: jobErrorMessage,
     playlistUrl: polledPlaylistUrl,
     availableDurationMs,
     estimatedTotalDurationMs,
   } = useAudioJobPolling({
     jobId: activeJobId,
-    enabled: isLiveGenerating && !!activeJobId,
+    enabled: isLessonGenerating && !!activeJobId,
   });
+
+  const isLiveGenerating = isLessonGenerating && !isJobCompleted;
 
   const resolvedPlaylistUrl =
     polledPlaylistUrl ?? playlistUrl ?? currentLesson?.playlistUrl ?? undefined;
@@ -234,10 +238,37 @@ export function AudioPlayerProvider({ children }: AudioPlayerProviderProps) {
       setDuration(0);
       setIsLoading(true);
       setIsMinimized(false);
+      hasHandledJobCompletionRef.current = false;
       setPlaybackKey((key) => key + 1);
     },
     [queryClient],
   );
+
+  useEffect(() => {
+    if (
+      !isJobCompleted ||
+      !currentLesson ||
+      currentLesson.status !== 'AUDIO_GENERATING' ||
+      hasHandledJobCompletionRef.current
+    ) {
+      return;
+    }
+
+    hasHandledJobCompletionRef.current = true;
+
+    setCurrentLessonState((lesson) =>
+      lesson ? { ...lesson, status: 'AUDIO_COMPLETED' } : null,
+    );
+
+    if (availableDurationMs > 0) {
+      setDuration(availableDurationMs / 1000);
+    }
+
+    queryClient.removeQueries({
+      queryKey: audioGenerationJobQueryKey(currentLesson.id),
+    });
+    setActiveJobId(undefined);
+  }, [isJobCompleted, currentLesson, availableDurationMs, queryClient]);
 
   const togglePlay = useCallback(() => {
     const audio = audioRef.current;
