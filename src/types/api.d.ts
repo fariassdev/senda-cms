@@ -425,7 +425,7 @@ export interface paths {
         put?: never;
         /**
          * Generate Lesson Script
-         * @description Generate script for a specific lesson.
+         * @description Generate script for a specific lesson asynchronously.
          */
         post: operations["generate_lesson_script_api_courses__slug__lessons__id__generate_script_post"];
         delete?: never;
@@ -2579,12 +2579,12 @@ export interface operations {
         requestBody?: never;
         responses: {
             /** @description Successful Response */
-            200: {
+            202: {
                 headers: {
                     [name: string]: unknown;
                 };
                 content: {
-                    "application/json": components["schemas"]["ScriptGenerationResponse"];
+                    "application/json": components["schemas"]["ScriptGenerationStatusResponse"];
                 };
             };
             /** @description Validation Error */
