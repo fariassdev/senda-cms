@@ -43,6 +43,8 @@ export type BatchScriptResponse =
   components['schemas']['CourseScriptsGenerationResponse'];
 export type AudioGenerationStatusResponse =
   components['schemas']['AudioGenerationStatusResponse'];
+export type ScriptGenerationStatusResponse =
+  components['schemas']['ScriptGenerationStatusResponse'];
 
 // User types
 export type User = components['schemas']['AuthenticatedUserData'];

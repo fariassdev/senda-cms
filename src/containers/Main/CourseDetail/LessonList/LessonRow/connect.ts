@@ -6,6 +6,7 @@ import type { CSSProperties } from 'react';
 import type { LessonFormData } from '@/components/LessonForm';
 import useAudioGeneration from '@/hooks/useAudioGeneration';
 import useLessonActions from '@/hooks/useLessonActions';
+import { useLessonStatusPolling } from '@/hooks/useLessonStatusPolling';
 import useScriptGeneration from '@/hooks/useScriptGeneration';
 import { formatTimestamp } from '@/lib/utils';
 import type { LessonStatus } from '@/types/models';
@@ -16,6 +17,11 @@ export default function useConnect({
   courseSlug,
   disabled,
 }: LessonRowProps) {
+  useLessonStatusPolling({
+    courseSlug,
+    lessonId: lesson.id,
+    status: lesson.status as LessonStatus,
+  });
   const {
     attributes,
     listeners,

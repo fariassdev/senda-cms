@@ -93,6 +93,7 @@ export function useRestoreGeneratingAudioJob({
   return {
     isRestoring: shouldRestore && (isLoading || isFetching),
     restoredJob: cachedJob,
+    status: data?.status,
   };
 }
 

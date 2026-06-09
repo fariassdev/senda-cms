@@ -1,12 +1,19 @@
 import type { LessonFormData } from '@/components/LessonForm';
 import useAudioGeneration from '@/hooks/useAudioGeneration';
 import useLessonActions from '@/hooks/useLessonActions';
+import { useLessonStatusPolling } from '@/hooks/useLessonStatusPolling';
 import useScriptGeneration from '@/hooks/useScriptGeneration';
 import { formatTimestamp } from '@/lib/utils';
 import type { LessonStatus } from '@/types/models';
 import type { LessonCardProps } from './types';
 
 export default function useConnect({ lesson, courseSlug }: LessonCardProps) {
+  useLessonStatusPolling({
+    courseSlug,
+    lessonId: lesson.id,
+    status: lesson.status as LessonStatus,
+  });
+
   // Lesson update actions
   const { updateLesson, isUpdating } = useLessonActions({
     courseSlug,

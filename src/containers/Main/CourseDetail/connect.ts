@@ -16,7 +16,6 @@ import type { BatchModalView } from './BatchGenerationModal/types';
 import {
   courseUpdateSchema,
   GENERATING_STATUSES,
-  POLLING_INTERVAL,
   type CourseUpdateFormData,
 } from './constants';
 
@@ -71,39 +70,19 @@ export default function useConnect(courseSlug: string) {
 
   const course = courseResponse?.course;
 
-  // Helper function to check if any lessons are generating
-  const hasGeneratingLessons = (lessonsData: Lesson[] | undefined): boolean => {
-    if (!lessonsData) return false;
-    return lessonsData.some((lesson) =>
-      GENERATING_STATUSES.includes(lesson.status as LessonStatus),
-    );
-  };
-
-  // Fetch lessons for this course with dynamic polling
+  // Fetch lessons for this course
   const {
     data: lessonsResponse,
     isLoading: isLessonsLoading,
     isError: isLessonsError,
     refetch: refetchLessons,
-  } = $api.useQuery(
-    'get',
-    '/api/courses/{slug}/lessons',
-    {
-      params: {
-        path: {
-          slug: courseSlug,
-        },
+  } = $api.useQuery('get', '/api/courses/{slug}/lessons', {
+    params: {
+      path: {
+        slug: courseSlug,
       },
     },
-    {
-      refetchInterval: (query: {
-        state: { data?: { lessons?: Lesson[] } | undefined };
-      }) => {
-        const lessonsData = query.state.data?.lessons;
-        return hasGeneratingLessons(lessonsData) ? POLLING_INTERVAL : false;
-      },
-    },
-  );
+  });
 
   const lessons: Lesson[] | undefined = lessonsResponse?.lessons;
 
