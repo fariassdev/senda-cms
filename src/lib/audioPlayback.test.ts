@@ -1,9 +1,14 @@
 import { describe, expect, it } from 'vitest';
 
+import type { Lesson } from '@/types/models';
+
 import {
   getBufferedEnd,
+  getEstimatedTotalDuration,
   getFiniteDuration,
   getMaxSeekTime,
+  getTimelineTotalDuration,
+  toTimelinePercent,
 } from './audioPlayback';
 
 function createAudioStub({
@@ -35,5 +40,23 @@ describe('audioPlayback', () => {
 
     expect(getFiniteDuration(audio)).toBe(120);
     expect(getMaxSeekTime(audio, false)).toBe(120);
+  });
+
+  it('estimates total duration from lesson metadata', () => {
+    const lesson = { durationMinutes: 10 } as Lesson;
+
+    expect(getEstimatedTotalDuration(lesson)).toBe(600);
+    expect(getEstimatedTotalDuration(null)).toBe(0);
+  });
+
+  it('derives timeline totals for streaming playback', () => {
+    expect(getTimelineTotalDuration(true, 72, 600)).toBe(600);
+    expect(getTimelineTotalDuration(true, 720, 600)).toBe(720);
+    expect(getTimelineTotalDuration(false, 540, 600)).toBe(540);
+  });
+
+  it('maps timeline values to percentages', () => {
+    expect(toTimelinePercent(30, 600)).toBe(5);
+    expect(toTimelinePercent(0, 0)).toBe(0);
   });
 });

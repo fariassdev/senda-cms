@@ -6,6 +6,11 @@ import {
 } from '@/contexts/AudioPlayerContext';
 
 import {
+  getEstimatedTotalDuration,
+  getTimelineTotalDuration,
+} from '@/lib/audioPlayback';
+
+import {
   KEYBOARD_SHORTCUTS,
   PLAYER_HEIGHT,
   SEEK_AMOUNT,
@@ -59,9 +64,21 @@ const useConnect = (): UseAudioPlayerConnectResult => {
     retryPlayback,
   } = useAudioPlayer();
 
-  const progressPercent = duration > 0 ? (progress / duration) * 100 : 0;
+  const availableDuration = duration;
+  const estimatedTotalDuration = getEstimatedTotalDuration(currentLesson);
+  const totalDuration = getTimelineTotalDuration(
+    isLiveGenerating,
+    availableDuration,
+    estimatedTotalDuration,
+  );
+
+  const progressPercent =
+    totalDuration > 0 ? (progress / totalDuration) * 100 : 0;
   const formattedCurrentTime = formatTime(progress);
-  const formattedDuration = formatTime(duration);
+  const formattedDuration =
+    isLiveGenerating && estimatedTotalDuration > 0
+      ? `~${formatTime(estimatedTotalDuration)}`
+      : formatTime(totalDuration);
 
   const containerHeight = playbackError
     ? 'auto'
@@ -99,7 +116,12 @@ const useConnect = (): UseAudioPlayerConnectResult => {
           break;
         case KEYBOARD_SHORTCUTS.SEEK_FORWARD:
           event.preventDefault();
-          seek(Math.min(duration, progress + SEEK_AMOUNT));
+          seek(
+            Math.min(
+              isLiveGenerating ? availableDuration : totalDuration,
+              progress + SEEK_AMOUNT,
+            ),
+          );
           break;
         case KEYBOARD_SHORTCUTS.TOGGLE_MUTE:
         case KEYBOARD_SHORTCUTS.TOGGLE_MUTE.toUpperCase():
@@ -116,7 +138,17 @@ const useConnect = (): UseAudioPlayerConnectResult => {
           break;
       }
     },
-    [togglePlay, seek, progress, duration, toggleMute, setVolume, volume],
+    [
+      togglePlay,
+      seek,
+      progress,
+      availableDuration,
+      totalDuration,
+      isLiveGenerating,
+      toggleMute,
+      setVolume,
+      volume,
+    ],
   );
 
   useEffect(() => {
@@ -126,12 +158,11 @@ const useConnect = (): UseAudioPlayerConnectResult => {
     return () => window.removeEventListener('keydown', handleKeyDown);
   }, [currentLesson, playbackError, handleKeyDown]);
 
-  const handleProgressChange = useCallback(
-    (value: number[]) => {
-      const newProgress = ((value[0] ?? 0) / 100) * duration;
-      seek(newProgress);
+  const handleProgressSeek = useCallback(
+    (time: number) => {
+      seek(time);
     },
-    [duration, seek],
+    [seek],
   );
 
   const handleVolumeChange = useCallback(
@@ -161,6 +192,8 @@ const useConnect = (): UseAudioPlayerConnectResult => {
     isLoading,
     isLiveGenerating,
     progressPercent,
+    availableDuration,
+    totalDuration,
     formattedCurrentTime,
     formattedDuration,
     containerHeight,
@@ -173,7 +206,7 @@ const useConnect = (): UseAudioPlayerConnectResult => {
     toggleMinimized,
     closePlayer,
     retryPlayback,
-    handleProgressChange,
+    handleProgressSeek,
     handleVolumeChange,
     handleSpeedChange,
   };

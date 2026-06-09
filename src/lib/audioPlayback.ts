@@ -1,3 +1,5 @@
+import type { Lesson } from '@/types/models';
+
 /**
  * Returns the end time (seconds) of the last buffered range, or 0 if none.
  */
@@ -28,4 +30,32 @@ export function getMaxSeekTime(
     return getBufferedEnd(audio);
   }
   return getFiniteDuration(audio);
+}
+
+/** Estimated full audio length from lesson metadata (seconds). */
+export function getEstimatedTotalDuration(lesson: Lesson | null): number {
+  if (!lesson?.durationMinutes || lesson.durationMinutes <= 0) {
+    return 0;
+  }
+  return lesson.durationMinutes * 60;
+}
+
+/** Timeline denominator for the streaming progress bar. */
+export function getTimelineTotalDuration(
+  isLiveGenerating: boolean,
+  availableDuration: number,
+  estimatedTotalDuration: number,
+): number {
+  if (isLiveGenerating && estimatedTotalDuration > 0) {
+    return Math.max(estimatedTotalDuration, availableDuration);
+  }
+  return availableDuration;
+}
+
+/** Maps a duration value to a percentage of the total timeline. */
+export function toTimelinePercent(value: number, total: number): number {
+  if (total <= 0) {
+    return 0;
+  }
+  return Math.min(100, Math.max(0, (value / total) * 100));
 }

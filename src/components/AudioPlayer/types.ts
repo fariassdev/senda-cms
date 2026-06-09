@@ -40,11 +40,15 @@ export interface UseAudioPlayerConnectResult {
   isLiveGenerating: boolean;
 
   // Derived values
-  /** Progress as percentage (0-100) */
+  /** Progress as percentage (0-100) relative to total timeline */
   progressPercent: number;
+  /** Generated/buffered audio available for seek in seconds */
+  availableDuration: number;
+  /** Total timeline length in seconds */
+  totalDuration: number;
   /** Current time formatted as mm:ss */
   formattedCurrentTime: string;
-  /** Duration formatted as mm:ss */
+  /** Duration formatted as mm:ss (prefixed with ~ while generating) */
   formattedDuration: string;
   /** Container height based on state */
   containerHeight: string;
@@ -62,7 +66,7 @@ export interface UseAudioPlayerConnectResult {
   retryPlayback: () => void;
 
   // Handlers for UI components
-  handleProgressChange: (value: number[]) => void;
+  handleProgressSeek: (time: number) => void;
   handleVolumeChange: (value: number[]) => void;
   handleSpeedChange: (value: string) => void;
 }

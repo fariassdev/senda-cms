@@ -28,6 +28,7 @@ import {
   TooltipTrigger,
 } from '@/components/ui/tooltip';
 
+import { PlaybackProgressBar } from './PlaybackProgressBar';
 import useConnect from './connect';
 import { SPEED_OPTIONS } from './constants';
 
@@ -47,7 +48,9 @@ export function AudioPlayer() {
     playbackError,
     isLoading,
     isLiveGenerating,
-    progressPercent,
+    progress,
+    availableDuration,
+    totalDuration,
     formattedCurrentTime,
     formattedDuration,
     containerHeight,
@@ -57,7 +60,7 @@ export function AudioPlayer() {
     toggleMinimized,
     closePlayer,
     retryPlayback,
-    handleProgressChange,
+    handleProgressSeek,
     handleVolumeChange,
     handleSpeedChange,
   } = useConnect();
@@ -114,14 +117,14 @@ export function AudioPlayer() {
       return (
         <div className="relative h-full">
           {/* Thin progress bar at top */}
-          <div className="absolute top-0 left-0 right-0 h-1 bg-muted">
-            <div
-              className="h-full bg-primary transition-all duration-200"
-              style={{ width: `${progressPercent}%` }}
-              role="progressbar"
-              aria-valuenow={progressPercent}
-              aria-valuemin={0}
-              aria-valuemax={100}
+          <div className="absolute top-0 left-0 right-0">
+            <PlaybackProgressBar
+              progress={progress}
+              availableDuration={availableDuration}
+              totalDuration={totalDuration}
+              disabled={isLoading}
+              compact
+              onSeek={handleProgressSeek}
               aria-label="Audio progress"
             />
           </div>
@@ -195,15 +198,16 @@ export function AudioPlayer() {
           <span className="text-xs text-muted-foreground w-12 text-right tabular-nums">
             {formattedCurrentTime}
           </span>
-          <Slider
-            value={[progressPercent]}
-            max={100}
-            step={0.1}
-            onValueChange={handleProgressChange}
-            className="flex-1"
-            aria-label="Playback progress"
-            disabled={isLoading}
-          />
+          <div className="flex-1">
+            <PlaybackProgressBar
+              progress={progress}
+              availableDuration={availableDuration}
+              totalDuration={totalDuration}
+              disabled={isLoading}
+              onSeek={handleProgressSeek}
+              aria-label="Playback progress"
+            />
+          </div>
           <span className="text-xs text-muted-foreground w-12 tabular-nums">
             {formattedDuration}
           </span>
