@@ -122,7 +122,7 @@ export function LessonRow(props: LessonRowProps) {
               {hasViewableScript ? 'View Script' : 'Generate script first'}
             </TooltipContent>
           </Tooltip>
-          <PlayButton lesson={lesson} />
+          <PlayButton lesson={lesson} courseSlug={courseSlug} />
         </div>
       </TableCell>
 

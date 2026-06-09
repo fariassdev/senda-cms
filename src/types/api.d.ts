@@ -740,7 +740,7 @@ export interface components {
          * @description Response for polling an HLS audio generation job.
          * @example {
          *       "job_id": "3fa85f64-5717-4562-b3fc-2c963f66afa6",
-         *       "playlist_url": "https://cdn.senda.com/meditations/1/job-id/playlist.m3u8",
+         *       "playlist_url": "https://cdn.senda.com/audio/1/job-id/playlist.m3u8",
          *       "segments_available": 3,
          *       "status": "GENERATING"
          *     }
@@ -782,12 +782,10 @@ export interface components {
          * AudioGenerationResponse
          * @description Response for completed batch/synchronous audio generation.
          * @example {
-         *       "duration_ms": 300000,
          *       "generation_time_seconds": 15.34,
          *       "job_id": "3fa85f64-5717-4562-b3fc-2c963f66afa6",
          *       "lesson_id": 1,
-         *       "playlist_url": "https://cdn.senda.com/meditations/1/job-id/playlist.m3u8",
-         *       "segment_count": 12
+         *       "playlist_url": "https://cdn.senda.com/audio/1/job-id/playlist.m3u8"
          *     }
          */
         AudioGenerationResponse: {
@@ -808,16 +806,6 @@ export interface components {
              */
             playlist_url: string;
             /**
-             * Segment Count
-             * @description Total number of HLS segments
-             */
-            segment_count: number;
-            /**
-             * Duration Ms
-             * @description Total audio duration in milliseconds
-             */
-            duration_ms: number;
-            /**
              * Generation Time Seconds
              * @description Time taken to generate the audio
              */
@@ -827,7 +815,9 @@ export interface components {
          * AudioGenerationStatusResponse
          * @description Response for lesson-level audio generation status check.
          * @example {
+         *       "active_job_id": "3fa85f64-5717-4562-b3fc-2c963f66afa6",
          *       "lesson_id": 1,
+         *       "playlist_url": "https://cdn.senda.com/audio/1/job-id/playlist.m3u8",
          *       "status": "AUDIO_GENERATING"
          *     }
          */
@@ -847,6 +837,11 @@ export interface components {
              * @description HLS playlist URL if audio is available
              */
             playlist_url?: string | null;
+            /**
+             * Active Job Id
+             * @description Active generation job id while status is AUDIO_GENERATING
+             */
+            active_job_id?: string | null;
         };
         /** AuthenticatedUserData */
         AuthenticatedUserData: {
@@ -928,12 +923,10 @@ export interface components {
          *       ],
          *       "generated_audios": [
          *         {
-         *           "duration_ms": 300000,
          *           "generation_time_seconds": 15.34,
          *           "job_id": "3fa85f64-5717-4562-b3fc-2c963f66afa6",
          *           "lesson_id": 1,
-         *           "playlist_url": "https://cdn.senda.com/meditations/1/job-id/playlist.m3u8",
-         *           "segment_count": 12
+         *           "playlist_url": "https://cdn.senda.com/audio/1/job-id/playlist.m3u8"
          *         }
          *       ],
          *       "successful_generations": 1,
@@ -1454,7 +1447,7 @@ export interface components {
          * @example {
          *       "job_id": "3fa85f64-5717-4562-b3fc-2c963f66afa6",
          *       "lesson_id": 1,
-         *       "playlist_url": "https://cdn.senda.com/meditations/1/job-id/playlist.m3u8",
+         *       "playlist_url": "https://cdn.senda.com/audio/1/job-id/playlist.m3u8",
          *       "status": "PENDING"
          *     }
          */

@@ -89,7 +89,7 @@ export function LessonCard(props: LessonCardProps) {
           </Tooltip>
 
           {/* Play Audio */}
-          <PlayButton lesson={lesson} />
+          <PlayButton lesson={lesson} courseSlug={courseSlug} />
 
           {/* Divider */}
           <div className="h-5 w-px bg-border mx-1" />

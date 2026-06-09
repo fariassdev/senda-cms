@@ -1,6 +1,6 @@
 'use client';
 
-import { Pause, PlayCircle } from 'lucide-react';
+import { Loader2, Pause, PlayCircle } from 'lucide-react';
 
 import { Button } from '@/components/ui/button';
 import {
@@ -18,8 +18,14 @@ import type { PlayButtonProps } from './types';
  * Disabled when lesson doesn't have audio
  */
 export function PlayButton(props: PlayButtonProps) {
-  const { canPlay, isCurrentlyPlaying, handleClick, ariaLabel, tooltipText } =
-    useConnect(props);
+  const {
+    canPlay,
+    isCurrentlyPlaying,
+    isLoadingPlayback,
+    handleClick,
+    ariaLabel,
+    tooltipText,
+  } = useConnect(props);
 
   return (
     <Tooltip>
@@ -32,15 +38,18 @@ export function PlayButton(props: PlayButtonProps) {
             className={`h-8 w-8 ${
               isCurrentlyPlaying
                 ? 'text-primary'
-                : canPlay
+                : canPlay || isLoadingPlayback
                   ? ''
                   : 'text-muted-foreground'
             }`}
             aria-label={ariaLabel}
+            aria-busy={isLoadingPlayback}
             disabled={!canPlay}
             onClick={handleClick}
           >
-            {isCurrentlyPlaying ? (
+            {isLoadingPlayback ? (
+              <Loader2 className="h-4 w-4 animate-spin" />
+            ) : isCurrentlyPlaying ? (
               <Pause className="h-4 w-4" />
             ) : (
               <PlayCircle className="h-4 w-4" />

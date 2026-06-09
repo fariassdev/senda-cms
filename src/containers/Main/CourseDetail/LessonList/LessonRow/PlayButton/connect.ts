@@ -1,7 +1,12 @@
 import { useCallback, useMemo } from 'react';
 
 import { useAudioPlayer } from '@/contexts/AudioPlayerContext';
-import { useLessonAudioJob } from '@/hooks/useAudioJobPolling';
+import {
+  useLessonAudioJob,
+  useRestoreGeneratingAudioJob,
+} from '@/hooks/useAudioJobPolling';
+
+import type { LessonStatus } from '@/types/models';
 
 import type { PlayButtonProps, UsePlayButtonConnectResult } from './types';
 
@@ -15,28 +20,48 @@ const PLAYABLE_STATUSES = ['AUDIO_COMPLETED', 'AUDIO_GENERATING'] as const;
  */
 const useConnect = ({
   lesson,
+  courseSlug,
 }: PlayButtonProps): UsePlayButtonConnectResult => {
-  const { currentLesson, isPlaying, setCurrentLesson, togglePlay } =
+  const { currentLesson, isPlaying, isLoading, setCurrentLesson, togglePlay } =
     useAudioPlayer();
+
+  const { isRestoring } = useRestoreGeneratingAudioJob({
+    lessonId: lesson.id,
+    courseSlug,
+    lessonStatus: lesson.status as LessonStatus,
+  });
 
   const activeJob = useLessonAudioJob(lesson.id);
 
   const playlistUrl = lesson.playlistUrl ?? activeJob?.playlistUrl ?? null;
+  const isGenerating = lesson.status === 'AUDIO_GENERATING';
+  const isCurrentLesson = currentLesson?.id === lesson.id;
 
-  const canPlay = useMemo(
-    () =>
-      PLAYABLE_STATUSES.includes(
+  const canPlay = useMemo(() => {
+    if (
+      !PLAYABLE_STATUSES.includes(
         lesson.status as (typeof PLAYABLE_STATUSES)[number],
-      ) && !!playlistUrl,
-    [lesson.status, playlistUrl],
-  );
+      )
+    ) {
+      return false;
+    }
+
+    if (isGenerating) {
+      return !!playlistUrl && !isRestoring;
+    }
+
+    return !!playlistUrl;
+  }, [lesson.status, isGenerating, playlistUrl, isRestoring]);
 
   const isCurrentlyPlaying = useMemo(
-    () => currentLesson?.id === lesson.id && isPlaying,
-    [currentLesson?.id, lesson.id, isPlaying],
+    () => isCurrentLesson && isPlaying,
+    [isCurrentLesson, isPlaying],
   );
 
-  const isCurrentLesson = currentLesson?.id === lesson.id;
+  const isLoadingPlayback = useMemo(
+    () => isRestoring || (isCurrentLesson && isLoading && !isCurrentlyPlaying),
+    [isRestoring, isCurrentLesson, isLoading, isCurrentlyPlaying],
+  );
 
   const handleClick = useCallback(() => {
     if (isCurrentLesson) {
@@ -55,6 +80,9 @@ const useConnect = ({
   ]);
 
   const ariaLabel = useMemo(() => {
+    if (isLoadingPlayback) {
+      return `Preparing audio for ${lesson.title}`;
+    }
     if (!canPlay) {
       return `No audio available for ${lesson.title}`;
     }
@@ -65,13 +93,22 @@ const useConnect = ({
       return `Resume ${lesson.title}`;
     }
     return `Play ${lesson.title}`;
-  }, [canPlay, isCurrentlyPlaying, isCurrentLesson, lesson.title]);
+  }, [
+    isLoadingPlayback,
+    canPlay,
+    isCurrentlyPlaying,
+    isCurrentLesson,
+    lesson.title,
+  ]);
 
   const tooltipText = useMemo(() => {
+    if (isLoadingPlayback) {
+      return isRestoring
+        ? 'Restoring live stream...'
+        : 'Waiting for first audio segment';
+    }
     if (!canPlay) {
-      return lesson.status === 'AUDIO_GENERATING'
-        ? 'Waiting for first audio segment'
-        : 'Generate audio first';
+      return isGenerating ? 'Preparing live stream...' : 'Generate audio first';
     }
     if (isCurrentlyPlaying) {
       return 'Pause';
@@ -79,15 +116,23 @@ const useConnect = ({
     if (isCurrentLesson) {
       return 'Resume';
     }
-    if (lesson.status === 'AUDIO_GENERATING') {
+    if (isGenerating) {
       return 'Play live preview';
     }
     return 'Play audio';
-  }, [canPlay, isCurrentlyPlaying, isCurrentLesson, lesson.status]);
+  }, [
+    isLoadingPlayback,
+    isRestoring,
+    canPlay,
+    isGenerating,
+    isCurrentlyPlaying,
+    isCurrentLesson,
+  ]);
 
   return {
     canPlay,
     isCurrentlyPlaying,
+    isLoadingPlayback,
     handleClick,
     ariaLabel,
     tooltipText,

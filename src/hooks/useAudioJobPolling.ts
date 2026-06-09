@@ -1,10 +1,12 @@
-import { useQuery } from '@tanstack/react-query';
+import { useQuery, useQueryClient } from '@tanstack/react-query';
+import { useEffect } from 'react';
 
 import { $api } from '@/lib/api';
-import type { components } from '@/types/api';
-
-type JobStatusResponse =
-  components['schemas']['AudioGenerationJobStatusResponse'];
+import type {
+  AudioGenerationJobStatusResponse,
+  AudioGenerationStatusResponse,
+  LessonStatus,
+} from '@/types/models';
 
 /** Query key for in-flight audio generation job metadata per lesson */
 export const audioGenerationJobQueryKey = (lessonId: number) =>
@@ -27,6 +29,71 @@ export function useLessonAudioJob(lessonId: number) {
   });
 
   return data;
+}
+
+/**
+ * Restores in-flight job metadata after a page reload while audio is generating.
+ */
+export function useRestoreGeneratingAudioJob({
+  lessonId,
+  courseSlug,
+  lessonStatus,
+}: {
+  lessonId: number;
+  courseSlug: string;
+  lessonStatus: LessonStatus;
+}) {
+  const queryClient = useQueryClient();
+  const cachedJob = useLessonAudioJob(lessonId);
+  const shouldRestore = lessonStatus === 'AUDIO_GENERATING' && !cachedJob;
+
+  const { data, isLoading, isFetching } = $api.useQuery(
+    'get',
+    '/api/courses/{slug}/lessons/{id}/audio-status',
+    {
+      params: {
+        path: {
+          slug: courseSlug,
+          id: lessonId,
+        },
+      },
+    },
+    {
+      enabled: shouldRestore,
+      refetchInterval: (query: {
+        state: { data?: AudioGenerationStatusResponse | undefined };
+      }) => {
+        const statusData = query.state.data;
+        if (
+          statusData?.active_job_id &&
+          statusData.playlist_url &&
+          lessonStatus === 'AUDIO_GENERATING'
+        ) {
+          return false;
+        }
+        return lessonStatus === 'AUDIO_GENERATING' ? 2000 : false;
+      },
+    },
+  );
+
+  useEffect(() => {
+    if (!data?.active_job_id || !data.playlist_url) {
+      return;
+    }
+
+    queryClient.setQueryData<AudioGenerationJobCache>(
+      audioGenerationJobQueryKey(lessonId),
+      {
+        jobId: data.active_job_id,
+        playlistUrl: data.playlist_url,
+      },
+    );
+  }, [data, lessonId, queryClient]);
+
+  return {
+    isRestoring: shouldRestore && (isLoading || isFetching),
+    restoredJob: cachedJob,
+  };
 }
 
 const ACTIVE_JOB_STATUSES = new Set(['PENDING', 'GENERATING']);
@@ -54,7 +121,7 @@ export function useAudioJobPolling({
     {
       enabled: enabled && !!jobId,
       refetchInterval: (query: {
-        state: { data?: JobStatusResponse | undefined };
+        state: { data?: AudioGenerationJobStatusResponse | undefined };
       }) => {
         const status = query.state.data?.status;
         const segments = query.state.data?.segments_available ?? 0;

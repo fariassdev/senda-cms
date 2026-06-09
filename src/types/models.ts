@@ -41,6 +41,8 @@ export type AudioGenerationJobStatus =
   | 'FAILED';
 export type BatchScriptResponse =
   components['schemas']['CourseScriptsGenerationResponse'];
+export type AudioGenerationStatusResponse =
+  components['schemas']['AudioGenerationStatusResponse'];
 
 // User types
 export type User = components['schemas']['AuthenticatedUserData'];
